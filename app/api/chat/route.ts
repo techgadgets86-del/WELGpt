@@ -7,7 +7,7 @@ export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
 
-    const result = streamText({
+    const result = await streamText({
       model: google('gemini-2.5-flash'),
       system: `You are WelGPT, a highly advanced AI neuroscience and wellness coach. 
       Your tone is calm, highly intelligent, slightly futuristic, and deeply empathetic.

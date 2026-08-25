@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Send, Paperclip, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useChat } from "@ai-sdk/react";
+import { useChat } from "ai/react";
 
 const SUGGESTIONS = [
   { icon: "🌿", title: "Guided Meditation", desc: "5 minutes to center yourself" },
