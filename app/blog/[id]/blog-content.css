@@ -1,0 +1,48 @@
+.blog-content h2 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 2.5rem;
+  color: #c084fc;
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.blog-content p {
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 1.5rem;
+}
+
+.blog-content strong {
+  color: #fff;
+  font-weight: 600;
+  background: linear-gradient(to right, #c084fc, #d946ef);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.blog-content em {
+  color: #e879f9;
+  font-style: italic;
+}
+
+.blog-content ul, .blog-content ol {
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+  padding-left: 1.5rem;
+}
+
+.blog-content li {
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 1rem;
+}
+
+.blog-content li strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 1.25rem;
+}

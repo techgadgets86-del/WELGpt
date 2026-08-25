@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 260">
+  <title>WelGPT — Secondary Logo</title>
+  <g transform="translate(70,15)">
+    <path d="M63,14.29 A38,38 0 1 1 37,14.29" fill="none" stroke="#6E56CF" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="50" cy="52" r="7" fill="#6E56CF"/>
+  </g>
+  <text x="120" y="210" text-anchor="middle" font-family="'Space Grotesk', 'Helvetica Neue', Arial, sans-serif" font-size="50" letter-spacing="-0.02em">
+    <tspan font-weight="400" fill="#F3F1EC">wel</tspan><tspan font-weight="700" fill="#F3F1EC">GPT</tspan>
+  </text>
+</svg>

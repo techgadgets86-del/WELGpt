@@ -24,3 +24,61 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@theme {
+  --animate-marquee: marquee var(--duration) linear infinite;
+  --animate-marquee-reverse: marquee-reverse var(--duration) linear infinite;
+  --animate-marquee-up: marquee-up var(--duration) linear infinite;
+  --animate-marquee-up-reverse: marquee-up-reverse var(--duration) linear infinite;
+  
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(calc(-100% - var(--gap))); }
+  }
+  @keyframes marquee-reverse {
+    from { transform: translateX(calc(-100% - var(--gap))); }
+    to { transform: translateX(0); }
+  }
+  @keyframes marquee-up {
+    from { transform: translateY(0); }
+    to { transform: translateY(calc(-100% - var(--gap))); }
+  }
+  @keyframes marquee-up-reverse {
+    from { transform: translateY(calc(-100% - var(--gap))); }
+    to { transform: translateY(0); }
+  }
+}
+
+.animate-marquee {
+  animation: marquee var(--duration, 40s) linear infinite;
+}
+.animate-marquee-reverse {
+  animation: marquee-reverse var(--duration, 40s) linear infinite;
+}
+.animate-marquee-up {
+  animation: marquee-up var(--duration, 40s) linear infinite;
+}
+.animate-marquee-up-reverse {
+  animation: marquee-up-reverse var(--duration, 40s) linear infinite;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-100% - var(--gap, 1rem))); }
+}
+@keyframes marquee-reverse {
+  from { transform: translateX(calc(-100% - var(--gap, 1rem))); }
+  to { transform: translateX(0); }
+}
+@keyframes marquee-up {
+  from { transform: translateY(0); }
+  to { transform: translateY(calc(-100% - var(--gap, 1rem))); }
+}
+@keyframes marquee-up-reverse {
+  from { transform: translateY(calc(-100% - var(--gap, 1rem))); }
+  to { transform: translateY(0); }
+}
+
+.group:hover .group-hover-pause {
+  animation-play-state: paused !important;
+}
