@@ -112,7 +112,7 @@ export default function InspirationPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto relative z-10 pt-4 pb-32 sm:pb-20 h-full flex flex-col items-center justify-center">
+    <div className="max-w-4xl mx-auto relative z-10 pt-8 pb-32 sm:pb-20 w-full flex flex-col items-center justify-start min-h-full">
       <header className="mb-8 text-center">
         <motion.div 
             initial={{ opacity: 0, scale: 0.8 }}
