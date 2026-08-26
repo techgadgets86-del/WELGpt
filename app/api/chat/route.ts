@@ -1,16 +1,64 @@
-import { streamText } from 'ai';
-import { google } from '@ai-sdk/google';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const { messages } = await req.json();
+  try {
+    const { messages } = await req.json();
 
-  const result = streamText({
-    model: google('gemini-3.6-flash'),
-    messages,
-    system: "You are WelGPT, a highly advanced AI neuroscience coach and wellness companion..."
-  });
+    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || '';
+    if (!apiKey) throw new Error("API Key is missing in Vercel settings.");
+    
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: 'gemini-3.6-flash' });
 
-  return result.toDataStreamResponse();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const formattedMessages = messages.map((m: any) => ({
+      role: m.role === 'user' ? 'user' : 'model',
+      parts: [{ text: m.content }],
+    }));
+    
+    // Add system instruction as the very first message
+    formattedMessages.unshift({
+      role: 'user',
+      parts: [{ text: "SYSTEM INSTRUCTION: You are WelGPT, a highly advanced AI neuroscience and wellness coach. Keep responses concise, brilliant, and formatted cleanly with markdown." }]
+    });
+    formattedMessages.unshift({
+      role: 'model',
+      parts: [{ text: "Understood. I will act as WelGPT." }]
+    });
+
+    const response = await model.generateContentStream({
+      contents: formattedMessages
+    });
+
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const chunk of response.stream) {
+            const text = chunk.text();
+            // Data Stream Protocol Format for Vercel AI SDK useChat
+            controller.enqueue(encoder.encode(`0:${JSON.stringify(text)}\n`));
+          }
+          controller.close();
+        } catch (error) {
+          controller.error(error);
+        }
+      }
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    });
+    
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    console.error(error);
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+  }
 }
