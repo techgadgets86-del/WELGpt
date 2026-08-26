@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Sparkles, Brain, LayoutDashboard, Menu, X, CheckSquare, Leaf, Activity, BookOpen, Mail } from "lucide-react";
+import { Sparkles, Brain, LayoutDashboard, Menu, X, CheckSquare, Leaf, Activity, BookOpen, Mail, BarChart3 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -22,6 +22,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { icon: LayoutDashboard, label: "Meditation Hub", href: "/" },
     { icon: Sparkles, label: "Daily Inspiration", href: "/inspiration" },
     { icon: CheckSquare, label: "Routine Checklist", href: "/routine" },
+    { icon: BarChart3, label: "Analytics Dashboard", href: "/dashboard" },
     { icon: Leaf, label: "Detox Hub", href: "/detox" },
     { icon: Brain, label: "AI Coach", href: "/coach" },
     { icon: Activity, label: "Sensei Training", href: "/sensei" },
