@@ -19,7 +19,7 @@ export default function InspirationPage() {
   const [quote, setQuote] = useState("Peace comes from within. Do not seek it without.");
   const [author, setAuthor] = useState("Siddhartha Gautama");
   const [isLoading, setIsLoading] = useState(false);
-  const [bgMode, setBgMode] = useState<"gradient" | "realistic">("gradient");
+  const [bgMode, setBgMode] = useState<"gradient" | "realistic" | "paper">("gradient");
   const [bgSeed, setBgSeed] = useState(1);
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -51,7 +51,7 @@ export default function InspirationPage() {
     const randomQuote = OFFLINE_QUOTES[Math.floor(Math.random() * OFFLINE_QUOTES.length)];
     setQuote(randomQuote.quote);
     setAuthor(randomQuote.author);
-    setBgMode("gradient"); // Force gradient mode since realistic images need internet
+    if (bgMode === "realistic") setBgMode("gradient"); // Force gradient mode if realistic since images need internet
     setIsLoading(false);
   };
 
@@ -110,19 +110,26 @@ export default function InspirationPage() {
       <motion.div 
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }} 
-        className="flex items-center bg-[#111127] rounded-full p-1 border border-white/10 mb-8"
+        className="flex items-center bg-[#111127] rounded-full p-1 border border-white/10 mb-8 overflow-x-auto no-scrollbar max-w-full"
       >
         <button 
           onClick={() => setBgMode("gradient")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${bgMode === "gradient" ? "bg-white/10 text-white" : "text-gray-400 hover:text-gray-200"}`}
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${bgMode === "gradient" ? "bg-white/10 text-white" : "text-gray-400 hover:text-gray-200"}`}
         >
           <PaintBucket size={16} /> Gradient
         </button>
         <button 
           onClick={() => setBgMode("realistic")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${bgMode === "realistic" ? "bg-white/10 text-white" : "text-gray-400 hover:text-gray-200"}`}
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${bgMode === "realistic" ? "bg-white/10 text-white" : "text-gray-400 hover:text-gray-200"}`}
         >
           <ImageIcon size={16} /> Realistic AI
+        </button>
+        <button 
+          onClick={() => setBgMode("paper")}
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${bgMode === "paper" ? "bg-white/10 text-white" : "text-gray-400 hover:text-gray-200"}`}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg> 
+          Vintage Paper
         </button>
       </motion.div>
 
@@ -136,7 +143,7 @@ export default function InspirationPage() {
         <div 
           ref={cardRef} 
           className="relative rounded-3xl overflow-hidden aspect-square flex flex-col items-center justify-center p-12 text-center border border-white/20 shadow-2xl"
-          style={{ backgroundColor: bgMode === "gradient" ? "#0f0f23" : "#000" }}
+          style={{ backgroundColor: bgMode === "gradient" ? "#0f0f23" : bgMode === "paper" ? "#f5f5f5" : "#000" }}
         >
           {/* Background Layer */}
           <AnimatePresence mode="wait">
@@ -146,30 +153,43 @@ export default function InspirationPage() {
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="absolute inset-0 bg-gradient-to-br from-violet-600/40 via-[#0f0f23] to-teal-600/40"
               />
-            ) : (
+            ) : bgMode === "realistic" ? (
               <motion.div 
                 key={`img-${bgSeed}`}
                 initial={{ opacity: 0 }} animate={{ opacity: 0.6 }} exit={{ opacity: 0 }} transition={{ duration: 1 }}
                 className="absolute inset-0 bg-cover bg-center"
                 style={{ backgroundImage: `url(https://picsum.photos/800/800?random=${bgSeed}&blur=2)` }}
               />
+            ) : (
+              <motion.div 
+                key="paper"
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}
+                className="absolute inset-0 bg-cover bg-center opacity-70 mix-blend-multiply"
+                style={{ backgroundImage: `url(https://images.unsplash.com/photo-1601662528567-526cd06f6582?q=80&w=1080&auto=format&fit=crop)` }}
+              />
             )}
           </AnimatePresence>
           
           {/* Content Layer */}
           <div className="relative z-10 w-full">
-            <Image src="/logo-icon.png" alt="WelGPT" width={32} height={32} className="mx-auto mb-8 opacity-80" />
-            <h2 className="text-2xl md:text-3xl font-serif italic font-medium text-white leading-relaxed mb-6 drop-shadow-md">
+            <Image 
+              src="/logo-icon.png" 
+              alt="WelGPT" 
+              width={32} 
+              height={32} 
+              className={`mx-auto mb-8 ${bgMode === "paper" ? "opacity-30 invert" : "opacity-80"}`} 
+            />
+            <h2 className={`text-2xl md:text-3xl font-serif italic leading-relaxed mb-6 ${bgMode === "paper" ? "text-[#2a2a2a] font-medium" : "text-white font-medium drop-shadow-md"}`}>
               &quot;{quote}&quot;
             </h2>
-            <p className="text-sm font-medium text-gray-300 tracking-widest uppercase drop-shadow-md">
+            <p className={`text-sm tracking-widest uppercase ${bgMode === "paper" ? "text-[#555] font-semibold" : "text-gray-300 font-medium drop-shadow-md"}`}>
               — {author}
             </p>
           </div>
           
           {/* Watermark for sharing */}
-          <div className="absolute bottom-6 left-0 right-0 text-center z-10 opacity-50">
-            <p className="text-[10px] font-mono tracking-widest text-white">APP.WELGPT.SPACE</p>
+          <div className={`absolute bottom-6 left-0 right-0 text-center z-10 opacity-50`}>
+            <p className={`text-[10px] font-mono tracking-widest ${bgMode === "paper" ? "text-gray-500" : "text-white"}`}>APP.WELGPT.SPACE</p>
           </div>
         </div>
       </motion.div>
