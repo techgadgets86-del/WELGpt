@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import { Play, X, Activity, Flame, Shield, Zap, Target, Bot, Loader2 } from "lucide-react";
 import { MagicCard } from "@/components/ui/magic-card";
+import AnimatedGuide from "@/components/AnimatedGuide";
 
 type BodyPart = "chest" | "core" | "arms" | "legs" | "shoulders" | null;
 
@@ -484,8 +485,8 @@ export default function SenseiPage() {
               transition={{ delay: 0.2 }}
               className="text-center"
             >
-              <div className="inline-flex items-center justify-center p-6 rounded-2xl bg-white/5 mb-8 border border-white/10" style={{ borderColor: bodyData[activeExercise].color, boxShadow: `0 0 50px ${bodyData[activeExercise].color}40` }}>
-                {bodyData[activeExercise].icon}
+              <div className="mb-8">
+                <AnimatedGuide part={activeExercise as string} color={bodyData[activeExercise].color} />
               </div>
               <h2 className="text-5xl md:text-7xl font-bold text-white mb-4 uppercase tracking-tight">
                 {bodyData[activeExercise].exercise}
