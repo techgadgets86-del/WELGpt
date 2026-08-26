@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Share2, Image as ImageIcon, PaintBucket, Loader2 } from "lucide-react";
+import { Sparkles, Share2, Download, Image as ImageIcon, PaintBucket, Loader2 } from "lucide-react";
 import Image from "next/image";
 import * as htmlToImage from "html-to-image";
 
@@ -56,24 +56,34 @@ export default function InspirationPage() {
     setIsLoading(false);
   };
 
-  const handleShare = async () => {
-    if (!cardRef.current) return;
-    try {
-      // 1. Convert to Image (iOS Safari Fixes)
-      const dataUrl = await htmlToImage.toPng(cardRef.current, {
-        quality: 1.0,
-        pixelRatio: 2, // High resolution for IG
-        cacheBust: true, // Fixes Safari caching issues
-        backgroundColor: bgMode === "paper" ? "#f5f5f5" : "#0f0f23", // Fallback background
-      });
+  const generateImageDataUrl = async () => {
+    if (!cardRef.current) return null;
+    return await htmlToImage.toPng(cardRef.current, {
+      quality: 1.0,
+      pixelRatio: 2, // High resolution for IG
+      cacheBust: true, // Fixes Safari caching issues
+      backgroundColor: bgMode === "paper" ? "#f5f5f5" : "#0f0f23", // Fallback background
+    });
+  };
 
-      // 2. Auto-Download for the user
+  const handleDownload = async () => {
+    try {
+      const dataUrl = await generateImageDataUrl();
+      if (!dataUrl) return;
       const link = document.createElement("a");
       link.download = `welgpt-quote-${Date.now()}.png`;
       link.href = dataUrl;
       link.click();
+    } catch (error) {
+      console.error("Error downloading image", error);
+    }
+  };
 
-      // 3. Native Share (if supported on mobile)
+  const handleShare = async () => {
+    try {
+      const dataUrl = await generateImageDataUrl();
+      if (!dataUrl) return;
+
       if (navigator.share) {
         const blob = await (await fetch(dataUrl)).blob();
         const file = new File([blob], "quote.png", { type: "image/png" });
@@ -83,10 +93,13 @@ export default function InspirationPage() {
           url: "https://app.welgpt.space",
           files: [file],
         });
+      } else {
+        // Fallback to download if web share isn't available
+        handleDownload();
       }
     } catch (error) {
-      console.error("Error generating image", error);
-      alert("Image saved! (Native share sheet is only supported on mobile devices)");
+      console.error("Error sharing image", error);
+      alert("Failed to open share sheet. You can download the image instead.");
     }
   };
 
@@ -217,6 +230,13 @@ export default function InspirationPage() {
         >
           {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
           {isLoading ? "Generating..." : "Generate New"}
+        </button>
+        <button 
+          onClick={handleDownload}
+          className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium transition-colors border border-white/5"
+        >
+          <Download size={18} />
+          Save Image
         </button>
         <button 
           onClick={handleShare}
