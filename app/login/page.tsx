@@ -16,7 +16,7 @@ export default function LoginPage() {
       router.push("/");
     } catch (error) {
       console.error("Authentication Error", error);
-      alert("Failed to log in.");
+      alert(`Failed to log in: ${error.message}`);
     }
   };
 
