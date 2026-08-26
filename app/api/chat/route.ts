@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     if (!apiKey) throw new Error("API Key is missing in Vercel settings.");
     
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3.6-flash' });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const formattedMessages = messages.map((m: any) => ({
@@ -66,7 +66,7 @@ export async function POST(req: Request) {
     const { getFallbackResponse } = await import('@/lib/knowledgeDatabase');
     
     const lastMessage = extractedMessages.length > 0 ? extractedMessages[extractedMessages.length - 1].content : "";
-    const fallbackText = getFallbackResponse(lastMessage);
+    const fallbackText = getFallbackResponse(lastMessage, error?.message || "");
     
     // Stream the fallback text to mimic the AI SDK format
     const encoder = new TextEncoder();

@@ -84,7 +84,7 @@ export const HEALTH_ENCYCLOPEDIA = [
 ];
 
 // NLP Bot Analyzer
-export function getFallbackResponse(query: string): string {
+export function getFallbackResponse(query: string, errorMessage?: string): string {
   // 1. Sanitize and tokenize the query
   const normalizedQuery = query.toLowerCase().replace(/[^\w\s]/g, '');
   const words = normalizedQuery.split(/\s+/);
@@ -131,5 +131,12 @@ export function getFallbackResponse(query: string): string {
     responseText = `**${bestMatch.topic}**\n\n${bestMatch.content}`;
   }
   
-  return responseText + "\n\n*(Disclaimer: This is a pre-programmed response from the WelGPT Offline Health Encyclopedia because the cloud AI API quota has been reached.)*";
+  
+  let disclaimer = "*(Disclaimer: This is a pre-programmed response from the WelGPT Offline Health Encyclopedia because the cloud AI API quota has been reached.)*";
+  if (errorMessage && errorMessage.includes("API Key is missing")) {
+    disclaimer = "*(Disclaimer: I am operating in offline mode because the GOOGLE_GENERATIVE_AI_API_KEY environment variable is missing in your Vercel project settings!)*";
+  }
+  
+  return responseText + "\n\n" + disclaimer;
+
 }
