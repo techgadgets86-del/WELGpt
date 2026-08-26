@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Send, Paperclip, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
-// @ts-expect-error - AI SDK might not export this depending on version
 import { useChat } from "ai/react";
 
 const SUGGESTIONS = [

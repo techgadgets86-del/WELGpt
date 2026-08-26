@@ -63,7 +63,6 @@ export default function InspirationPage() {
       const dataUrl = await htmlToImage.toPng(cardRef.current, {
         quality: 1.0,
         pixelRatio: 2, // High resolution for IG
-        useCORS: true, // MUST be true for Safari external images
         cacheBust: true, // Fixes Safari caching issues
         backgroundColor: bgMode === "paper" ? "#f5f5f5" : "#0f0f23", // Fallback background
       });
