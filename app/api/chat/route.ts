@@ -16,7 +16,7 @@ export async function POST(req: Request) {
       messages,
     });
 
-    return result.toDataStreamResponse();
+    return result.toTextStreamResponse();
   } catch (error) {
     console.error(error);
     return new Response(JSON.stringify({ error: "Failed to generate response" }), { status: 500 });
