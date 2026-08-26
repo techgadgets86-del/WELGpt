@@ -58,10 +58,13 @@ export default function InspirationPage() {
   const handleShare = async () => {
     if (!cardRef.current) return;
     try {
-      // 1. Convert to Image
+      // 1. Convert to Image (iOS Safari Fixes)
       const dataUrl = await htmlToImage.toPng(cardRef.current, {
         quality: 1.0,
         pixelRatio: 2, // High resolution for IG
+        useCORS: true, // MUST be true for Safari external images
+        cacheBust: true, // Fixes Safari caching issues
+        backgroundColor: bgMode === "paper" ? "#f5f5f5" : "#0f0f23", // Fallback background
       });
 
       // 2. Auto-Download for the user
@@ -143,9 +146,9 @@ export default function InspirationPage() {
         <div 
           ref={cardRef} 
           className="relative rounded-3xl overflow-hidden aspect-square flex flex-col items-center justify-center p-12 text-center border border-white/20 shadow-2xl"
-          style={{ backgroundColor: bgMode === "gradient" ? "#0f0f23" : bgMode === "paper" ? "#f5f5f5" : "#000" }}
+          style={{ backgroundColor: bgMode === "paper" ? "#f5f5f5" : "#0f0f23" }}
         >
-          {/* Background Layer */}
+          {/* Background Layer (iOS Safari Safe Rendering) */}
           <AnimatePresence mode="wait">
             {bgMode === "gradient" ? (
               <motion.div 
@@ -154,25 +157,30 @@ export default function InspirationPage() {
                 className="absolute inset-0 bg-gradient-to-br from-violet-600/40 via-[#0f0f23] to-teal-600/40"
               />
             ) : bgMode === "realistic" ? (
-              <motion.div 
+              <motion.img 
                 key={`img-${bgSeed}`}
                 initial={{ opacity: 0 }} animate={{ opacity: 0.6 }} exit={{ opacity: 0 }} transition={{ duration: 1 }}
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: `url(https://picsum.photos/800/800?random=${bgSeed}&blur=2)` }}
+                className="absolute inset-0 w-full h-full object-cover"
+                crossOrigin="anonymous"
+                src={`https://picsum.photos/800/800?random=${bgSeed}&blur=2`}
+                alt="realistic background"
               />
             ) : (
-              <motion.div 
+              <motion.img 
                 key="paper"
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}
-                className="absolute inset-0 bg-cover bg-center opacity-70 mix-blend-multiply"
-                style={{ backgroundImage: `url(https://images.unsplash.com/photo-1601662528567-526cd06f6582?q=80&w=1080&auto=format&fit=crop)` }}
+                className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-normal"
+                crossOrigin="anonymous"
+                src={`https://images.unsplash.com/photo-1601662528567-526cd06f6582?q=80&w=1080&auto=format&fit=crop`}
+                alt="vintage paper"
               />
             )}
           </AnimatePresence>
           
           {/* Content Layer */}
           <div className="relative z-10 w-full">
-            <Image 
+            {/* Native img tag instead of next/image for better html-to-image support */}
+            <img 
               src="/logo-icon.png" 
               alt="WelGPT" 
               width={32} 
