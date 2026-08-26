@@ -25,7 +25,7 @@ export default function ChatInterface() {
 
   const { messages, input, handleInputChange, handleSubmit, append, isLoading } = useChat({
     api: '/api/chat',
-    onError: (err) => {
+    onError: (err: any) => {
       console.error("Chat Error:", err);
       alert("Chat Error: " + err.message);
     }
