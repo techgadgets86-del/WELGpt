@@ -6,6 +6,15 @@ import { Sparkles, Share2, Image as ImageIcon, PaintBucket, Loader2 } from "luci
 import Image from "next/image";
 import * as htmlToImage from "html-to-image";
 
+const OFFLINE_QUOTES = [
+  { quote: "The mind is everything. What you think you become.", author: "Siddhartha Gautama" },
+  { quote: "We suffer more often in imagination than in reality.", author: "Seneca" },
+  { quote: "Neuroplasticity is the muscle of the soul.", author: "Dr. Andrew Huberman" },
+  { quote: "He who has a why to live for can bear almost any how.", author: "Friedrich Nietzsche" },
+  { quote: "Focus is a matter of deciding what things you're not going to do.", author: "John Carmack" },
+  { quote: "You have power over your mind - not outside events.", author: "Marcus Aurelius" }
+];
+
 export default function InspirationPage() {
   const [quote, setQuote] = useState("Peace comes from within. Do not seek it without.");
   const [author, setAuthor] = useState("Siddhartha Gautama");
@@ -16,6 +25,13 @@ export default function InspirationPage() {
 
   const fetchNewQuote = async () => {
     setIsLoading(true);
+    
+    // Check if offline before attempting network request
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      applyOfflineFallback();
+      return;
+    }
+
     try {
       setBgSeed(Date.now()); // change realistic background instantly
       const res = await fetch("/api/quote", { method: "POST" });
@@ -24,11 +40,19 @@ export default function InspirationPage() {
       setQuote(data.quote);
       setAuthor(data.author);
     } catch (err) {
-      console.error(err);
-      alert("Failed to generate quote. Try again.");
+      console.error("AI API failed or offline", err);
+      applyOfflineFallback();
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const applyOfflineFallback = () => {
+    const randomQuote = OFFLINE_QUOTES[Math.floor(Math.random() * OFFLINE_QUOTES.length)];
+    setQuote(randomQuote.quote);
+    setAuthor(randomQuote.author);
+    setBgMode("gradient"); // Force gradient mode since realistic images need internet
+    setIsLoading(false);
   };
 
   const handleShare = async () => {
