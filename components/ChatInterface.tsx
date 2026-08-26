@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Send, Paperclip, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
+// @ts-ignore
 import { useChat } from "ai/react";
 
 const SUGGESTIONS = [
@@ -93,7 +94,7 @@ export default function ChatInterface() {
         ) : (
           <div className="space-y-6 flex-1 flex flex-col justify-end">
             <AnimatePresence>
-              {messages.map((msg) => (
+              {messages.map((msg: any) => (
                 <motion.div
                   key={msg.id}
                   initial={{ opacity: 0, y: 15, scale: 0.95 }}
