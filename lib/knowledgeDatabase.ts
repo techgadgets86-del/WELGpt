@@ -107,7 +107,7 @@ export const HEALTH_ENCYCLOPEDIA = [
 ];
 
 // NLP Bot Analyzer
-export function getFallbackResponse(query: string, errorMessage?: string): string {
+export async function getFallbackResponse(query: string, errorMessage?: string): Promise<string> {
   // 1. Sanitize and tokenize the query
   const normalizedQuery = query.toLowerCase().replace(/[^\w\s]/g, '');
   const words = normalizedQuery.split(/\s+/);
@@ -148,10 +148,30 @@ export function getFallbackResponse(query: string, errorMessage?: string): strin
   }
   
   // 3. Construct Intelligent Answer
-  let responseText = "I don't have specific offline data for that query in my Encyclopedia. However, remember that mastering the biological basics—sleep, hydration, sunlight, and movement—is the foundation of all human optimization.";
+    let responseText = "I don't have specific offline data for that query in my Encyclopedia. However, remember that mastering the biological basics—sleep, hydration, sunlight, and movement—is the foundation of all human optimization.";
   
   if (bestMatch && maxScore > 1) {
     responseText = `**${bestMatch.topic}**\n\n${bestMatch.content}`;
+  } else {
+    // Wikipedia API Fallback!
+    try {
+      // 1. Search Wikipedia for the best matching article title
+      const searchRes = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&utf8=&format=json&srlimit=1`);
+      const searchData = await searchRes.json();
+      
+      if (searchData.query && searchData.query.search && searchData.query.search.length > 0) {
+        const title = searchData.query.search[0].title;
+        // 2. Fetch the summary of that specific article
+        const summaryRes = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`);
+        const summaryData = await summaryRes.json();
+        
+        if (summaryData.extract) {
+          responseText = `**${summaryData.title}** (Source: Wikipedia)\n\n${summaryData.extract}`;
+        }
+      }
+    } catch(e) {
+      console.error("Wikipedia API fetch failed:", e);
+    }
   }
   
   

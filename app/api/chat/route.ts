@@ -66,7 +66,7 @@ export async function POST(req: Request) {
     const { getFallbackResponse } = await import('@/lib/knowledgeDatabase');
     
     const lastMessage = extractedMessages.length > 0 ? extractedMessages[extractedMessages.length - 1].content : "";
-    const fallbackText = getFallbackResponse(lastMessage, error?.message || "");
+    const fallbackText = await getFallbackResponse(lastMessage, error?.message || "");
     
     // Stream the fallback text to mimic the AI SDK format
     const encoder = new TextEncoder();
