@@ -1,5 +1,28 @@
 // Intelligent Offline Health Encyclopedia
 export const HEALTH_ENCYCLOPEDIA = [
+
+  // PSYCHOLOGY & EMOTIONS
+  {
+    topic: "The Neuroscience of Gratitude",
+    tags: ["gratitude", "thankful", "appreciation", "journaling", "blessed"],
+    content: "Gratitude is not just a concept; it is a neurological state. Practicing gratitude daily increases dopamine and serotonin levels in the brain, which immediately boosts mood. It also reduces activity in the amygdala, the brain's fear center. For maximum biological impact, don't just list things you are grateful for—relive the specific emotional memory associated with them."
+  },
+  {
+    topic: "Happiness & Baseline Levels",
+    tags: ["happiness", "happy", "joy", "content", "sad", "depressed"],
+    content: "Happiness is largely governed by your baseline dopamine levels. Seeking constant external rewards (hedonic treadmill) causes your baseline dopamine to drop over time, leading to long-term dissatisfaction. True, sustainable happiness comes from pursuing difficult goals, deep social connection, and doing things for the sake of the effort itself."
+  },
+  {
+    topic: "Anger Management",
+    tags: ["anger", "mad", "angry", "rage", "frustration", "temper"],
+    content: "Anger is an autonomic nervous system response characterized by high norepinephrine (adrenaline) and heart rate. You cannot simply 'think' your way out of anger because the prefrontal cortex is suppressed. To lower anger, you must physically intervene: splash cold water on your face to trigger the mammalian dive reflex, or perform slow, extended exhales to activate the parasympathetic nervous system."
+  },
+  {
+    topic: "Chronic vs Acute Stress",
+    tags: ["stress", "anxiety", "overwhelmed", "burnout", "cortisol", "worry"],
+    content: "Acute stress (short-term) is highly beneficial; it sharpens focus and prepares the body for action. However, chronic stress (long-term) keeps cortisol elevated constantly, leading to neurotoxicity in the hippocampus (memory center) and systemic inflammation. To combat chronic stress, prioritize Delta-wave sleep, Zone 2 cardio, and 4-7-8 breathing exercises."
+  },
+
   // SLEEP
   {
     topic: "Circadian Rhythm & Sleep",
