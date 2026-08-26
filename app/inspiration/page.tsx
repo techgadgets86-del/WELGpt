@@ -33,6 +33,7 @@ export default function InspirationPage() {
     }
 
     try {
+      // eslint-disable-next-line react-hooks/purity
       setBgSeed(Date.now()); // change realistic background instantly
       const res = await fetch("/api/quote", { method: "POST" });
       if (!res.ok) throw new Error("Failed to fetch quote");

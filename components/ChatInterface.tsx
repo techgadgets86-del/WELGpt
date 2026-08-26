@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Send, Paperclip, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
-// @ts-ignore
+// @ts-expect-error - AI SDK might not export this depending on version
 import { useChat } from "ai/react";
 
 const SUGGESTIONS = [
@@ -25,6 +25,7 @@ export default function ChatInterface() {
 
   const { messages, input, handleInputChange, handleSubmit, append, isLoading } = useChat({
     api: '/api/chat',
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (err: any) => {
       console.error("Chat Error:", err);
       alert("Chat Error: " + err.message);
@@ -98,6 +99,7 @@ export default function ChatInterface() {
         ) : (
           <div className="space-y-6 flex-1 flex flex-col justify-end">
             <AnimatePresence>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {messages.map((msg: any) => (
                 <motion.div
                   key={msg.id}

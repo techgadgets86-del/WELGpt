@@ -14,6 +14,7 @@ export default function LoginPage() {
     try {
       await signInWithPopup(auth, googleProvider);
       router.push("/");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Authentication Error", error);
       alert(`Failed to log in: ${error.message}`);

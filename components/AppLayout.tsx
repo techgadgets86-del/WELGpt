@@ -94,6 +94,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <motion.div className="w-full flex items-center justify-between gap-3 p-2 rounded-xl text-left">
               <div className="flex items-center gap-3 overflow-hidden">
                 <div className="w-10 h-10 rounded-full bg-violet-600 flex items-center justify-center shrink-0 border border-white/10 overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || "User"}&background=7c3aed&color=fff`} alt="User" width={40} height={40} />
                 </div>
                 <motion.div animate={{ opacity: sidebarOpen ? 1 : 0, display: sidebarOpen ? "block" : "none" }} className="flex-1 overflow-hidden">
@@ -164,6 +165,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               {!loading && user ? (
                 <div className="flex items-center justify-between bg-white/5 p-4 rounded-2xl">
                   <div className="flex items-center gap-3">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || "User"}&background=7c3aed&color=fff`} className="w-12 h-12 rounded-full border border-white/10" alt="Profile" />
                     <div>
                       <p className="font-medium text-white">{user.displayName || "User"}</p>
