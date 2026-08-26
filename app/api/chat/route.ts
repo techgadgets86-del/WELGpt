@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     if (!apiKey) throw new Error("API Key is missing in Vercel settings.");
     
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     const formattedMessages = messages.map((m: any) => ({
       role: m.role === 'user' ? 'user' : 'model',
