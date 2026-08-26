@@ -25,6 +25,10 @@ export default function ChatInterface() {
 
   const { messages, input, handleInputChange, handleSubmit, append, isLoading } = useChat({
     api: '/api/chat',
+    onError: (err) => {
+      console.error("Chat Error:", err);
+      alert("Chat Error: " + err.message);
+    }
   });
 
   // Auto-scroll to bottom
