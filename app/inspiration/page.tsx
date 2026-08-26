@@ -180,6 +180,7 @@ export default function InspirationPage() {
           {/* Content Layer */}
           <div className="relative z-10 w-full">
             {/* Native img tag instead of next/image for better html-to-image support */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img 
               src="/logo-icon.png" 
               alt="WelGPT" 
