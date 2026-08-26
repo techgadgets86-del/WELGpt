@@ -82,3 +82,30 @@ body {
 .group:hover .group-hover-pause {
   animation-play-state: paused !important;
 }
+
+/* Native Mobile App Optimizations */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  overscroll-behavior-y: none;
+  /* Prevent pull-to-refresh and bounce on mobile */
+}
+
+/* Hide scrollbars for a clean app feel */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Safe area padding for iOS notch/home bar */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top);
+}

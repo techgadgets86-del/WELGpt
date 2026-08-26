@@ -17,6 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "WelGPT | AI Neuroscience Coach",
   description: "Dopamine detox, circadian alignment, and neuroplasticity.",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
