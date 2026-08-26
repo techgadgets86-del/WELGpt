@@ -7,6 +7,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
+import { useAuth } from "@/lib/AuthContext";
+import { auth } from "@/lib/firebase";
+import { signOut } from "firebase/auth";
+import { LogIn, LogOut } from "lucide-react";
+
 // 🌊 Smooth UI: Physical Spring Transitions
 const springTransition = {
   type: "spring" as const,
@@ -17,6 +22,7 @@ const springTransition = {
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const pathname = usePathname();
+  const { user, loading } = useAuth();
 
   const navItems = [
     { icon: LayoutDashboard, label: "Meditation Hub", href: "/" },
@@ -84,21 +90,46 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         {/* User Profile Footer */}
         <div className="p-4 border-t border-white/10">
-          <motion.button 
-            whileHover={{ backgroundColor: "rgba(255,255,255,0.05)" }}
-            className="w-full flex items-center gap-3 p-2 rounded-xl transition-colors text-left"
-          >
-            <div className="w-10 h-10 rounded-full bg-violet-600 flex items-center justify-center shrink-0 border border-white/10 overflow-hidden">
-              <img src="https://ui-avatars.com/api/?name=User&background=7c3aed&color=fff" alt="User" width={40} height={40} />
-            </div>
-            <motion.div animate={{ opacity: sidebarOpen ? 1 : 0, display: sidebarOpen ? "block" : "none" }} className="flex-1 overflow-hidden">
-              <p className="text-sm font-medium text-white truncate">Guest User</p>
-              <div className="flex items-center gap-1.5 text-xs text-gray-400 mt-0.5">
-                <Image src="/logo-text.png" alt="Premium" width={40} height={10} className="h-[10px] w-auto opacity-70" />
-                <span>Premium</span>
+          {!loading && user ? (
+            <motion.div 
+              className="w-full flex items-center justify-between gap-3 p-2 rounded-xl text-left"
+            >
+              <div className="flex items-center gap-3 overflow-hidden">
+                <div className="w-10 h-10 rounded-full bg-violet-600 flex items-center justify-center shrink-0 border border-white/10 overflow-hidden">
+                  <img src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || "User"}&background=7c3aed&color=fff`} alt="User" width={40} height={40} />
+                </div>
+                <motion.div animate={{ opacity: sidebarOpen ? 1 : 0, display: sidebarOpen ? "block" : "none" }} className="flex-1 overflow-hidden">
+                  <p className="text-sm font-medium text-white truncate">{user.displayName || "User"}</p>
+                  <div className="flex items-center gap-1.5 text-xs text-gray-400 mt-0.5">
+                    <span>Premium</span>
+                  </div>
+                </motion.div>
               </div>
+              
+              <motion.button
+                animate={{ opacity: sidebarOpen ? 1 : 0, display: sidebarOpen ? "block" : "none" }}
+                onClick={() => signOut(auth)}
+                className="p-2 text-gray-500 hover:text-red-400 transition-colors rounded-lg hover:bg-white/5"
+              >
+                <LogOut size={16} />
+              </motion.button>
             </motion.div>
-          </motion.button>
+          ) : (
+            <Link href="/login">
+              <motion.button 
+                whileHover={{ backgroundColor: "rgba(255,255,255,0.05)" }}
+                className="w-full flex items-center gap-3 p-3 rounded-xl transition-colors text-left border border-white/5 bg-white/[0.02]"
+              >
+                <LogIn size={20} className="text-violet-400 shrink-0 ml-1" />
+                <motion.span 
+                    animate={{ opacity: sidebarOpen ? 1 : 0 }} 
+                    className="whitespace-nowrap font-medium text-white"
+                >
+                    {sidebarOpen && "Sign In / Register"}
+                </motion.span>
+              </motion.button>
+            </Link>
+          )}
         </div>
       </motion.aside>
 
