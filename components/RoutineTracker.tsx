@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Sun, Moon, Sparkles } from "lucide-react";
 
-interface Task {
+export interface Task {
   id: string;
   time: string;
   title: string;
