@@ -3,8 +3,10 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
+  let extractedMessages: { role: string; content: string }[] = [];
   try {
     const { messages } = await req.json();
+    extractedMessages = messages;
 
     const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || '';
     if (!apiKey) throw new Error("API Key is missing in Vercel settings.");
@@ -58,7 +60,29 @@ export async function POST(req: Request) {
     
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.error(error);
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+    console.error("AI API Error (likely quota reached):", error);
+    
+    // Import dynamically or just use the local function we created
+    const { getFallbackResponse } = await import('@/lib/knowledgeDatabase');
+    
+    const lastMessage = extractedMessages.length > 0 ? extractedMessages[extractedMessages.length - 1].content : "";
+    const fallbackText = getFallbackResponse(lastMessage);
+    
+    // Stream the fallback text to mimic the AI SDK format
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(`0:${JSON.stringify(fallbackText)}\n`));
+        controller.close();
+      }
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    });
   }
 }
