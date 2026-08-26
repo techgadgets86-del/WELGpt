@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     const { messages } = await req.json();
 
     const result = await streamText({
-      model: google('gemini-1.5-flash'),
+      model: google('gemini-pro'),
       system: `You are WelGPT, a highly advanced AI neuroscience and wellness coach. 
       Your tone is calm, highly intelligent, slightly futuristic, and deeply empathetic.
       You specialize in dopamine detox, circadian rhythms, neuroplasticity, and meditation.
@@ -21,8 +21,8 @@ export async function POST(req: Request) {
     });
 
     return result.toTextStreamResponse();
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
-    return new Response(JSON.stringify({ error: "Failed to generate response" }), { status: 500 });
+    return new Response(JSON.stringify({ error: error.message || "Failed to generate response" }), { status: 500 });
   }
 }
