@@ -112,7 +112,7 @@ export default function InspirationPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto relative z-10 pt-4 pb-20 h-full flex flex-col items-center justify-center">
+    <div className="max-w-4xl mx-auto relative z-10 pt-4 pb-32 sm:pb-20 h-full flex flex-col items-center justify-center">
       <header className="mb-8 text-center">
         <motion.div 
             initial={{ opacity: 0, scale: 0.8 }}
@@ -162,11 +162,11 @@ export default function InspirationPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="w-full max-w-lg relative"
+        className="w-full max-w-lg relative px-2 sm:px-0"
       >
         <div 
           ref={cardRef} 
-          className="relative rounded-3xl overflow-hidden aspect-square flex flex-col items-center justify-center p-12 text-center border border-white/20 shadow-2xl"
+          className="relative rounded-3xl overflow-hidden aspect-[4/5] sm:aspect-square flex flex-col items-center justify-center p-8 sm:p-12 text-center border border-white/20 shadow-2xl"
           style={{ backgroundColor: bgMode === "paper" ? "#f5f5f5" : "#0f0f23" }}
         >
           {/* Background Layer (iOS Safari Safe Rendering) */}
@@ -207,19 +207,19 @@ export default function InspirationPage() {
               alt="WelGPT" 
               width={32} 
               height={32} 
-              className={`mx-auto mb-8 ${bgMode === "paper" ? "opacity-30 invert" : "opacity-80"}`} 
+              className={`mx-auto mb-4 sm:mb-8 w-8 h-8 sm:w-10 sm:h-10 ${bgMode === "paper" ? "opacity-30 invert" : "opacity-80"}`} 
             />
-            <h2 className={`text-2xl md:text-3xl font-serif italic leading-relaxed mb-6 ${bgMode === "paper" ? "text-[#2a2a2a] font-medium" : "text-white font-medium drop-shadow-md"}`}>
+            <h2 className={`text-xl sm:text-2xl md:text-3xl font-serif italic leading-relaxed mb-4 sm:mb-6 ${bgMode === "paper" ? "text-[#2a2a2a] font-medium" : "text-white font-medium drop-shadow-md"}`}>
               &quot;{quote}&quot;
             </h2>
-            <p className={`text-sm tracking-widest uppercase ${bgMode === "paper" ? "text-[#555] font-semibold" : "text-gray-300 font-medium drop-shadow-md"}`}>
+            <p className={`text-xs sm:text-sm tracking-widest uppercase ${bgMode === "paper" ? "text-[#555] font-semibold" : "text-gray-300 font-medium drop-shadow-md"}`}>
               — {author}
             </p>
           </div>
           
           {/* Watermark for sharing */}
-          <div className={`absolute bottom-6 left-0 right-0 text-center z-10 opacity-50`}>
-            <p className={`text-[10px] font-mono tracking-widest ${bgMode === "paper" ? "text-gray-500" : "text-white"}`}>APP.WELGPT.SPACE</p>
+          <div className={`absolute bottom-4 sm:bottom-6 left-0 right-0 text-center z-10 opacity-50`}>
+            <p className={`text-[9px] sm:text-[10px] font-mono tracking-widest ${bgMode === "paper" ? "text-gray-500" : "text-white"}`}>APP.WELGPT.SPACE</p>
           </div>
         </div>
       </motion.div>
@@ -229,26 +229,26 @@ export default function InspirationPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
-        className="flex flex-wrap items-center justify-center gap-4 mt-10"
+        className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mt-8 sm:mt-10 w-full px-4 sm:px-0"
       >
         <button 
           onClick={fetchNewQuote}
           disabled={isLoading}
-          className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium transition-colors border border-white/5 disabled:opacity-50"
+          className="flex items-center justify-center w-full sm:w-auto gap-2 px-6 py-3.5 sm:py-3 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium transition-colors border border-white/5 disabled:opacity-50"
         >
           {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
           {isLoading ? "Generating..." : "Generate New"}
         </button>
         <button 
           onClick={handleDownload}
-          className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium transition-colors border border-white/5"
+          className="flex items-center justify-center w-full sm:w-auto gap-2 px-6 py-3.5 sm:py-3 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium transition-colors border border-white/5"
         >
           <Download size={18} />
           Save Image
         </button>
         <button 
           onClick={handleShare}
-          className="flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#f09433] via-[#dc2743] to-[#bc1888] hover:opacity-90 text-white font-medium transition-opacity shadow-lg shadow-pink-500/20"
+          className="flex items-center justify-center w-full sm:w-auto gap-2 px-6 py-3.5 sm:py-3 rounded-full bg-gradient-to-r from-[#f09433] via-[#dc2743] to-[#bc1888] hover:opacity-90 text-white font-medium transition-opacity shadow-lg shadow-pink-500/20"
         >
           <Share2 size={18} />
           Share to IG

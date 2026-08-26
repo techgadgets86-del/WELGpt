@@ -191,7 +191,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* ============================================================== */}
       {/* MAIN CONTENT AREA */}
       {/* ============================================================== */}
-      <main className="flex-1 overflow-y-auto relative p-4 md:p-8 lg:p-12 pb-24 md:pb-8 no-scrollbar bg-[#0a0a1a]">
+      <main className="flex-1 overflow-y-auto relative p-4 md:p-8 lg:p-12 pb-32 md:pb-8 no-scrollbar bg-[#0a0a1a]">
         {/* Unlumen UI Ambient Glows */}
         <div className="absolute top-[-10%] left-[-10%] w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-violet-600/20 blur-[100px] rounded-full pointer-events-none" />
         <div className="absolute bottom-1/4 right-[-10%] w-[250px] md:w-[400px] h-[250px] md:h-[400px] bg-teal-500/10 blur-[100px] rounded-full pointer-events-none" />
