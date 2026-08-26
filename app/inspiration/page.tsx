@@ -6,6 +6,14 @@ import { Sparkles, Share2, Download, Image as ImageIcon, PaintBucket, Loader2 } 
 import Image from "next/image";
 import * as htmlToImage from "html-to-image";
 
+const PAPER_TEXTURES = [
+  "https://images.unsplash.com/photo-1601662528567-526cd06f6582?q=80&w=1080&auto=format&fit=crop", // standard crumpled
+  "https://images.unsplash.com/photo-1615800098779-1be32e60cca3?q=80&w=1080&auto=format&fit=crop", // parchment
+  "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?q=80&w=1080&auto=format&fit=crop", // folded white
+  "https://images.unsplash.com/photo-1603513492128-ba7bc9b3e143?q=80&w=1080&auto=format&fit=crop", // soft crumpled
+  "https://images.unsplash.com/photo-1620392348544-59e663a8a0cb?q=80&w=1080&auto=format&fit=crop"  // stained paper
+];
+
 const OFFLINE_QUOTES = [
   { quote: "The mind is everything. What you think you become.", author: "Siddhartha Gautama" },
   { quote: "We suffer more often in imagination than in reality.", author: "Seneca" },
@@ -175,16 +183,16 @@ export default function InspirationPage() {
                 initial={{ opacity: 0 }} animate={{ opacity: 0.6 }} exit={{ opacity: 0 }} transition={{ duration: 1 }}
                 className="absolute inset-0 w-full h-full object-cover"
                 crossOrigin="anonymous"
-                src={`https://picsum.photos/800/800?random=${bgSeed}&blur=2`}
+                src={`https://picsum.photos/seed/${bgSeed}/800/800?blur=2`}
                 alt="realistic background"
               />
             ) : (
               <motion.img 
-                key="paper"
+                key={`paper-${bgSeed}`}
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}
                 className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-normal"
                 crossOrigin="anonymous"
-                src={`https://images.unsplash.com/photo-1601662528567-526cd06f6582?q=80&w=1080&auto=format&fit=crop`}
+                src={PAPER_TEXTURES[bgSeed % PAPER_TEXTURES.length]}
                 alt="vintage paper"
               />
             )}
