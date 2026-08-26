@@ -2,13 +2,14 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
-import { Play, X, Activity, Flame, Shield, Zap, Target } from "lucide-react";
+import { Play, X, Activity, Flame, Shield, Zap, Target, Bot, Loader2 } from "lucide-react";
 import { MagicCard } from "@/components/ui/magic-card";
 
 type BodyPart = "chest" | "core" | "arms" | "legs" | "shoulders" | null;
 
 // (BodyData remains unchanged)
-const BODY_DATA = {
+export type BodyDataConfig = { title: string; icon: React.ReactNode; description: string; diagram: string; exercise: string; duration: number; color: string; };
+const INITIAL_BODY_DATA: Record<string, BodyDataConfig> = {
   chest: {
     title: "Pectoral Forging",
     icon: <Shield className="text-orange-400" size={24} />,
@@ -57,9 +58,46 @@ const BODY_DATA = {
 };
 
 export default function SenseiPage() {
+  
   const [hoveredPart, setHoveredPart] = useState<BodyPart>(null);
   const [activeExercise, setActiveExercise] = useState<BodyPart>(null);
   const [timeLeft, setTimeLeft] = useState(0);
+  
+  // Customization State
+  const [bodyData, setBodyData] = useState<Record<string, BodyDataConfig>>(INITIAL_BODY_DATA);
+  const [showQuestionnaire, setShowQuestionnaire] = useState(true);
+  const [isOptimizing, setIsOptimizing] = useState(false);
+  const [formData, setFormData] = useState({ age: "", weight: "", height: "", goal: "Hypertrophy" });
+
+  const handleOptimize = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsOptimizing(true);
+    try {
+      const res = await fetch("/api/sensei-optimize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
+      const data = await res.json();
+      if(data && data.core) {
+        setBodyData({
+          chest: INITIAL_BODY_DATA.chest, // Keep fallback
+          shoulders: INITIAL_BODY_DATA.shoulders, // Keep fallback
+          ...data,
+          // Re-inject icons and colors for generated parts
+          core: { ...data.core, icon: <Flame className="text-red-400" size={24} />, color: "#ef4444" },
+          arms: { ...data.arms, icon: <Zap className="text-yellow-400" size={24} />, color: "#eab308" },
+          legs: { ...data.legs, icon: <Activity className="text-emerald-400" size={24} />, color: "#34d399" },
+        });
+      }
+      setShowQuestionnaire(false);
+    } catch(err) {
+      console.error(err);
+      setShowQuestionnaire(false); // fallback
+    }
+    setIsOptimizing(false);
+  };
+
   
   // 3D Parallax Mouse Tracking
   const containerRef = useRef<HTMLDivElement>(null);
@@ -98,7 +136,7 @@ export default function SenseiPage() {
   const startExercise = (part: BodyPart) => {
     if (!part) return;
     setActiveExercise(part);
-    setTimeLeft(BODY_DATA[part].duration);
+    setTimeLeft(bodyData[part].duration);
   };
 
   const endExercise = () => {
@@ -114,6 +152,82 @@ export default function SenseiPage() {
 
   return (
     <div className="max-w-6xl mx-auto relative z-10 pt-4 h-full flex flex-col">
+      {/* AI Optimize Questionnaire Modal */}
+      <AnimatePresence>
+        {showQuestionnaire && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-[#050510]/95 backdrop-blur-2xl flex items-center justify-center p-4 pt-safe pb-safe"
+          >
+            <motion.form 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              className="bg-[#111127] border border-white/10 p-8 rounded-3xl w-full max-w-md shadow-2xl relative overflow-hidden"
+              onSubmit={handleOptimize}
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-violet-500 to-teal-500" />
+              
+              <div className="flex justify-center mb-6">
+                <div className="p-4 bg-white/5 rounded-full border border-white/10">
+                  <Bot size={32} className="text-teal-400" />
+                </div>
+              </div>
+              
+              <h2 className="text-2xl font-bold text-center text-white mb-2">AI Protocol Optimization</h2>
+              <p className="text-gray-400 text-center text-sm mb-8">
+                Enter your biometrics to generate a scientifically optimal training protocol.
+              </p>
+
+              <div className="space-y-4 mb-8">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Age</label>
+                    <input type="number" required value={formData.age} onChange={e => setFormData({...formData, age: e.target.value})} className="w-full bg-[#0a0a1a] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-teal-500" placeholder="e.g. 28" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Weight</label>
+                    <input type="text" required value={formData.weight} onChange={e => setFormData({...formData, weight: e.target.value})} className="w-full bg-[#0a0a1a] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-teal-500" placeholder="e.g. 180 lbs" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Height</label>
+                    <input type="text" required value={formData.height} onChange={e => setFormData({...formData, height: e.target.value})} className="w-full bg-[#0a0a1a] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-teal-500" placeholder="e.g. 5'10" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Primary Goal</label>
+                    <select value={formData.goal} onChange={e => setFormData({...formData, goal: e.target.value})} className="w-full bg-[#0a0a1a] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-teal-500">
+                      <option>Hypertrophy</option>
+                      <option>Fat Loss</option>
+                      <option>Endurance</option>
+                      <option>Flexibility</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <button 
+                disabled={isOptimizing}
+                type="submit" 
+                className="w-full py-4 rounded-xl bg-gradient-to-r from-violet-600 to-teal-600 text-white font-bold text-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {isOptimizing ? <Loader2 size={24} className="animate-spin" /> : <Activity size={24} />}
+                {isOptimizing ? "Generating Protocol..." : "Optimize AI"}
+              </button>
+              
+              <button 
+                type="button"
+                onClick={() => setShowQuestionnaire(false)}
+                className="w-full mt-4 py-3 text-gray-400 text-sm hover:text-white transition-colors"
+              >
+                Skip & Use Standard Protocol
+              </button>
+            </motion.form>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <header className="mb-8">
         <motion.h1 
             initial={{ opacity: 0, y: 20 }}
@@ -164,10 +278,10 @@ export default function SenseiPage() {
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
               >
                 <path d="M50,80 Q100,50 150,80 L160,110 Q100,100 40,110 Z" 
-                  fill={hoveredPart === "shoulders" ? BODY_DATA.shoulders.color : "rgba(255,255,255,0.05)"} 
+                  fill={hoveredPart === "shoulders" ? bodyData.shoulders.color : "rgba(255,255,255,0.05)"} 
                   stroke={hoveredPart === "shoulders" ? "#fff" : "rgba(255,255,255,0.2)"} 
                   strokeWidth="2" 
-                  style={{ filter: hoveredPart === "shoulders" ? `drop-shadow(0 0 15px ${BODY_DATA.shoulders.color})` : 'none', transition: 'fill 0.3s' }}
+                  style={{ filter: hoveredPart === "shoulders" ? `drop-shadow(0 0 15px ${bodyData.shoulders.color})` : 'none', transition: 'fill 0.3s' }}
                 />
               </motion.g>
 
@@ -181,10 +295,10 @@ export default function SenseiPage() {
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
               >
                 <path d="M55,115 Q100,105 145,115 L140,150 Q100,160 60,150 Z" 
-                  fill={hoveredPart === "chest" ? BODY_DATA.chest.color : "rgba(255,255,255,0.08)"} 
+                  fill={hoveredPart === "chest" ? bodyData.chest.color : "rgba(255,255,255,0.08)"} 
                   stroke={hoveredPart === "chest" ? "#fff" : "rgba(255,255,255,0.2)"} 
                   strokeWidth="2"
-                  style={{ filter: hoveredPart === "chest" ? `drop-shadow(0 0 15px ${BODY_DATA.chest.color})` : 'none', transition: 'fill 0.3s' }}
+                  style={{ filter: hoveredPart === "chest" ? `drop-shadow(0 0 15px ${bodyData.chest.color})` : 'none', transition: 'fill 0.3s' }}
                 />
                 <line x1="100" y1="110" x2="100" y2="155" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
               </motion.g>
@@ -199,10 +313,10 @@ export default function SenseiPage() {
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
               >
                 <path d="M65,155 Q100,165 135,155 L125,230 Q100,240 75,230 Z" 
-                  fill={hoveredPart === "core" ? BODY_DATA.core.color : "rgba(255,255,255,0.05)"} 
+                  fill={hoveredPart === "core" ? bodyData.core.color : "rgba(255,255,255,0.05)"} 
                   stroke={hoveredPart === "core" ? "#fff" : "rgba(255,255,255,0.2)"} 
                   strokeWidth="2"
-                  style={{ filter: hoveredPart === "core" ? `drop-shadow(0 0 15px ${BODY_DATA.core.color})` : 'none', transition: 'fill 0.3s' }}
+                  style={{ filter: hoveredPart === "core" ? `drop-shadow(0 0 15px ${bodyData.core.color})` : 'none', transition: 'fill 0.3s' }}
                 />
                 {/* Ab grid lines */}
                 <line x1="100" y1="160" x2="100" y2="235" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
@@ -221,17 +335,17 @@ export default function SenseiPage() {
               >
                 {/* Left Arm */}
                 <path d="M35,115 Q20,160 25,210 L45,205 Q50,150 50,115 Z" 
-                  fill={hoveredPart === "arms" ? BODY_DATA.arms.color : "rgba(255,255,255,0.06)"} 
+                  fill={hoveredPart === "arms" ? bodyData.arms.color : "rgba(255,255,255,0.06)"} 
                   stroke={hoveredPart === "arms" ? "#fff" : "rgba(255,255,255,0.2)"} 
                   strokeWidth="2"
-                  style={{ filter: hoveredPart === "arms" ? `drop-shadow(0 0 15px ${BODY_DATA.arms.color})` : 'none', transition: 'fill 0.3s' }}
+                  style={{ filter: hoveredPart === "arms" ? `drop-shadow(0 0 15px ${bodyData.arms.color})` : 'none', transition: 'fill 0.3s' }}
                 />
                 {/* Right Arm */}
                 <path d="M165,115 Q180,160 175,210 L155,205 Q150,150 150,115 Z" 
-                  fill={hoveredPart === "arms" ? BODY_DATA.arms.color : "rgba(255,255,255,0.06)"} 
+                  fill={hoveredPart === "arms" ? bodyData.arms.color : "rgba(255,255,255,0.06)"} 
                   stroke={hoveredPart === "arms" ? "#fff" : "rgba(255,255,255,0.2)"} 
                   strokeWidth="2"
-                  style={{ filter: hoveredPart === "arms" ? `drop-shadow(0 0 15px ${BODY_DATA.arms.color})` : 'none', transition: 'fill 0.3s' }}
+                  style={{ filter: hoveredPart === "arms" ? `drop-shadow(0 0 15px ${bodyData.arms.color})` : 'none', transition: 'fill 0.3s' }}
                 />
               </motion.g>
 
@@ -246,17 +360,17 @@ export default function SenseiPage() {
               >
                 {/* Left Leg */}
                 <path d="M75,235 Q60,300 65,360 L95,360 Q95,280 98,240 Z" 
-                  fill={hoveredPart === "legs" ? BODY_DATA.legs.color : "rgba(255,255,255,0.07)"} 
+                  fill={hoveredPart === "legs" ? bodyData.legs.color : "rgba(255,255,255,0.07)"} 
                   stroke={hoveredPart === "legs" ? "#fff" : "rgba(255,255,255,0.2)"} 
                   strokeWidth="2"
-                  style={{ filter: hoveredPart === "legs" ? `drop-shadow(0 0 15px ${BODY_DATA.legs.color})` : 'none', transition: 'fill 0.3s' }}
+                  style={{ filter: hoveredPart === "legs" ? `drop-shadow(0 0 15px ${bodyData.legs.color})` : 'none', transition: 'fill 0.3s' }}
                 />
                 {/* Right Leg */}
                 <path d="M125,235 Q140,300 135,360 L105,360 Q105,280 102,240 Z" 
-                  fill={hoveredPart === "legs" ? BODY_DATA.legs.color : "rgba(255,255,255,0.07)"} 
+                  fill={hoveredPart === "legs" ? bodyData.legs.color : "rgba(255,255,255,0.07)"} 
                   stroke={hoveredPart === "legs" ? "#fff" : "rgba(255,255,255,0.2)"} 
                   strokeWidth="2"
-                  style={{ filter: hoveredPart === "legs" ? `drop-shadow(0 0 15px ${BODY_DATA.legs.color})` : 'none', transition: 'fill 0.3s' }}
+                  style={{ filter: hoveredPart === "legs" ? `drop-shadow(0 0 15px ${bodyData.legs.color})` : 'none', transition: 'fill 0.3s' }}
                 />
               </motion.g>
 
@@ -285,35 +399,35 @@ export default function SenseiPage() {
                 transition={{ duration: 0.3 }}
                 className="w-full"
               >
-                <MagicCard gradientColor={BODY_DATA[hoveredPart].color} gradientOpacity={0.15} className="p-8">
+                <MagicCard gradientColor={bodyData[hoveredPart].color} gradientOpacity={0.15} className="p-8">
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="p-3 rounded-xl bg-white/5 border border-white/10" style={{ boxShadow: `0 0 20px ${BODY_DATA[hoveredPart].color}40` }}>
-                      {BODY_DATA[hoveredPart].icon}
+                    <div className="p-3 rounded-xl bg-white/5 border border-white/10" style={{ boxShadow: `0 0 20px ${bodyData[hoveredPart].color}40` }}>
+                      {bodyData[hoveredPart].icon}
                     </div>
-                    <h2 className="text-2xl font-bold text-white uppercase tracking-wider">{BODY_DATA[hoveredPart].title}</h2>
+                    <h2 className="text-2xl font-bold text-white uppercase tracking-wider">{bodyData[hoveredPart].title}</h2>
                   </div>
 
                   <div className="space-y-6">
                     <div>
                       <h4 className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Physiology</h4>
-                      <p className="text-gray-300 leading-relaxed border-l-2 pl-4" style={{ borderColor: BODY_DATA[hoveredPart].color }}>
-                        {BODY_DATA[hoveredPart].description}
+                      <p className="text-gray-300 leading-relaxed border-l-2 pl-4" style={{ borderColor: bodyData[hoveredPart].color }}>
+                        {bodyData[hoveredPart].description}
                       </p>
                     </div>
 
                     <div className="bg-white/5 rounded-xl p-4 border border-white/5">
                       <h4 className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Target Diagram</h4>
                       <p className="text-white text-sm font-mono opacity-80">
-                        &gt; {BODY_DATA[hoveredPart].diagram}
+                        &gt; {bodyData[hoveredPart].diagram}
                       </p>
                     </div>
 
                     <div className="pt-4 border-t border-white/10">
                       <h4 className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Protocol</h4>
                       <div className="flex items-center justify-between">
-                        <span className="text-xl font-bold text-white">{BODY_DATA[hoveredPart].exercise}</span>
+                        <span className="text-xl font-bold text-white">{bodyData[hoveredPart].exercise}</span>
                         <span className="px-3 py-1 bg-white/10 rounded-full text-sm font-mono text-white">
-                          {Math.floor(BODY_DATA[hoveredPart].duration / 60)} MIN
+                          {Math.floor(bodyData[hoveredPart].duration / 60)} MIN
                         </span>
                       </div>
                     </div>
@@ -324,8 +438,8 @@ export default function SenseiPage() {
                       onClick={() => startExercise(hoveredPart)}
                       className="w-full py-4 mt-4 rounded-xl font-bold text-white uppercase tracking-widest transition-all"
                       style={{ 
-                        backgroundColor: BODY_DATA[hoveredPart].color, 
-                        boxShadow: `0 10px 30px -10px ${BODY_DATA[hoveredPart].color}` 
+                        backgroundColor: bodyData[hoveredPart].color, 
+                        boxShadow: `0 10px 30px -10px ${bodyData[hoveredPart].color}` 
                       }}
                     >
                       Initiate Protocol
@@ -370,13 +484,13 @@ export default function SenseiPage() {
               transition={{ delay: 0.2 }}
               className="text-center"
             >
-              <div className="inline-flex items-center justify-center p-6 rounded-2xl bg-white/5 mb-8 border border-white/10" style={{ borderColor: BODY_DATA[activeExercise].color, boxShadow: `0 0 50px ${BODY_DATA[activeExercise].color}40` }}>
-                {BODY_DATA[activeExercise].icon}
+              <div className="inline-flex items-center justify-center p-6 rounded-2xl bg-white/5 mb-8 border border-white/10" style={{ borderColor: bodyData[activeExercise].color, boxShadow: `0 0 50px ${bodyData[activeExercise].color}40` }}>
+                {bodyData[activeExercise].icon}
               </div>
               <h2 className="text-5xl md:text-7xl font-bold text-white mb-4 uppercase tracking-tight">
-                {BODY_DATA[activeExercise].exercise}
+                {bodyData[activeExercise].exercise}
               </h2>
-              <p className="text-2xl text-gray-400 mb-16">{BODY_DATA[activeExercise].title} Protocol</p>
+              <p className="text-2xl text-gray-400 mb-16">{bodyData[activeExercise].title} Protocol</p>
               
               <div className="relative inline-flex items-center justify-center">
                 <svg className="w-64 h-64 md:w-80 md:h-80 transform -rotate-90">
@@ -392,15 +506,15 @@ export default function SenseiPage() {
                     cx="50%" 
                     cy="50%" 
                     r="45%" 
-                    stroke={BODY_DATA[activeExercise].color} 
+                    stroke={bodyData[activeExercise].color} 
                     strokeWidth="8" 
                     fill="none"
                     strokeDasharray="283%" // roughly 2 * pi * r
                     initial={{ strokeDashoffset: "0%" }}
-                    animate={{ strokeDashoffset: `${(1 - timeLeft / BODY_DATA[activeExercise].duration) * 283}%` }}
+                    animate={{ strokeDashoffset: `${(1 - timeLeft / bodyData[activeExercise].duration) * 283}%` }}
                     transition={{ duration: 1, ease: "linear" }}
                     strokeLinecap="round"
-                    style={{ filter: `drop-shadow(0 0 10px ${BODY_DATA[activeExercise].color})` }}
+                    style={{ filter: `drop-shadow(0 0 10px ${bodyData[activeExercise].color})` }}
                   />
                 </svg>
                 <div className="absolute flex flex-col items-center justify-center">

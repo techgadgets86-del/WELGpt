@@ -11,25 +11,25 @@ interface Task {
   desc: string;
 }
 
-const MORNING_TASKS: Task[] = [
+export const INITIAL_MORNING_TASKS: Task[] = [
   { id: "m1", time: "07:00 AM", title: "Cellular Hydration", desc: "Drink 500ml of water with a pinch of sea salt for electrolytes." },
   { id: "m2", time: "07:15 AM", title: "Photon Absorption", desc: "10-15 minutes of direct sunlight viewing to spike morning cortisol." },
   { id: "m3", time: "07:45 AM", title: "Kinetic Activation", desc: "20 minutes of Zone 2 movement or mobility stretching." },
   { id: "m4", time: "08:30 AM", title: "Deep Work Block", desc: "90 minutes of hyper-focused flow state with zero distractions." }
 ];
 
-const EVENING_TASKS: Task[] = [
+export const INITIAL_EVENING_TASKS: Task[] = [
   { id: "e1", time: "08:00 PM", title: "Lux Reduction", desc: "Dim all overhead artificial lighting to signal melatonin production." },
   { id: "e2", time: "08:30 PM", title: "Digital Sunset", desc: "Strict blue-light blocking. Put all screens in another room." },
   { id: "e3", time: "09:00 PM", title: "Neuro-Supplements", desc: "Magnesium L-Threonate & Apigenin protocol." },
   { id: "e4", time: "09:30 PM", title: "Yoga Nidra", desc: "Non-sleep deep rest (NSDR) to transition into deep Delta sleep." }
 ];
 
-export default function RoutineTracker() {
+export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, eveningTasks = INITIAL_EVENING_TASKS }: { morningTasks?: Task[], eveningTasks?: Task[] }) {
   const [activeTab, setActiveTab] = useState<"morning" | "evening">("morning");
   const [completed, setCompleted] = useState<Set<string>>(new Set());
 
-  const currentTasks = activeTab === "morning" ? MORNING_TASKS : EVENING_TASKS;
+  const currentTasks = activeTab === "morning" ? morningTasks : eveningTasks;
   const progress = Math.round((currentTasks.filter(t => completed.has(t.id)).length / currentTasks.length) * 100);
 
   const toggleTask = (id: string) => {
