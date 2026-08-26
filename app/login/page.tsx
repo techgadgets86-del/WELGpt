@@ -14,7 +14,7 @@ export default function LoginPage() {
     try {
       await signInWithPopup(auth, googleProvider);
       router.push("/");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Authentication Error", error);
       alert(`Failed to log in: ${error.message}`);
     }
