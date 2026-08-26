@@ -119,7 +119,14 @@ export default function ChatInterface() {
       {/* Magic UI Animated Input */}
       <div className="pt-2 pb-6 relative">
         <form 
-          onSubmit={handleSubmit}
+          onSubmit={(e) => {
+            e.preventDefault();
+            try {
+              handleSubmit(e);
+            } catch (err) {
+              console.error(err);
+            }
+          }}
           className="relative"
         >
           <motion.div 
