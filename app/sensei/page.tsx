@@ -2,11 +2,16 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
-import { Play, X, Activity, Sparkles, Flame, Shield, Zap, Target, Bot, Loader2 } from "lucide-react";
+import { Play, X, Activity, Sparkles, Flame, Shield, Zap, Target, Bot, Loader2, Plus, List } from "lucide-react";
 import { MagicCard } from "@/components/ui/magic-card";
+import { auth, db } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { collection, addDoc, getDocs, onSnapshot, query, orderBy, serverTimestamp } from "firebase/firestore";
 import AnimatedGuide from "@/components/AnimatedGuide";
 
-type BodyPart = "chest" | "core" | "arms" | "legs" | "shoulders" | "custom" | null;
+type BodyPart = string | null;
+interface SavedRoutine { id: string; title: string; color: string; description: string; exercise: string; duration?: number; }
+
 
 // (BodyData remains unchanged)
 export type BodyDataConfig = { title: string; icon: React.ReactNode; description: string; diagram: string; exercise: string; duration: number; color: string; };
@@ -68,6 +73,45 @@ export default function SenseiPage() {
   const [bodyData, setBodyData] = useState<Record<string, BodyDataConfig>>(INITIAL_BODY_DATA);
   const [showQuestionnaire, setShowQuestionnaire] = useState(true);
   const [isOptimizing, setIsOptimizing] = useState(false);
+  const [user, setUser] = useState<unknown>(null) 
+  const [savedRoutines, setSavedRoutines] = useState<SavedRoutine[]>([]) 
+  const [showRoutinesMenu, setShowRoutinesMenu] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        const q = query(collection(db, `users/${currentUser.uid}/customExercises`), orderBy("createdAt", "desc"));
+        const unsubDb = onSnapshot(q, (snapshot) => {
+          const routines = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setSavedRoutines(routines);
+        });
+        return () => unsubDb();
+      } else {
+        setSavedRoutines([]);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+    const launchSavedRoutine = (routine: SavedRoutine) => {
+    const newData = {
+      ...bodyData,
+      [routine.id]: {
+        title: routine.title,
+        color: routine.color,
+        description: routine.description,
+        diagram: "AI GENERATED VECTOR",
+        exercise: routine.exercise,
+        duration: routine.duration || 180,
+        icon: <Sparkles className="text-white" size={24} />
+      }
+    };
+    setBodyData(newData);
+    setActiveExercise(routine.id as BodyPart);
+    setShowRoutinesMenu(false);
+  };
+
 
   const [showCustomTargetModal, setShowCustomTargetModal] = useState(false);
   const [customTargetPrompt, setCustomTargetPrompt] = useState("");
@@ -84,22 +128,34 @@ export default function SenseiPage() {
       });
       const json = await res.json();
       if (json && json.data) {
+        const newRoutine = {
+          title: json.data.title,
+          color: json.data.color || "#d946ef",
+          description: json.data.desc,
+          exercise: json.data.exercise,
+          duration: 180,
+          createdAt: new Date().toISOString()
+        };
+        
+        // Save to Firestore if logged in
+        let routineId = "custom";
+        if (user) {
+          const docRef = await addDoc(collection(db, `users/${user.uid}/customExercises`), newRoutine);
+          routineId = docRef.id;
+        }
+
         const newData = {
           ...bodyData,
-          "custom": {
-            title: json.data.title,
-            color: json.data.color || "#d946ef",
-            description: json.data.desc,
+          [routineId]: {
+            ...newRoutine,
             diagram: "AI GENERATED VECTOR",
-            exercise: json.data.exercise,
-            duration: 180,
             icon: <Sparkles className="text-white" size={24} />
           }
         };
         setBodyData(newData);
         setShowCustomTargetModal(false);
         setCustomTargetPrompt("");
-        setActiveExercise("custom");
+        setActiveExercise(routineId as BodyPart);
       }
     } catch (err) {
       console.error(err);
@@ -421,12 +477,18 @@ export default function SenseiPage() {
                 <path d="M88,45 Q100,55 112,45 L112,50 Q100,60 88,50 Z" fill="#fff" style={{ filter: 'drop-shadow(0 0 5px #fff)' }} />
               </motion.g>
             </svg>
-            <div className="mt-8 flex justify-center">
+            <div className="mt-8 flex justify-center gap-4">
               <button 
                 onClick={() => setShowCustomTargetModal(true)}
                 className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full flex items-center gap-2 text-fuchsia-400 font-medium transition-colors"
               >
                 <Sparkles size={18} /> Generate Custom Target
+              </button>
+              <button 
+                onClick={() => setShowRoutinesMenu(true)}
+                className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full flex items-center gap-2 text-teal-400 font-medium transition-colors"
+              >
+                <List size={18} /> My Routines
               </button>
             </div>
             
@@ -624,6 +686,76 @@ export default function SenseiPage() {
               >
                 {isGeneratingCustomTarget ? <Loader2 size={20} className="animate-spin" /> : <Sparkles size={20} />}
                 {isGeneratingCustomTarget ? "Generating Protocol..." : "Generate AI Protocol"}
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Saved Routines Menu Modal */}
+      <AnimatePresence>
+        {showRoutinesMenu && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="w-full max-w-lg max-h-[80vh] overflow-y-auto bg-[#111127] rounded-3xl border border-white/10 p-8 shadow-2xl relative"
+            >
+              <button 
+                onClick={() => setShowRoutinesMenu(false)}
+                className="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors"
+              >
+                <X size={24} />
+              </button>
+              
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-teal-500/20 text-teal-400 rounded-xl">
+                  <List size={24} />
+                </div>
+                <h2 className="text-2xl font-bold text-white">My Custom Routines</h2>
+              </div>
+              
+              {!user ? (
+                <div className="text-center p-8 bg-white/5 rounded-2xl border border-white/10">
+                  <p className="text-gray-400 mb-4">Please log in to save and view your custom AI routines.</p>
+                </div>
+              ) : savedRoutines.length === 0 ? (
+                <div className="text-center p-8 bg-white/5 rounded-2xl border border-white/10">
+                  <p className="text-gray-400 mb-4">You haven&apos;t generated any custom routines yet.</p>
+                </div>
+              ) : (
+                <div className="space-y-3 mb-6">
+                  {savedRoutines.map((routine) => (
+                    <div 
+                      key={routine.id}
+                      onClick={() => launchSavedRoutine(routine)}
+                      className="p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl cursor-pointer transition-colors flex justify-between items-center group"
+                    >
+                      <div>
+                        <h3 className="text-white font-semibold flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: routine.color }} />
+                          {routine.title}
+                        </h3>
+                        <p className="text-sm text-gray-400">{routine.exercise}</p>
+                      </div>
+                      <Play size={18} className="text-gray-500 group-hover:text-white transition-colors" />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <button
+                onClick={() => { setShowRoutinesMenu(false); setShowCustomTargetModal(true); }}
+                className="w-full py-4 mt-4 rounded-xl font-bold text-teal-400 transition-all bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/20 flex items-center justify-center gap-2"
+              >
+                <Plus size={20} />
+                Create New Routine
               </button>
             </motion.div>
           </motion.div>
