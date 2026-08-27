@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Brain, LayoutDashboard, Menu, X, CheckSquare, Leaf, Activity, BookOpen, Mail, BarChart3 , Utensils } from "lucide-react";
+import { Sparkles, Brain, LayoutDashboard, Menu, X, CheckSquare, Leaf, Activity, BookOpen, Mail, BarChart3 , Utensils, Waves, Home } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -26,9 +26,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useAuth();
 
   const navItems = [
+    { icon: Home, label: "Home", href: "/" },
     { icon: Utensils, label: "Nutrition", href: "/nutrition" },
-    { icon: LayoutDashboard, label: "Meditation Hub", href: "/" },
     { icon: Brain, label: "AI Coach", href: "/coach" },
+    { icon: Waves, label: "Meditation Hub", href: "/meditation" },
     { icon: Sparkles, label: "Inspiration", href: "/inspiration" },
     { icon: CheckSquare, label: "Routine", href: "/routine" },
     { icon: BarChart3, label: "Analytics", href: "/dashboard" },
