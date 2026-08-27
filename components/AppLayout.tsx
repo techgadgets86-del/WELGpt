@@ -23,7 +23,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-  const { user, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
 
   const navItems = [
     { icon: LayoutDashboard, label: "Meditation Hub", href: "/" },
@@ -100,7 +100,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <motion.div animate={{ opacity: sidebarOpen ? 1 : 0, display: sidebarOpen ? "block" : "none" }} className="flex-1 overflow-hidden">
                   <p className="text-sm font-medium text-white truncate">{user.displayName || "User"}</p>
                   <div className="flex items-center gap-1.5 text-xs text-gray-400 mt-0.5">
-                    <span>Premium</span>
+                    <span>Level {profile?.level || 1} • 🔥 {profile?.streak || 0}</span>
                   </div>
                 </motion.div>
               </div>
@@ -169,7 +169,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     <img src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || "User"}&background=7c3aed&color=fff`} className="w-12 h-12 rounded-full border border-white/10" alt="Profile" />
                     <div>
                       <p className="font-medium text-white">{user.displayName || "User"}</p>
-                      <p className="text-xs text-violet-400">Premium Member</p>
+                      <p className="text-xs text-violet-400">Level {profile?.level || 1} • 🔥 {profile?.streak || 0} Streak</p>
                     </div>
                   </div>
                   <button onClick={() => { signOut(auth); setMobileMenuOpen(false); }} className="p-3 bg-red-500/20 text-red-400 rounded-xl">

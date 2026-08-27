@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useAuth } from "@/lib/AuthContext";
+import { useAudioFrequencies } from "@/lib/useAudioFrequencies";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import { Play, X, Activity, Sparkles, Flame, Shield, Zap, Target, Bot, Loader2, Plus, List } from "lucide-react";
 import { MagicCard } from "@/components/ui/magic-card";
@@ -74,6 +76,8 @@ export default function SenseiPage() {
   const [bodyData, setBodyData] = useState<Record<string, BodyDataConfig>>(INITIAL_BODY_DATA);
   const [showQuestionnaire, setShowQuestionnaire] = useState(true);
   const [isOptimizing, setIsOptimizing] = useState(false);
+  const { addXP } = useAuth();
+  const { playingId, toggleSound, stopAudio } = useAudioFrequencies();
   const [user, setUser] = useState<User | null>(null); 
   const [savedRoutines, setSavedRoutines] = useState<SavedRoutine[]>([]) 
   const [showRoutinesMenu, setShowRoutinesMenu] = useState(false);
@@ -239,11 +243,12 @@ export default function SenseiPage() {
     if (activeExercise && timeLeft > 0) {
       interval = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
     } else if (timeLeft === 0 && activeExercise) {
-      // Play a sound or show completion?
-      // For now, it just hits 0.
+      setTimeout(() => setActiveExercise(null), 0);
+      stopAudio();
+      addXP(50);
     }
     return () => clearInterval(interval);
-  }, [activeExercise, timeLeft]);
+  }, [activeExercise, timeLeft, addXP, stopAudio]);
 
   const startExercise = (part: BodyPart) => {
     if (!part) return;
@@ -254,6 +259,7 @@ export default function SenseiPage() {
   const endExercise = () => {
     setActiveExercise(null);
     setTimeLeft(0);
+    stopAudio();
   };
 
   const formatTime = (secs: number) => {
@@ -610,9 +616,29 @@ export default function SenseiPage() {
               transition={{ delay: 0.2 }}
               className="text-center"
             >
-              <div className="mb-8">
+              <div className="mb-8 relative group">
                 <AnimatedGuide part={activeExercise as string} color={bodyData[activeExercise].color} />
               </div>
+              <button
+                onClick={() => toggleSound(activeExercise as string, "binaural", 40)}
+                className={`mb-8 px-6 py-2 rounded-full border flex items-center justify-center gap-2 mx-auto transition-all ${
+                  playingId === activeExercise 
+                    ? "bg-fuchsia-500/20 border-fuchsia-500 text-fuchsia-400" 
+                    : "bg-white/5 border-white/10 text-gray-400 hover:text-white"
+                }`}
+              >
+                {playingId === activeExercise ? (
+                  <>
+                    <Activity size={16} className="animate-pulse" />
+                    <span>40Hz Gamma Waves Active</span>
+                  </>
+                ) : (
+                  <>
+                    <Play size={16} />
+                    <span>Enable Neural Sync</span>
+                  </>
+                )}
+              </button>
               <h2 className="text-5xl md:text-7xl font-bold text-white mb-4 uppercase tracking-tight">
                 {bodyData[activeExercise].exercise}
               </h2>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Sun, Moon, Sparkles, Target } from "lucide-react";
 
@@ -30,15 +31,20 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, e
   const [activeTab, setActiveTab] = useState<"morning" | "evening" | "custom">("morning");
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const router = useRouter();
+  const { addXP } = useAuth();
 
   const currentTasks = activeTab === "morning" ? morningTasks : activeTab === "evening" ? eveningTasks : customTasks;
   const progress = Math.round((currentTasks.filter(t => completed.has(t.id)).length / currentTasks.length) * 100);
 
-  const toggleTask = (id: string) => {
+    const toggleTask = (id: string) => {
     setCompleted(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(id)) newSet.delete(id);
-      else newSet.add(id);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+        addXP(10); // Reward XP for task completion!
+      }
       return newSet;
     });
   };

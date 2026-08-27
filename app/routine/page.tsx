@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { RefreshCw, Loader2, X, Sparkles, List, Play, Plus } from "lucide-react";
+import { RefreshCw, Loader2, X, Sparkles, List, Play, Plus, Activity, Headphones } from "lucide-react";
+import { useAudioFrequencies } from "@/lib/useAudioFrequencies";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { collection, addDoc, onSnapshot, query, orderBy } from "firebase/firestore";
@@ -21,6 +22,7 @@ export default function RoutinePage() {
   const [showCustomModal, setShowCustomModal] = useState(false);
   const [customPrompt, setCustomPrompt] = useState("");
   const [isGeneratingCustom, setIsGeneratingCustom] = useState(false);
+  const { playingId, toggleSound } = useAudioFrequencies();
   const [user, setUser] = useState<User | null>(null);
   const [savedRoutines, setSavedRoutines] = useState<SavedRoutine[]>([]);
   const [showRoutinesMenu, setShowRoutinesMenu] = useState(false);
@@ -119,6 +121,20 @@ export default function RoutinePage() {
           </motion.p>
         </div>
         <div className="flex flex-wrap gap-4 self-start md:self-end">
+          <motion.button 
+            onClick={() => toggleSound("routine_focus", "noise", "brown")}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-full border transition-colors ${
+              playingId === "routine_focus"
+                ? "bg-fuchsia-500/20 border-fuchsia-500/50 text-fuchsia-400"
+                : "bg-white/5 hover:bg-white/10 border-white/10 text-gray-300"
+            }`}
+          >
+            {playingId === "routine_focus" ? <Activity size={16} className="animate-pulse" /> : <Headphones size={16} />}
+            {playingId === "routine_focus" ? "Deep Focus Active" : "Focus Audio"}
+          </motion.button>
           <motion.button 
             onClick={() => setShowRoutinesMenu(true)}
             initial={{ opacity: 0 }}
