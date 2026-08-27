@@ -25,11 +25,11 @@ export const INITIAL_EVENING_TASKS: Task[] = [
   { id: "e4", time: "09:30 PM", title: "Yoga Nidra", desc: "Non-sleep deep rest (NSDR) to transition into deep Delta sleep." }
 ];
 
-export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, eveningTasks = INITIAL_EVENING_TASKS }: { morningTasks?: Task[], eveningTasks?: Task[] }) {
-  const [activeTab, setActiveTab] = useState<"morning" | "evening">("morning");
+export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, eveningTasks = INITIAL_EVENING_TASKS, customTasks = [], onGenerateCustom }: { morningTasks?: Task[], eveningTasks?: Task[], customTasks?: Task[], onGenerateCustom?: () => void }) {
+  const [activeTab, setActiveTab] = useState<"morning" | "evening" | "custom">("morning");
   const [completed, setCompleted] = useState<Set<string>>(new Set());
 
-  const currentTasks = activeTab === "morning" ? morningTasks : eveningTasks;
+  const currentTasks = activeTab === "morning" ? morningTasks : activeTab === "evening" ? eveningTasks : customTasks;
   const progress = Math.round((currentTasks.filter(t => completed.has(t.id)).length / currentTasks.length) * 100);
 
   const toggleTask = (id: string) => {
@@ -73,6 +73,18 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, e
             <Moon size={18} className="relative z-10" />
             <span className="relative z-10">Evening Protocol</span>
           </button>
+          <button
+            onClick={() => { setActiveTab("custom"); if (customTasks.length === 0 && onGenerateCustom) onGenerateCustom(); }}
+            className={`relative flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-colors ${
+              activeTab === "custom" ? "text-white" : "text-gray-500 hover:text-white"
+            }`}
+          >
+            {activeTab === "custom" && (
+              <motion.div layoutId="routineTab" className="absolute inset-0 bg-fuchsia-600 rounded-xl" />
+            )}
+            <Sparkles size={18} className="relative z-10" />
+            <span className="relative z-10">Custom Routine</span>
+          </button>
         </div>
 
         {/* Progress Bar */}
@@ -83,7 +95,7 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, e
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.5, ease: "easeOut" }}
-              className={`absolute top-0 left-0 h-full ${activeTab === "morning" ? "bg-violet-500" : "bg-indigo-500"}`}
+              className={`absolute top-0 left-0 h-full ${activeTab === "morning" ? "bg-violet-500" : activeTab === "evening" ? "bg-indigo-500" : "bg-fuchsia-500"}`}
             />
           </div>
         </div>
@@ -104,6 +116,16 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, e
             transition={{ duration: 0.3 }}
             className="space-y-8 relative"
           >
+            {activeTab === "custom" && currentTasks.length === 0 && (
+              <div className="text-center p-12 bg-white/5 border border-white/10 rounded-2xl">
+                <Sparkles size={32} className="text-fuchsia-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-white mb-2">No Custom Routine</h3>
+                <p className="text-gray-400 mb-6">Prompt the AI to generate a highly specific protocol for you.</p>
+                <button onClick={onGenerateCustom} className="px-6 py-3 rounded-full bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-medium transition-colors">
+                  Generate Protocol
+                </button>
+              </div>
+            )}
             {currentTasks.map((task, index) => {
               const isDone = completed.has(task.id);
               
@@ -117,7 +139,7 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, e
                       <motion.div 
                         initial={{ height: 0 }}
                         animate={{ height: "4rem" }}
-                        className={`absolute left-[11px] top-6 w-0.5 ${activeTab === "morning" ? "bg-violet-500" : "bg-indigo-500"} shadow-[0_0_10px_rgba(124,58,237,0.5)] z-0`}
+                        className={`absolute left-[11px] top-6 w-0.5 ${activeTab === "morning" ? "bg-violet-500" : activeTab === "evening" ? "bg-indigo-500" : "bg-fuchsia-500"} shadow-[0_0_10px_rgba(124,58,237,0.5)] z-0`}
                       />
                     )}
                     
@@ -125,7 +147,7 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, e
                       onClick={() => toggleTask(task.id)}
                       className={`relative w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 z-10 bg-[#070714] ${
                         isDone 
-                          ? (activeTab === "morning" ? "border-violet-500 bg-violet-500 shadow-[0_0_15px_rgba(124,58,237,0.6)]" : "border-indigo-500 bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.6)]")
+                          ? (activeTab === "morning" ? "border-violet-500 bg-violet-500 shadow-[0_0_15px_rgba(124,58,237,0.6)]" : activeTab === "evening" ? "border-indigo-500 bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.6)]" : "border-fuchsia-500 bg-fuchsia-500 shadow-[0_0_15px_rgba(217,70,239,0.6)]")
                           : "border-gray-600 hover:border-gray-400"
                       }`}
                     >

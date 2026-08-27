@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
-import { Play, X, Activity, Flame, Shield, Zap, Target, Bot, Loader2 } from "lucide-react";
+import { Play, X, Activity, Sparkles, Flame, Shield, Zap, Target, Bot, Loader2 } from "lucide-react";
 import { MagicCard } from "@/components/ui/magic-card";
 import AnimatedGuide from "@/components/AnimatedGuide";
 
-type BodyPart = "chest" | "core" | "arms" | "legs" | "shoulders" | null;
+type BodyPart = "chest" | "core" | "arms" | "legs" | "shoulders" | "custom" | null;
 
 // (BodyData remains unchanged)
 export type BodyDataConfig = { title: string; icon: React.ReactNode; description: string; diagram: string; exercise: string; duration: number; color: string; };
@@ -68,6 +68,45 @@ export default function SenseiPage() {
   const [bodyData, setBodyData] = useState<Record<string, BodyDataConfig>>(INITIAL_BODY_DATA);
   const [showQuestionnaire, setShowQuestionnaire] = useState(true);
   const [isOptimizing, setIsOptimizing] = useState(false);
+
+  const [showCustomTargetModal, setShowCustomTargetModal] = useState(false);
+  const [customTargetPrompt, setCustomTargetPrompt] = useState("");
+  const [isGeneratingCustomTarget, setIsGeneratingCustomTarget] = useState(false);
+  
+  const handleGenerateCustomTarget = async () => {
+    if (!customTargetPrompt.trim()) return;
+    setIsGeneratingCustomTarget(true);
+    try {
+      const res = await fetch("/api/custom-exercise", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: customTargetPrompt })
+      });
+      const json = await res.json();
+      if (json && json.data) {
+        const newData = {
+          ...bodyData,
+          "custom": {
+            title: json.data.title,
+            color: json.data.color || "#d946ef",
+            description: json.data.desc,
+            diagram: "AI GENERATED VECTOR",
+            exercise: json.data.exercise,
+            duration: 180,
+            icon: <Sparkles className="text-white" size={24} />
+          }
+        };
+        setBodyData(newData);
+        setShowCustomTargetModal(false);
+        setCustomTargetPrompt("");
+        setActiveExercise("custom");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    setIsGeneratingCustomTarget(false);
+  };
+
   const [formData, setFormData] = useState({ age: "", weight: "", height: "", goal: "Hypertrophy" });
 
   const handleOptimize = async (e: React.FormEvent) => {
@@ -382,6 +421,14 @@ export default function SenseiPage() {
                 <path d="M88,45 Q100,55 112,45 L112,50 Q100,60 88,50 Z" fill="#fff" style={{ filter: 'drop-shadow(0 0 5px #fff)' }} />
               </motion.g>
             </svg>
+            <div className="mt-8 flex justify-center">
+              <button 
+                onClick={() => setShowCustomTargetModal(true)}
+                className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full flex items-center gap-2 text-fuchsia-400 font-medium transition-colors"
+              >
+                <Sparkles size={18} /> Generate Custom Target
+              </button>
+            </div>
             
             {/* Ambient Base Glow */}
             <div className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 w-[200px] h-[20px] bg-white/20 blur-xl rounded-full" />
@@ -524,6 +571,60 @@ export default function SenseiPage() {
                   </span>
                 </div>
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Custom Target Modal */}
+      <AnimatePresence>
+        {showCustomTargetModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="w-full max-w-lg bg-[#111127] rounded-3xl border border-white/10 p-8 shadow-2xl relative"
+            >
+              <button 
+                onClick={() => setShowCustomTargetModal(false)}
+                className="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors"
+              >
+                <X size={24} />
+              </button>
+              
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-fuchsia-500/20 text-fuchsia-400 rounded-xl">
+                  <Sparkles size={24} />
+                </div>
+                <h2 className="text-2xl font-bold text-white">Custom Target</h2>
+              </div>
+              
+              <p className="text-gray-400 mb-6">
+                What do you want to train today? (e.g., &quot;Neck&quot;, &quot;Grip Strength&quot;, &quot;Posture&quot;, &quot;Ankles&quot;)
+              </p>
+              
+              <input
+                type="text"
+                value={customTargetPrompt}
+                onChange={(e) => setCustomTargetPrompt(e.target.value)}
+                placeholder="Enter custom muscle group or goal..."
+                className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-fuchsia-500 transition-colors mb-6"
+              />
+              
+              <button
+                onClick={handleGenerateCustomTarget}
+                disabled={isGeneratingCustomTarget || !customTargetPrompt.trim()}
+                className="w-full py-4 rounded-xl font-bold text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-fuchsia-600 hover:bg-fuchsia-500 flex items-center justify-center gap-2"
+              >
+                {isGeneratingCustomTarget ? <Loader2 size={20} className="animate-spin" /> : <Sparkles size={20} />}
+                {isGeneratingCustomTarget ? "Generating Protocol..." : "Generate AI Protocol"}
+              </button>
             </motion.div>
           </motion.div>
         )}
