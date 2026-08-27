@@ -15,8 +15,8 @@ export async function POST(req: Request) {
     });
 
     const sysPrompt = `
-      You are an elite fitness and biomechanics AI coach. The user wants to train a custom body part or goal: "${prompt}".
-      Generate a specific protocol to target this.
+      You are a hyper-accurate elite biomechanics and kinesiologist AI. The user wants to train a specific physiological target or movement pattern: "${prompt}".
+      Generate a hyper-accurate, biomechanically optimal protocol to target this. The description must include specific muscle insertions, neuro-muscular activation patterns, or joint mechanics.
       Return a JSON object exactly matching this interface:
       {
         "title": string, // short body part or goal name (e.g., "Neck", "Grip Strength", "Posture")

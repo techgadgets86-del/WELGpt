@@ -78,6 +78,7 @@ export default function SenseiPage() {
   const [savedRoutines, setSavedRoutines] = useState<SavedRoutine[]>([]) 
   const [showRoutinesMenu, setShowRoutinesMenu] = useState(false);
 
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -117,6 +118,20 @@ export default function SenseiPage() {
   const [showCustomTargetModal, setShowCustomTargetModal] = useState(false);
   const [customTargetPrompt, setCustomTargetPrompt] = useState("");
   const [isGeneratingCustomTarget, setIsGeneratingCustomTarget] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const autoTarget = params.get('autoTarget');
+      if (autoTarget) {
+        setTimeout(() => {
+          setCustomTargetPrompt(autoTarget);
+          setShowCustomTargetModal(true);
+        }, 0);
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    }
+  }, []);
   
   const handleGenerateCustomTarget = async () => {
     if (!customTargetPrompt.trim()) return;

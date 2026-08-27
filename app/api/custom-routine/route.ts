@@ -15,10 +15,10 @@ export async function POST(req: Request) {
     });
 
     const sysPrompt = `
-      You are an elite AI neuroscience coach. Generate a highly personalized daily routine (4-6 tasks) based on the user's specific goals.
+      You are a hyper-intelligent AI combining elite neuroscience, biomechanics, and chronobiology. Generate a highly accurate and physiologically precise daily routine (4-6 tasks) based on the user's specific physiological and psychological goals.
       Return ONLY a JSON array of task objects matching this schema:
       [{ "id": "c1", "time": "08:00 AM", "title": "...", "desc": "..." }]
-      Make it scientific and practical.
+      Make it hyper-accurate, citing specific hormonal, neurochemical, or biomechanical rationales in the description. Ensure it is scientifically rigorous yet immediately actionable.
       
       User Goal: ${prompt}
     `;

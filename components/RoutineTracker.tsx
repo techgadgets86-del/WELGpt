@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Sun, Moon, Sparkles } from "lucide-react";
+import { Check, Sun, Moon, Sparkles, Target } from "lucide-react";
 
 export interface Task {
   id: string;
@@ -28,6 +29,7 @@ export const INITIAL_EVENING_TASKS: Task[] = [
 export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, eveningTasks = INITIAL_EVENING_TASKS, customTasks = [], onGenerateCustom }: { morningTasks?: Task[], eveningTasks?: Task[], customTasks?: Task[], onGenerateCustom?: () => void }) {
   const [activeTab, setActiveTab] = useState<"morning" | "evening" | "custom">("morning");
   const [completed, setCompleted] = useState<Set<string>>(new Set());
+  const router = useRouter();
 
   const currentTasks = activeTab === "morning" ? morningTasks : activeTab === "evening" ? eveningTasks : customTasks;
   const progress = Math.round((currentTasks.filter(t => completed.has(t.id)).length / currentTasks.length) * 100);
@@ -183,6 +185,18 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, e
                     <p className={`text-sm transition-colors duration-300 ${isDone ? "text-gray-600" : "text-gray-400"}`}>
                       {task.desc}
                     </p>
+                    {activeTab === "custom" && !isDone && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/sensei?autoTarget=${encodeURIComponent(task.title)}`);
+                        }}
+                        className="mt-4 px-4 py-2 bg-fuchsia-600/20 hover:bg-fuchsia-600/40 border border-fuchsia-500/30 rounded-lg text-fuchsia-300 font-medium text-sm flex items-center gap-2 transition-colors w-fit"
+                      >
+                        <Target size={16} />
+                        Train in Sensei
+                      </button>
+                    )}
                   </motion.div>
                 </div>
               );
