@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Brain, LayoutDashboard, Menu, X, CheckSquare, Leaf, Activity, BookOpen, Mail, BarChart3 } from "lucide-react";
+import { Sparkles, Brain, LayoutDashboard, Menu, X, CheckSquare, Leaf, Activity, BookOpen, Mail, BarChart3 , Utensils } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -26,6 +26,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useAuth();
 
   const navItems = [
+    { icon: Utensils, label: "Nutrition", href: "/nutrition" },
     { icon: LayoutDashboard, label: "Meditation Hub", href: "/" },
     { icon: Brain, label: "AI Coach", href: "/coach" },
     { icon: Sparkles, label: "Inspiration", href: "/inspiration" },
@@ -39,6 +40,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   // Core 4 items for the mobile bottom nav
   const bottomNavItems = [
+    { icon: Utensils, label: "Food", href: "/nutrition" },
     { icon: Brain, label: "Coach", href: "/coach" },
     { icon: CheckSquare, label: "Routine", href: "/routine" },
     { icon: Sparkles, label: "Quotes", href: "/inspiration" },
@@ -207,7 +209,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           {bottomNavItems.map((item, idx) => {
             const isActive = pathname === item.href;
             return (
-              <Link href={item.href} key={idx} className="w-1/4">
+              <Link href={item.href} key={idx} className="flex-1">
                 <button className="w-full flex flex-col items-center justify-center py-2 gap-1 relative">
                   {isActive && (
                     <motion.div layoutId="mobileNavGlow" className="absolute inset-0 bg-violet-500/20 rounded-xl" transition={springTransition} />
