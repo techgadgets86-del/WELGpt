@@ -5,8 +5,9 @@ import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-mo
 import { Play, X, Activity, Sparkles, Flame, Shield, Zap, Target, Bot, Loader2, Plus, List } from "lucide-react";
 import { MagicCard } from "@/components/ui/magic-card";
 import { auth, db } from "@/lib/firebase";
+import type { User } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
-import { collection, addDoc, getDocs, onSnapshot, query, orderBy, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, onSnapshot, query, orderBy } from "firebase/firestore";
 import AnimatedGuide from "@/components/AnimatedGuide";
 
 type BodyPart = string | null;
@@ -73,7 +74,7 @@ export default function SenseiPage() {
   const [bodyData, setBodyData] = useState<Record<string, BodyDataConfig>>(INITIAL_BODY_DATA);
   const [showQuestionnaire, setShowQuestionnaire] = useState(true);
   const [isOptimizing, setIsOptimizing] = useState(false);
-  const [user, setUser] = useState<unknown>(null) 
+  const [user, setUser] = useState<User | null>(null); 
   const [savedRoutines, setSavedRoutines] = useState<SavedRoutine[]>([]) 
   const [showRoutinesMenu, setShowRoutinesMenu] = useState(false);
 
@@ -83,7 +84,7 @@ export default function SenseiPage() {
       if (currentUser) {
         const q = query(collection(db, `users/${currentUser.uid}/customExercises`), orderBy("createdAt", "desc"));
         const unsubDb = onSnapshot(q, (snapshot) => {
-          const routines = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          const routines = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as unknown as SavedRoutine));
           setSavedRoutines(routines);
         });
         return () => unsubDb();
