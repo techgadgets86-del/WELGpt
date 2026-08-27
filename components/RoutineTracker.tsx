@@ -26,7 +26,7 @@ export const INITIAL_EVENING_TASKS: Task[] = [
   { id: "e4", time: "09:30 PM", title: "Yoga Nidra", desc: "Non-sleep deep rest (NSDR) to transition into deep Delta sleep." }
 ];
 
-export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, eveningTasks = INITIAL_EVENING_TASKS, customTasks = [], onGenerateCustom }: { morningTasks?: Task[], eveningTasks?: Task[], customTasks?: Task[], onGenerateCustom?: () => void }) {
+export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, eveningTasks = INITIAL_EVENING_TASKS, customTasks = [], customTitle = "Custom Routine", onGenerateCustom }: { morningTasks?: Task[], eveningTasks?: Task[], customTasks?: Task[], customTitle?: string, onGenerateCustom?: () => void }) {
   const [activeTab, setActiveTab] = useState<"morning" | "evening" | "custom">("morning");
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const router = useRouter();
@@ -85,7 +85,7 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, e
               <motion.div layoutId="routineTab" className="absolute inset-0 bg-fuchsia-600 rounded-xl" />
             )}
             <Sparkles size={18} className="relative z-10" />
-            <span className="relative z-10">Custom Routine</span>
+            <span className="relative z-10">{customTitle}</span>
           </button>
         </div>
 
@@ -121,7 +121,7 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, e
             {activeTab === "custom" && currentTasks.length === 0 && (
               <div className="text-center p-12 bg-white/5 border border-white/10 rounded-2xl">
                 <Sparkles size={32} className="text-fuchsia-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-white mb-2">No Custom Routine</h3>
+                <h3 className="text-xl font-semibold text-white mb-2">No {customTitle}</h3>
                 <p className="text-gray-400 mb-6">Prompt the AI to generate a highly specific protocol for you.</p>
                 <button onClick={onGenerateCustom} className="px-6 py-3 rounded-full bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-medium transition-colors">
                   Generate Protocol
