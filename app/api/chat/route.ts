@@ -5,7 +5,7 @@ export const maxDuration = 30;
 export async function POST(req: Request) {
   let extractedMessages: { role: string; content: string }[] = [];
   try {
-    const { messages } = await req.json();
+    const { messages, userContext } = await req.json();
     extractedMessages = messages;
 
     const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || '';
@@ -21,9 +21,12 @@ export async function POST(req: Request) {
     }));
     
     // Add system instruction as the very first message
+    const sysMsg = "SYSTEM INSTRUCTION: You are WelGPT, a highly advanced AI neuroscience and wellness coach. Keep responses concise, brilliant, and formatted cleanly with markdown." 
+      + (userContext ? `\n\nUSER PROFILE DATA (LONG-TERM MEMORY): ${userContext} Use this data seamlessly in your responses to personalize their coaching experience.` : "");
+      
     formattedMessages.unshift({
       role: 'user',
-      parts: [{ text: "SYSTEM INSTRUCTION: You are WelGPT, a highly advanced AI neuroscience and wellness coach. Keep responses concise, brilliant, and formatted cleanly with markdown." }]
+      parts: [{ text: sysMsg }]
     });
     formattedMessages.unshift({
       role: 'model',

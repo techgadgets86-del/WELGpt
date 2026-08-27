@@ -6,6 +6,7 @@ import { Send, Paperclip, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useChat } from "ai/react";
+import { useAuth } from "@/lib/AuthContext";
 
 const SUGGESTIONS = [
   { icon: "🌿", title: "Guided Meditation", desc: "5 minutes to center yourself" },
@@ -22,8 +23,13 @@ export default function ChatInterface() {
   const [isFocused, setIsFocused] = useState(false);
   const [hasAutoPrompted, setHasAutoPrompted] = useState(false);
 
+  const { user, profile } = useAuth();
+  
   const { messages, input, handleInputChange, handleSubmit, append, isLoading } = useChat({
     api: '/api/chat',
+    body: {
+      userContext: profile ? `The user is currently Level ${profile.level} with ${profile.xp} XP and an active ${profile.streak}-day streak.` : ""
+    },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (err: any) => {
       console.error("Chat Error:", err);

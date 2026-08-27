@@ -1,14 +1,22 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Activity, Brain, Moon, Sparkles, TrendingUp, Zap } from "lucide-react";
+import { Activity, Brain, Moon, Sparkles, TrendingUp, Zap, Flame, Target } from "lucide-react";
+import { useAuth } from "@/lib/AuthContext";
 
 export default function AnalyticsDashboard() {
+  const { profile } = useAuth();
+  
+  const xp = profile?.xp || 0;
+  const level = profile?.level || 1;
+  const streak = profile?.streak || 0;
+  const xpToNextLevel = (level * 100) - xp;
+
   const metrics = [
-    { label: "Dopamine Baseline", value: "84%", trend: "+12%", icon: Zap, color: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-emerald-400/20" },
-    { label: "Circadian Alignment", value: "92%", trend: "+5%", icon: Moon, color: "text-indigo-400", bg: "bg-indigo-400/10", border: "border-indigo-400/20" },
-    { label: "Neuroplasticity Index", value: "High", trend: "Optimal", icon: Brain, color: "text-violet-400", bg: "bg-violet-400/10", border: "border-violet-400/20" },
-    { label: "Meditation Streak", value: "14 Days", trend: "Active", icon: Sparkles, color: "text-teal-400", bg: "bg-teal-400/10", border: "border-teal-400/20" }
+    { label: "Neuro Level", value: `Lvl ${level}`, trend: "Active", icon: Brain, color: "text-violet-400", bg: "bg-violet-400/10", border: "border-violet-400/20" },
+    { label: "Total XP", value: `${xp} XP`, trend: `${xpToNextLevel} to next`, icon: Target, color: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-emerald-400/20" },
+    { label: "Active Streak", value: `${streak} Days`, trend: "On Fire", icon: Flame, color: "text-orange-400", bg: "bg-orange-400/10", border: "border-orange-400/20" },
+    { label: "Cognitive Score", value: "94%", trend: "Optimal", icon: Sparkles, color: "text-teal-400", bg: "bg-teal-400/10", border: "border-teal-400/20" }
   ];
 
   const weeklyData = [45, 52, 48, 65, 78, 85, 84]; // Sample dopamine scores
