@@ -129,7 +129,11 @@ export default function NutritionPage() {
                   <img 
                     src={`https://image.pollinations.ai/prompt/${encodeURIComponent(item.searchPrompt)}?width=600&height=400&nologo=true`} 
                     alt={item.name}
-                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
+                    onError={(e) => {
+                      // Fallback to Unsplash if AI generation fails or times out
+                      e.currentTarget.src = `https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=600&h=400&fit=crop&q=80`;
+                    }}
+                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 bg-gray-900"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#15152a] via-[#15152a]/20 to-transparent" />
                   <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
