@@ -39,21 +39,20 @@ function HeroFlowchart() {
       >
         
         {/* HERO SECTION */}
-        <motion.div variants={item} className="mb-12 mt-4 max-w-2xl mx-auto px-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-sm font-medium mb-6">
-            <Sparkles size={16} />
+        <motion.div variants={item} className="mb-12 mt-4 max-w-3xl mx-auto px-4">
+          <h1 className="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-teal-400 tracking-tight mb-6 leading-tight drop-shadow-sm">
             Your AI Wellness Coach
-          </div>
-          <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-6 leading-tight">
-            WelGPT builds a <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-teal-400">personalized daily plan</span> for your mind, body, nutrition and habits—and adapts as you progress.
           </h1>
+          <p className="text-xl md:text-2xl text-gray-300 font-medium leading-relaxed max-w-2xl mx-auto mb-10">
+            One personalized plan for your mind, movement, nutrition and daily habits—adapted as you progress.
+          </p>
           
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button 
               onClick={() => router.push('/routine')}
               className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white rounded-2xl font-bold text-lg shadow-[0_0_30px_rgba(124,58,237,0.3)] transition-all hover:scale-105"
             >
-              Start My Wellness Plan
+              Build My Wellness Plan
             </button>
             <button 
               onClick={() => router.push('/coach')}
