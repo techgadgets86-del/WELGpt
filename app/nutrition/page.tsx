@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Utensils, RefreshCw, Loader2, Sparkles, Activity, Check, Crown, X, Star } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
+import PremiumModal from "@/components/PremiumModal";
 
 interface FoodItem {
   name: string;
@@ -176,90 +177,8 @@ export default function NutritionPage() {
         )}
       </AnimatePresence>
 
-      {/* Pricing Modal */}
-      <AnimatePresence>
-        {showPricing && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto"
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              className="w-full max-w-5xl my-8 bg-[#111127] rounded-3xl border border-white/10 p-4 md:p-8 shadow-2xl relative"
-            >
-              <button 
-                onClick={() => setShowPricing(false)}
-                className="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors z-10"
-              >
-                <X size={24} />
-              </button>
-              
-              <div className="text-center mb-10">
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Upgrade Your Nutrition</h2>
-                <p className="text-gray-400">Unlock advanced personalized meal plans and one-off transformation protocols.</p>
-              </div>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
-                {/* FREE TIER */}
-                <div className="bg-white/5 border border-white/10 rounded-3xl p-8 flex flex-col">
-                  <h3 className="text-2xl font-bold text-white mb-2">Basic</h3>
-                  <div className="text-3xl font-black text-white mb-6">Free</div>
-                  <ul className="space-y-4 mb-8 flex-1">
-                    {["Enter basic information", "Generate 1 nutrition protocol", "See calories/macros", "Get basic meal suggestions", "View basic nutrition education", "Save 1 plan", "Use limited AI Coach", "See ads"].map((feat, i) => (
-                      <li key={i} className="flex items-center gap-3 text-gray-300">
-                        <Check size={18} className="text-gray-500 shrink-0" /> {feat}
-                      </li>
-                    ))}
-                  </ul>
-                  <button disabled className="w-full py-4 rounded-xl font-bold text-gray-400 bg-white/5 border border-white/10 cursor-not-allowed">Current Plan</button>
-                </div>
-                
-                {/* PREMIUM TIER */}
-                <div className="bg-gradient-to-b from-orange-500/20 to-rose-500/5 border border-orange-500/50 rounded-3xl p-8 flex flex-col relative overflow-hidden">
-                  <div className="absolute top-0 right-0 bg-gradient-to-r from-orange-500 to-rose-500 text-white text-xs font-bold px-4 py-1 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
-                  <h3 className="text-2xl font-bold text-orange-400 mb-2 flex items-center gap-2"><Crown size={24} /> Premium</h3>
-                  <div className="text-3xl font-black text-white mb-1">$14.99<span className="text-lg text-gray-400 font-normal">/mo</span></div>
-                  <p className="text-sm text-gray-400 mb-6">Full access to the AI Nutrition Engine.</p>
-                  
-                  <ul className="space-y-4 mb-8 flex-1">
-                    {["Unlimited nutrition protocols", "Personalized meal plans", "Macro/calorie adjustments", "Dietary preferences & Food substitutions", "Weekly meal planning & Grocery lists", "Progress tracking", "Advanced AI nutrition coach", "Saved plans & Advanced analytics", "No ads"].map((feat, i) => (
-                      <li key={i} className="flex items-center gap-3 text-white">
-                        <Star size={18} className="text-orange-400 shrink-0 fill-orange-400" /> {feat}
-                      </li>
-                    ))}
-                  </ul>
-                  <button className="w-full py-4 rounded-xl font-bold text-white bg-gradient-to-r from-orange-500 to-rose-500 hover:scale-[1.02] transition-transform shadow-lg shadow-orange-500/20">Upgrade to Premium</button>
-                </div>
-              </div>
-              
-              <div className="border-t border-white/10 pt-10">
-                <h3 className="text-2xl font-bold text-white mb-6 text-center">One-Off Transformation Products</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {[
-                    { title: "7-Day Fat-Loss Meal Plan", price: "$4.99", color: "from-blue-500 to-cyan-500" },
-                    { title: "30-Day High-Protein Plan", price: "$9.99", color: "from-fuchsia-500 to-purple-500" },
-                    { title: "30-Day Healthy Eating Reset", price: "$9.99", color: "from-emerald-500 to-teal-500" },
-                    { title: "90-Day Transformation Plan", price: "$19.99", color: "from-amber-500 to-orange-500" }
-                  ].map((prod, i) => (
-                    <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-colors flex flex-col items-center text-center cursor-pointer group">
-                      <div className={`w-12 h-12 rounded-full mb-4 bg-gradient-to-br ${prod.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
-                        <Activity size={24} className="text-white" />
-                      </div>
-                      <h4 className="text-white font-bold mb-2 flex-1">{prod.title}</h4>
-                      <div className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-200 to-gray-400">{prod.price}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            {/* Global Adaptive Premium Modal */}
+      <PremiumModal isOpen={showPricing} onClose={() => setShowPricing(false)} />
     </div>
   );
 }
