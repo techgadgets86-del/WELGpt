@@ -44,7 +44,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   ];
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-[#0a0a1a] text-gray-100 overflow-hidden font-sans">
+    <div className="flex flex-col md:flex-row h-[100dvh] bg-[#0a0a1a] text-gray-100 overflow-hidden font-sans">
       
       {/* ============================================================== */}
       {/* DESKTOP SIDEBAR (Hidden on mobile) */}
@@ -122,7 +122,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* ============================================================== */}
       {/* MOBILE TOP BAR */}
       {/* ============================================================== */}
-      <div className="md:hidden flex items-center justify-between p-4 border-b border-white/10 bg-[#111127]/90 backdrop-blur-xl sticky top-0 z-30 pt-safe">
+      <div className="md:hidden flex items-center justify-between p-4 border-b border-white/10 bg-[#111127]/90 backdrop-blur-xl sticky top-0 z-30 pt-[env(safe-area-inset-top)]">
         <Link href="/">
           <Image src="/logo-full.png" alt="WelGPT" width={100} height={24} className="h-[24px] w-auto object-contain" priority />
         </Link>
@@ -139,7 +139,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-50 bg-[#0a0a1a] flex flex-col pt-safe"
+            className="fixed inset-0 z-50 bg-[#0a0a1a] flex flex-col pt-[env(safe-area-inset-top)]"
           >
             <div className="p-4 flex justify-between items-center border-b border-white/10">
               <span className="font-bold text-lg">Menu</span>
@@ -159,7 +159,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
             
             {/* Mobile Footer Login */}
-            <div className="p-6 border-t border-white/10 pb-safe">
+            <div className="p-6 border-t border-white/10 pb-[env(safe-area-inset-bottom)]">
               {!loading && user ? (
                 <div className="flex items-center justify-between bg-white/5 p-4 rounded-2xl">
                   <div className="flex items-center gap-3">
@@ -189,7 +189,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* ============================================================== */}
       {/* MAIN CONTENT AREA */}
       {/* ============================================================== */}
-      <main className="flex-1 overflow-y-auto relative p-4 md:p-8 lg:p-12 pb-32 md:pb-8 no-scrollbar bg-[#0a0a1a]">
+      <main className="flex-1 overflow-y-auto relative p-4 md:p-8 lg:p-12 pb-[140px] md:pb-8 no-scrollbar bg-[#0a0a1a]">
         {/* Unlumen UI Ambient Glows */}
         <div className="absolute top-[-10%] left-[-10%] w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-violet-600/20 blur-[100px] rounded-full pointer-events-none" />
         <div className="absolute bottom-1/4 right-[-10%] w-[250px] md:w-[400px] h-[250px] md:h-[400px] bg-teal-500/10 blur-[100px] rounded-full pointer-events-none" />
@@ -200,7 +200,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* ============================================================== */}
       {/* MOBILE BOTTOM NAVIGATION BAR */}
       {/* ============================================================== */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[#111127]/90 backdrop-blur-2xl border-t border-white/10 pb-safe z-30">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[#111127]/90 backdrop-blur-2xl border-t border-white/10 pb-[calc(0.5rem+env(safe-area-inset-bottom))] z-50">
         <div className="flex items-center justify-around p-2">
           {bottomNavItems.map((item, idx) => {
             const isActive = pathname === item.href;
