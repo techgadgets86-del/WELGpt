@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Brain, LayoutDashboard, Menu, X, CheckSquare, Leaf, Activity, BookOpen, Mail, BarChart3 , Utensils, Waves, Home } from "lucide-react";
+import { Sparkles, Brain, LayoutDashboard, Menu, X, CheckSquare, Leaf, Activity, BookOpen, Mail, BarChart3 , Utensils, Waves, Home, Compass, UserCircle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -27,25 +27,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { icon: Home, label: "Home", href: "/" },
-    { icon: Utensils, label: "Nutrition", href: "/nutrition" },
+    { icon: CheckSquare, label: "Today's Plan", href: "/routine" },
     { icon: Brain, label: "AI Coach", href: "/coach" },
-    { icon: Waves, label: "Meditation Hub", href: "/meditation" },
-    { icon: Sparkles, label: "Inspiration", href: "/inspiration" },
-    { icon: CheckSquare, label: "Routine", href: "/routine" },
-    { icon: BarChart3, label: "Analytics", href: "/dashboard" },
-    { icon: Leaf, label: "Detox Hub", href: "/detox" },
-    { icon: Activity, label: "Sensei Training", href: "/sensei" },
-    { icon: BookOpen, label: "Blog", href: "/blog" },
-    { icon: Mail, label: "Newsletter", href: "/newsletter" },
+    { icon: Compass, label: "Explore", href: "/explore" },
+    { icon: BarChart3, label: "Progress", href: "/dashboard" },
+    { icon: UserCircle, label: "Profile", href: "/profile" },
   ];
 
   // Core 4 items for the mobile bottom nav
   const bottomNavItems = [
-    { icon: Utensils, label: "Food", href: "/nutrition" },
+    { icon: Home, label: "Home", href: "/" },
+    { icon: CheckSquare, label: "Plan", href: "/routine" },
     { icon: Brain, label: "Coach", href: "/coach" },
-    { icon: CheckSquare, label: "Routine", href: "/routine" },
-    { icon: Sparkles, label: "Quotes", href: "/inspiration" },
-    { icon: BarChart3, label: "Data", href: "/dashboard" },
+    { icon: Compass, label: "Explore", href: "/explore" },
+    { icon: UserCircle, label: "Profile", href: "/profile" },
   ];
 
   return (
