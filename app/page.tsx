@@ -3,6 +3,8 @@
 
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import PremiumModal from "@/components/PremiumModal";
 import { useAuth } from "@/lib/AuthContext";
 import { Brain, Target, Calendar, Utensils, Activity, Sparkles, BarChart3, TrendingUp, RefreshCw, ChevronDown } from "lucide-react";
 
@@ -11,6 +13,7 @@ const Line = ({ h = "h-8" }: { h?: string }) => (
 );
 
 function HeroFlowchart() {
+  const [showPremium, setShowPremium] = useState(false);
   const router = useRouter();
 
   const container = {
@@ -160,11 +163,12 @@ function HeroFlowchart() {
         {/* AI ADJUSTS PLAN */}
         <motion.div variants={item}>
           <button 
-            onClick={() => router.push('/coach')}
-            className="flex items-center gap-3 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-full px-6 py-3 transition-all hover:scale-105 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+            onClick={() => setShowPremium(true)}
+            className="flex items-center gap-3 bg-gradient-to-r from-violet-600 to-teal-600 hover:scale-105 rounded-full px-6 py-3 transition-transform shadow-[0_0_20px_rgba(45,212,191,0.3)] relative overflow-hidden group"
           >
-            <RefreshCw className="text-emerald-400 animate-spin-slow" size={20} />
-            <h2 className="text-white font-bold text-sm tracking-widest uppercase">AI Adjusts Plan</h2>
+            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+            <RefreshCw className="text-white animate-spin-slow relative z-10" size={20} />
+            <h2 className="text-white font-bold text-sm tracking-widest uppercase relative z-10">AI Adjusts Plan</h2>
           </button>
         </motion.div>
 
@@ -182,6 +186,7 @@ function HeroFlowchart() {
         </motion.div>
 
       </motion.div>
+      <PremiumModal isOpen={showPremium} onClose={() => setShowPremium(false)} />
     </div>
   );
 }
