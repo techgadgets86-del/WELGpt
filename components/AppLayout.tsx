@@ -26,9 +26,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useAuth();
 
   const navItems = [
-    { icon: Home, label: "Home", href: "/" },
-    { icon: CheckSquare, label: "Today's Plan", href: "/routine" },
-    { icon: Brain, label: "AI Coach", href: "/coach" },
+    { icon: CheckSquare, label: "Today", href: "/routine" },
+    { icon: Brain, label: "Coach", href: "/coach" },
     { icon: Compass, label: "Explore", href: "/explore" },
     { icon: BarChart3, label: "Progress", href: "/dashboard" },
     { icon: UserCircle, label: "Profile", href: "/profile" },
@@ -36,10 +35,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   // Core 4 items for the mobile bottom nav
   const bottomNavItems = [
-    { icon: Home, label: "Home", href: "/" },
-    { icon: CheckSquare, label: "Plan", href: "/routine" },
+    { icon: CheckSquare, label: "Today", href: "/routine" },
     { icon: Brain, label: "Coach", href: "/coach" },
     { icon: Compass, label: "Explore", href: "/explore" },
+    { icon: BarChart3, label: "Progress", href: "/dashboard" },
     { icon: UserCircle, label: "Profile", href: "/profile" },
   ];
 
