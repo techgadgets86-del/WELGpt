@@ -37,14 +37,30 @@ export default function Home() {
         className="w-full flex flex-col items-center text-center"
       >
         
-        {/* WELGPT ROOT */}
-        <motion.div variants={item} className="mb-2">
-          <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-600 p-1 shadow-[0_0_30px_rgba(124,58,237,0.3)] flex items-center justify-center">
-            <div className="w-full h-full bg-[#0a0a1a] rounded-full flex items-center justify-center">
-              <Brain className="text-white" size={32} />
-            </div>
+        {/* HERO SECTION */}
+        <motion.div variants={item} className="mb-12 mt-4 max-w-2xl mx-auto px-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-sm font-medium mb-6">
+            <Sparkles size={16} />
+            Your AI Wellness Coach
           </div>
-          <h1 className="text-3xl font-black text-white mt-4 tracking-widest uppercase">WelGPT</h1>
+          <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-6 leading-tight">
+            WelGPT builds a <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-teal-400">personalized daily plan</span> for your mind, body, nutrition and habits—and adapts as you progress.
+          </h1>
+          
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
+            <button 
+              onClick={() => router.push('/routine')}
+              className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white rounded-2xl font-bold text-lg shadow-[0_0_30px_rgba(124,58,237,0.3)] transition-all hover:scale-105"
+            >
+              Start My Wellness Plan
+            </button>
+            <button 
+              onClick={() => router.push('/coach')}
+              className="w-full sm:w-auto px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-2xl font-bold text-lg transition-all"
+            >
+              Explore WelGPT
+            </button>
+          </div>
         </motion.div>
 
         <Line h="h-10" />
