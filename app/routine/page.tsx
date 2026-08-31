@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "@/lib/AuthContext";
 import { motion } from "framer-motion";
 import { RefreshCw, Loader2, X, Sparkles, List, Play, Plus, Activity, Headphones } from "lucide-react";
 import { useAudioFrequencies } from "@/lib/useAudioFrequencies";
@@ -15,6 +16,7 @@ interface SavedRoutine { id: string; title: string; tasks: Task[]; createdAt?: s
 
 
 export default function RoutinePage() {
+  const { logActivity } = useAuth();
   const [morning, setMorning] = useState<Task[]>(INITIAL_MORNING_TASKS);
   const [evening, setEvening] = useState<Task[]>(INITIAL_EVENING_TASKS);
   const [isOptimizing, setIsOptimizing] = useState(false);

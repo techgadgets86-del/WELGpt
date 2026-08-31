@@ -12,9 +12,9 @@ export interface UserProfile {
   lastActiveDate: string;
   goals: string[];
   preferences: {
-    dietary: string;
-    fitnessLevel: string;
-    focusAreas: string[];
+    dietary?: string;
+    fitnessLevel?: string;
+    focusAreas?: string[];
     [key: string]: string | number | boolean | string[] | undefined;
   };
   recentActivity: string[];
@@ -29,7 +29,7 @@ interface AuthContextType {
   logActivity: (activity: string) => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType>({ user: null, profile: null, loading: true, addXP: async () => {} });
+const AuthContext = createContext<AuthContextType>({ user: null, profile: null, loading: true, addXP: async () => {}, updateUserData: async () => {}, logActivity: async () => {} });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -85,18 +85,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         });
         setLoading(false);
       
-  const updateUserData = async (data: Partial<UserProfile>) => {
-    if (!user) return;
-    const userRef = doc(db, 'users', user.uid);
-    await updateDoc(userRef, data);
-  };
 
-  const logActivity = async (activity: string) => {
-    if (!user || !profile) return;
-    const userRef = doc(db, 'users', user.uid);
-    const newActivity = [activity, ...(profile.recentActivity || [])].slice(0, 10); // keep last 10
-    await updateDoc(userRef, { recentActivity: newActivity });
-  };
 
   return () => unsubProfile();
       } else {
@@ -138,6 +127,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       streak: newStreak,
       lastActiveDate: today
     });
+  };
+
+  const updateUserData = async (data: Partial<UserProfile>) => {
+    if (!user) return;
+    const userRef = doc(db, 'users', user.uid);
+    await updateDoc(userRef, data);
+  };
+
+  const logActivity = async (activity: string) => {
+    if (!user || !profile) return;
+    const userRef = doc(db, 'users', user.uid);
+    const newActivity = [activity, ...(profile.recentActivity || [])].slice(0, 10); // keep last 10
+    await updateDoc(userRef, { recentActivity: newActivity });
   };
 
   return (
