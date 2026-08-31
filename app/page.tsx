@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import { useState, useEffect } from "react";
 import PremiumModal from "@/components/PremiumModal";
-import { Brain, Flame } from "lucide-react";
+import { Brain, Flame, Loader2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
   const { user, profile, updateUserData } = useAuth();
@@ -12,6 +13,35 @@ export default function Home() {
   const [showPremium, setShowPremium] = useState(false);
   
   // Selection state for goals
+  
+  const [onboardingStep, setOnboardingStep] = useState(0);
+  const [feeling, setFeeling] = useState("");
+  const [dayType, setDayType] = useState("");
+  const [isBuilding, setIsBuilding] = useState(false);
+  const [hasPlan, setHasPlan] = useState(false);
+
+  const feelings = ["Great", "Good", "Okay", "Stressed", "Tired"];
+  const dayTypes = ["Work", "Student", "Flexible", "Busy"];
+
+  const handleBuildPlan = () => {
+    setOnboardingStep(1);
+  };
+
+  const completeOnboarding = () => {
+    setIsBuilding(true);
+    setTimeout(() => {
+      setIsBuilding(false);
+      setOnboardingStep(0);
+      setHasPlan(true);
+      if (user) {
+        updateUserData({ 
+          preferences: { ...profile?.preferences, feeling, dayType },
+          recentActivity: ["Generated AI Wellness Plan", ...(profile?.recentActivity || [])].slice(0, 10)
+        });
+      }
+    }, 2500);
+  };
+
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   
   // Sync with Firestore profile goals
@@ -40,6 +70,98 @@ export default function Home() {
 
   return (
     <div className="max-w-3xl mx-auto relative z-10 pt-8 pb-32 h-full flex flex-col items-center">
+      <AnimatePresence>
+        {onboardingStep > 0 && (
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-[#0a0a1a]/95 backdrop-blur-xl flex flex-col items-center justify-center p-6"
+          >
+            {isBuilding ? (
+              <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="flex flex-col items-center text-center">
+                <Loader2 size={48} className="text-violet-500 animate-spin mb-6" />
+                <h2 className="text-2xl font-bold text-white mb-2">Building your plan...</h2>
+                <p className="text-gray-400">Analyzing your profile and goals</p>
+              </motion.div>
+            ) : (
+              <motion.div 
+                key={onboardingStep}
+                initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }}
+                className="w-full max-w-md"
+              >
+                {onboardingStep === 1 && (
+                  <>
+                    <h2 className="text-3xl font-black text-white mb-2 text-center">What&apos;s your main goal?</h2>
+                    <p className="text-gray-400 text-center mb-8">Select what you want to focus on.</p>
+                    <div className="flex flex-wrap justify-center gap-3 mb-10">
+                      {goals.map(goal => (
+                        <button
+                          key={goal}
+                          onClick={() => toggleGoal(goal)}
+                          className={`px-6 py-4 rounded-xl border transition-all text-sm font-bold w-[45%] ${
+                            selectedGoals.includes(goal) 
+                              ? 'bg-violet-600 border-violet-500 text-white shadow-[0_0_15px_rgba(124,58,237,0.4)]'
+                              : 'bg-[#111127] border-white/10 text-gray-400'
+                          }`}
+                        >
+                          {goal}
+                        </button>
+                      ))}
+                    </div>
+                    <button onClick={() => setOnboardingStep(2)} disabled={selectedGoals.length === 0} className="w-full py-4 bg-white text-black font-bold rounded-2xl disabled:opacity-50">Next</button>
+                  </>
+                )}
+
+                {onboardingStep === 2 && (
+                  <>
+                    <h2 className="text-3xl font-black text-white mb-2 text-center">How are you feeling?</h2>
+                    <p className="text-gray-400 text-center mb-8">This helps WelGPT adjust your intensity.</p>
+                    <div className="flex flex-col gap-3 mb-10">
+                      {feelings.map(f => (
+                        <button
+                          key={f}
+                          onClick={() => setFeeling(f)}
+                          className={`px-6 py-4 rounded-xl border transition-all text-lg font-bold text-left ${
+                            feeling === f 
+                              ? 'bg-teal-500/20 border-teal-500 text-teal-300 shadow-[0_0_15px_rgba(20,184,166,0.2)]'
+                              : 'bg-[#111127] border-white/10 text-gray-300'
+                          }`}
+                        >
+                          {f}
+                        </button>
+                      ))}
+                    </div>
+                    <button onClick={() => setOnboardingStep(3)} disabled={!feeling} className="w-full py-4 bg-white text-black font-bold rounded-2xl disabled:opacity-50">Next</button>
+                  </>
+                )}
+
+                {onboardingStep === 3 && (
+                  <>
+                    <h2 className="text-3xl font-black text-white mb-2 text-center">What does your day look like?</h2>
+                    <p className="text-gray-400 text-center mb-8">WelGPT will schedule around your life.</p>
+                    <div className="flex flex-col gap-3 mb-10">
+                      {dayTypes.map(d => (
+                        <button
+                          key={d}
+                          onClick={() => setDayType(d)}
+                          className={`px-6 py-4 rounded-xl border transition-all text-lg font-bold text-left ${
+                            dayType === d 
+                              ? 'bg-orange-500/20 border-orange-500 text-orange-300 shadow-[0_0_15px_rgba(249,115,22,0.2)]'
+                              : 'bg-[#111127] border-white/10 text-gray-300'
+                          }`}
+                        >
+                          {d}
+                        </button>
+                      ))}
+                    </div>
+                    <button onClick={completeOnboarding} disabled={!dayType} className="w-full py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold rounded-2xl disabled:opacity-50 shadow-[0_0_20px_rgba(124,58,237,0.3)]">Create My Plan</button>
+                  </>
+                )}
+              </motion.div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       
       {/* 1. HERO & ONBOARDING (Tell us what you want to improve) */}
       <div className="w-full text-center mb-12">
@@ -67,7 +189,7 @@ export default function Home() {
         </div>
         
         <button 
-          onClick={() => router.push('/routine')}
+          onClick={handleBuildPlan}
           className="w-full max-w-sm mx-auto px-8 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white rounded-2xl font-bold text-lg shadow-[0_0_30px_rgba(124,58,237,0.3)] transition-all hover:scale-105"
         >
           BUILD MY PLAN
@@ -78,50 +200,86 @@ export default function Home() {
 
       {/* 2. YOUR PLAN TODAY */}
       <div className="w-full max-w-md mx-auto mb-12">
-        <h3 className="text-gray-400 font-bold tracking-widest uppercase text-sm mb-6 text-center">Your Plan Today</h3>
+        <h3 className="text-gray-400 font-bold tracking-widest uppercase text-sm mb-6 text-center">{hasPlan ? "Your WelGPT Plan" : "Your Plan Today"}</h3>
         
         <div className="bg-[#111127] border border-white/10 rounded-3xl p-6 mb-6">
-          <div className="space-y-4">
-            <div className="flex justify-between items-center pb-4 border-b border-white/5">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">🧘</span>
-                <span className="font-bold text-white">Meditation</span>
-              </div>
-              <span className="text-gray-400 font-medium">10 min</span>
-            </div>
-            
-            <div className="flex justify-between items-center pb-4 border-b border-white/5">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">🥗</span>
-                <span className="font-bold text-white">Nutrition</span>
-              </div>
-              <span className="text-orange-400 font-medium">Today&apos;s goal</span>
-            </div>
-            
-            <div className="flex justify-between items-center pb-4 border-b border-white/5">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">🏃</span>
-                <span className="font-bold text-white">Movement</span>
-              </div>
-              <span className="text-gray-400 font-medium">20 min</span>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">📓</span>
-                <span className="font-bold text-white">Reflection</span>
-              </div>
-              <span className="text-gray-400 font-medium">3 min</span>
-            </div>
-          </div>
+          {hasPlan ? (
+             <div className="space-y-6">
+                <div>
+                  <h4 className="text-violet-400 font-bold text-xs uppercase tracking-wider mb-3">Morning</h4>
+                  <div className="flex items-center gap-3 pb-4 border-b border-white/5">
+                    <span className="text-2xl">🧘</span>
+                    <span className="font-bold text-white text-lg">5 min breathing</span>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-teal-400 font-bold text-xs uppercase tracking-wider mb-3">Afternoon</h4>
+                  <div className="flex items-center gap-3 pb-4 border-b border-white/5">
+                    <span className="text-2xl">🏃</span>
+                    <span className="font-bold text-white text-lg">20 min movement</span>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-orange-400 font-bold text-xs uppercase tracking-wider mb-3">Evening</h4>
+                  <div className="flex items-center gap-3 pb-3">
+                    <span className="text-2xl">🥗</span>
+                    <span className="font-bold text-white text-lg">Nutrition goal</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">📓</span>
+                    <span className="font-bold text-white text-lg">Reflection</span>
+                  </div>
+                </div>
+             </div>
+          ) : (
+             <div className="space-y-4 opacity-50 pointer-events-none">
+                <div className="flex justify-between items-center pb-4 border-b border-white/5">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">🧘</span>
+                    <span className="font-bold text-white">Meditation</span>
+                  </div>
+                  <span className="text-gray-400 font-medium">10 min</span>
+                </div>
+                <div className="flex justify-between items-center pb-4 border-b border-white/5">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">🥗</span>
+                    <span className="font-bold text-white">Nutrition</span>
+                  </div>
+                  <span className="text-orange-400 font-medium">Today&apos;s goal</span>
+                </div>
+                <div className="flex justify-between items-center pb-4 border-b border-white/5">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">🏃</span>
+                    <span className="font-bold text-white">Movement</span>
+                  </div>
+                  <span className="text-gray-400 font-medium">20 min</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">📓</span>
+                    <span className="font-bold text-white">Reflection</span>
+                  </div>
+                  <span className="text-gray-400 font-medium">3 min</span>
+                </div>
+             </div>
+          )}
         </div>
         
-        <button 
-          onClick={() => router.push('/routine')}
-          className="w-full py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-2xl font-bold text-lg transition-all"
-        >
-          START
-        </button>
+        {hasPlan ? (
+          <button 
+            onClick={() => router.push('/routine')}
+            className="w-full py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white rounded-2xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(124,58,237,0.3)]"
+          >
+            START TRACKING
+          </button>
+        ) : (
+          <button 
+            onClick={handleBuildPlan}
+            className="w-full py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-2xl font-bold text-lg transition-all"
+          >
+            GENERATE PLAN
+          </button>
+        )}
       </div>
 
       <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-10" />
