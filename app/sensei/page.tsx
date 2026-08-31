@@ -7,8 +7,6 @@ import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-mo
 import { Play, X, Activity, Sparkles, Flame, Shield, Zap, Target, Bot, Loader2, Plus, List } from "lucide-react";
 import { MagicCard } from "@/components/ui/magic-card";
 import { auth, db } from "@/lib/firebase";
-import type { User } from "firebase/auth";
-import { onAuthStateChanged } from "firebase/auth";
 import { collection, addDoc, onSnapshot, query, orderBy } from "firebase/firestore";
 import AnimatedGuide from "@/components/AnimatedGuide";
 
@@ -78,27 +76,22 @@ export default function SenseiPage() {
   const [isOptimizing, setIsOptimizing] = useState(false);
   const { user, addXP, logActivity } = useAuth();
   const { playingId, toggleSound, stopAudio } = useAudioFrequencies();
-  const [user, setUser] = useState<User | null>(null); 
-  const [savedRoutines, setSavedRoutines] = useState<SavedRoutine[]>([]) 
+    const [savedRoutines, setSavedRoutines] = useState<SavedRoutine[]>([]) 
   const [showRoutinesMenu, setShowRoutinesMenu] = useState(false);
 
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        const q = query(collection(db, `users/${currentUser.uid}/customExercises`), orderBy("createdAt", "desc"));
-        const unsubDb = onSnapshot(q, (snapshot) => {
-          const routines = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as unknown as SavedRoutine));
-          setSavedRoutines(routines);
-        });
-        return () => unsubDb();
-      } else {
-        setSavedRoutines([]);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
+    if (user) {
+      const q = query(collection(db, `users/${user.uid}/customExercises`), orderBy("createdAt", "desc"));
+      const unsubDb = onSnapshot(q, (snapshot) => {
+        const routines = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as unknown as SavedRoutine));
+        setSavedRoutines(routines);
+      });
+      return () => unsubDb();
+    } else {
+      setSavedRoutines([]);
+    }
+  }, [user]);
 
     const launchSavedRoutine = (routine: SavedRoutine) => {
     const newData = {
