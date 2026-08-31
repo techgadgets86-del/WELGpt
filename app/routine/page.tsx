@@ -16,13 +16,22 @@ interface SavedRoutine { id: string; title: string; tasks: Task[]; createdAt?: s
 
 
 export default function RoutinePage() {
-  const { logActivity } = useAuth();
+  const { logActivity, profile } = useAuth();
   const [morning, setMorning] = useState<Task[]>(INITIAL_MORNING_TASKS);
   const [evening, setEvening] = useState<Task[]>(INITIAL_EVENING_TASKS);
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [custom, setCustom] = useState<Task[]>([]);
   const [showCustomModal, setShowCustomModal] = useState(false);
   const [customPrompt, setCustomPrompt] = useState("");
+
+    // Load Daily Plan from Profile if it exists
+  useEffect(() => {
+    if (profile?.dailyPlan) {
+      setMorning(profile.dailyPlan.morning);
+      setEvening(profile.dailyPlan.evening);
+      setCustom(profile.dailyPlan.afternoon);
+    }
+  }, [profile?.dailyPlan]);
 
   // Persist draft prompt across page navigations
   useEffect(() => {

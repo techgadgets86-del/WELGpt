@@ -74,7 +74,7 @@ export default function SenseiPage() {
   const [bodyData, setBodyData] = useState<Record<string, BodyDataConfig>>(INITIAL_BODY_DATA);
   const [showQuestionnaire, setShowQuestionnaire] = useState(true);
   const [isOptimizing, setIsOptimizing] = useState(false);
-  const { user, addXP, logActivity } = useAuth();
+  const { user, profile, addXP, logActivity } = useAuth();
   const { playingId, toggleSound, stopAudio } = useAudioFrequencies();
     const [savedRoutines, setSavedRoutines] = useState<SavedRoutine[]>([]) 
   const [showRoutinesMenu, setShowRoutinesMenu] = useState(false);

@@ -18,6 +18,7 @@ export default function NutritionPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [goal, setGoal] = useState("maximizing height growth, boosting HGH naturally, and increasing bone mineral density");
   const [showPricing, setShowPricing] = useState(false);
+  const { profile } = useAuth();
   // gamification coming soon for nutrition
 
   const generateFood = async () => {
@@ -48,6 +49,19 @@ export default function NutritionPage() {
 
   return (
     <div className="max-w-5xl mx-auto relative z-10 pt-4 pb-20 h-full flex flex-col">
+      
+      {profile?.dailyPlan && (
+        <div className="bg-orange-500/20 border border-orange-500/50 rounded-2xl p-4 mb-8 flex items-center justify-between text-orange-300 w-full">
+          <div className="flex items-center gap-3">
+            <Utensils size={24} />
+            <div>
+              <p className="font-bold">Your Daily Plan requires hitting your Nutrition Goal this evening.</p>
+              <p className="text-sm opacity-80">Use the generator below to find the optimal meals.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <motion.h1 

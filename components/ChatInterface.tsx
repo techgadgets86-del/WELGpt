@@ -34,7 +34,8 @@ export default function ChatInterface() {
         streak: profile.streak,
         goals: profile.goals || [],
         preferences: profile.preferences || {},
-        recentActivity: profile.recentActivity || []
+        recentActivity: profile.recentActivity || [],
+        dailyPlan: profile.dailyPlan || null
       }) : ""
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

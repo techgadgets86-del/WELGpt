@@ -5,6 +5,14 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import { doc, onSnapshot, setDoc, updateDoc, getDoc, increment } from 'firebase/firestore';
 import { auth, db } from './firebase';
 
+export interface RoutineTask {
+  id: string;
+  time: string;
+  title: string;
+  desc: string;
+  completed?: boolean;
+}
+
 export interface UserProfile {
   xp: number;
   level: number;
@@ -18,6 +26,12 @@ export interface UserProfile {
     [key: string]: string | number | boolean | string[] | undefined;
   };
   recentActivity: string[];
+  dailyPlan?: {
+    date: string;
+    morning: RoutineTask[];
+    afternoon: RoutineTask[];
+    evening: RoutineTask[];
+  };
 }
 
 interface AuthContextType {
@@ -27,9 +41,10 @@ interface AuthContextType {
   addXP: (amount: number) => Promise<void>;
   updateUserData: (data: Partial<UserProfile>) => Promise<void>;
   logActivity: (activity: string) => Promise<void>;
+  toggleTaskComplete: (taskId: string, completed: boolean) => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType>({ user: null, profile: null, loading: true, addXP: async () => {}, updateUserData: async () => {}, logActivity: async () => {} });
+const AuthContext = createContext<AuthContextType>({ user: null, profile: null, loading: true, addXP: async () => {}, updateUserData: async () => {}, logActivity: async () => {}, toggleTaskComplete: async () => {} });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -74,11 +89,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               lastActiveDate: lastActive,
               goals: data.goals || [],
               preferences: data.preferences || { dietary: "none", fitnessLevel: "beginner", focusAreas: [] },
-              recentActivity: data.recentActivity || []
+              recentActivity: data.recentActivity || [],
+              dailyPlan: data.dailyPlan || null
             });
           } else {
             // Initialize profile
-            const initData = { xp: 0, streak: 0, lastActiveDate: "", goals: [], preferences: { dietary: "none", fitnessLevel: "beginner", focusAreas: [] }, recentActivity: [] };
+            const initData = { xp: 0, streak: 0, lastActiveDate: "", goals: [], preferences: { dietary: "none", fitnessLevel: "beginner", focusAreas: [] }, recentActivity: [], dailyPlan: null };
             setDoc(userRef, initData);
             setProfile({ xp: 0, level: 1, streak: 0, lastActiveDate: "", goals: [], preferences: { dietary: "none", fitnessLevel: "beginner", focusAreas: [] }, recentActivity: [] });
           }
@@ -143,7 +159,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, addXP, updateUserData, logActivity }}>
+    <AuthContext.Provider value={{ user, profile, loading, addXP, updateUserData, logActivity, toggleTaskComplete }}>
       {children}
     </AuthContext.Provider>
   );

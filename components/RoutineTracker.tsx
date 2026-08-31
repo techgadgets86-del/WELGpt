@@ -11,6 +11,7 @@ export interface Task {
   time: string;
   title: string;
   desc: string;
+  completed?: boolean;
 }
 
 export const INITIAL_MORNING_TASKS: Task[] = [

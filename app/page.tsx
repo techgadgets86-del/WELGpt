@@ -33,10 +33,26 @@ export default function Home() {
       setIsBuilding(false);
       setOnboardingStep(0);
       setHasPlan(true);
+      
+      const newPlan = {
+        date: new Date().toISOString().split('T')[0],
+        morning: [
+          { id: "m1", time: "Morning", title: "5 min breathing", desc: "Focus on deep diaphragm breathing", completed: false }
+        ],
+        afternoon: [
+          { id: "a1", time: "Afternoon", title: "20 min movement", desc: "Cardio or mobility work", completed: false }
+        ],
+        evening: [
+          { id: "e1", time: "Evening", title: "Nutrition goal", desc: "Hit protein macros", completed: false },
+          { id: "e2", time: "Evening", title: "Reflection", desc: "3 min gratitude journal", completed: false }
+        ]
+      };
+      
       if (user) {
         updateUserData({ 
           preferences: { ...profile?.preferences, feeling, dayType },
-          recentActivity: ["Generated AI Wellness Plan", ...(profile?.recentActivity || [])].slice(0, 10)
+          recentActivity: ["Generated AI Wellness Plan", ...(profile?.recentActivity || [])].slice(0, 10),
+          dailyPlan: newPlan
         });
       }
     }, 2500);
@@ -67,6 +83,21 @@ export default function Home() {
   };
 
   const goals = ["Better Sleep", "Less Stress", "Better Fitness", "Nutrition", "Focus", "Better Habits"];
+
+  // Calculate Live Progress
+  let progressPercent = 0;
+  if (profile?.dailyPlan) {
+    let total = 0;
+    let completed = 0;
+    (['morning', 'afternoon', 'evening'] as const).forEach((timeOfDay) => {
+      profile.dailyPlan![timeOfDay]?.forEach(task => {
+        total++;
+        if (task.completed) completed++;
+      });
+    });
+    if (total > 0) progressPercent = Math.round((completed / total) * 100);
+  }
+
 
   return (
     <div className="max-w-3xl mx-auto relative z-10 pt-8 pb-32 h-full flex flex-col items-center">
@@ -291,10 +322,10 @@ export default function Home() {
         <div className="bg-[#111127] border border-white/10 rounded-3xl p-8">
           <div className="flex justify-between items-end mb-3">
             <span className="text-gray-400 text-sm font-medium">Daily Completion</span>
-            <span className="text-white font-bold text-xl">80%</span>
+            <span className="text-white font-bold text-xl">{profile?.dailyPlan ? progressPercent : 80}%</span>
           </div>
           <div className="w-full h-4 bg-white/5 rounded-full overflow-hidden mb-8">
-            <div className="h-full bg-gradient-to-r from-teal-400 to-emerald-400 w-[80%] rounded-full shadow-[0_0_10px_rgba(45,212,191,0.5)]" />
+            <div className={`h-full bg-gradient-to-r from-teal-400 to-emerald-400 rounded-full shadow-[0_0_10px_rgba(45,212,191,0.5)]`} style={{ width: `${profile?.dailyPlan ? progressPercent : 80}%` }} />
           </div>
           
           <div className="flex items-center justify-center gap-4">
