@@ -24,8 +24,9 @@ export default function ChatInterface() {
   const [hasAutoPrompted, setHasAutoPrompted] = useState(false);
 
   const { user, profile } = useAuth();
+  const [loadedSessionCount, setLoadedSessionCount] = useState(0);
   
-  const { messages, input, handleInputChange, handleSubmit, append, isLoading } = useChat({
+  const { messages, setMessages, input, handleInputChange, handleSubmit, append, isLoading } = useChat({
     api: '/api/chat',
     body: {
       userContext: profile ? JSON.stringify({
@@ -44,6 +45,31 @@ export default function ChatInterface() {
       alert("Chat Error: " + err.message);
     }
   });
+
+  // Load chat history on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("welgpt_chat_history");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.length > 0) {
+          setMessages(parsed);
+          // eslint-disable-next-line react-hooks/set-state-in-effect
+          setLoadedSessionCount(parsed.length);
+        }
+      } catch (e) {
+        console.error("Failed to parse chat history");
+      }
+    }
+  }, [setMessages]);
+
+  // Save chat history on update
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem("welgpt_chat_history", JSON.stringify(messages));
+    }
+  }, [messages]);
+
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -117,9 +143,16 @@ export default function ChatInterface() {
           <div className="space-y-6 flex-1 flex flex-col justify-end">
             <AnimatePresence>
               {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-              {messages.map((msg: any) => (
+              {messages.map((msg: any, index: number) => (
+                <div key={msg.id}>
+                  {index === 0 && loadedSessionCount > 0 && (
+                    <div className="flex items-center justify-center my-8 opacity-60">
+                      <div className="h-px bg-gray-600 flex-1"></div>
+                      <span className="px-4 text-xs font-bold tracking-widest text-gray-400 uppercase">Last Session</span>
+                      <div className="h-px bg-gray-600 flex-1"></div>
+                    </div>
+                  )}
                 <motion.div
-                  key={msg.id}
                   initial={{ opacity: 0, y: 15, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ type: "spring", stiffness: 400, damping: 25 }} // Smooth UI physics
@@ -133,6 +166,7 @@ export default function ChatInterface() {
                     {msg.content}
                   </div>
                 </motion.div>
+                </div>
               ))}
             </AnimatePresence>
             <div ref={messagesEndRef} />
