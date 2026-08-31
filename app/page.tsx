@@ -63,6 +63,7 @@ export default function Home() {
   // Sync with Firestore profile goals
   useEffect(() => {
     if (profile?.goals && profile.goals.length > 0) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setSelectedGoals(profile.goals);
     }
   }, [profile?.goals]);
@@ -89,15 +90,7 @@ export default function Home() {
   const timeOfDay = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const firstName = user?.displayName ? user.displayName.split(' ')[0] : "";
   
-  // Dynamic Subtitle Logic
-  let subtitle = "Tell us what you want to improve.";
-  if (hasPlan) {
-    if (progressPercent === 100) subtitle = "You crushed your entire daily plan. Rest well!";
-    else if (profile?.streak && profile.streak > 1) subtitle = `You're on a ${profile.streak}-day streak 🔥 Keep the momentum going!`;
-    else subtitle = "Your personalized plan is ready for action.";
-  }
-
-  // Calculate Live Progress
+    // Calculate Live Progress
   let progressPercent = 0;
   if (profile?.dailyPlan) {
     let total = 0;
@@ -110,6 +103,16 @@ export default function Home() {
     });
     if (total > 0) progressPercent = Math.round((completed / total) * 100);
   }
+
+  // Dynamic Subtitle Logic
+  let subtitle = "Tell us what you want to improve.";
+  if (hasPlan) {
+    if (progressPercent === 100) subtitle = "You crushed your entire daily plan. Rest well!";
+    else if (profile?.streak && profile.streak > 1) subtitle = `You're on a ${profile.streak}-day streak 🔥 Keep the momentum going!`;
+    else subtitle = "Your personalized plan is ready for action.";
+  }
+
+
 
 
   return (
