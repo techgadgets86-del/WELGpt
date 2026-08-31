@@ -246,6 +246,7 @@ export default function SenseiPage() {
       setTimeout(() => setActiveExercise(null), 0);
       stopAudio();
       addXP(50);
+      logActivity(`Completed Sensei Protocol: ${bodyData[activeExercise].title}`);
     }
     return () => clearInterval(interval);
   }, [activeExercise, timeLeft, addXP, stopAudio]);

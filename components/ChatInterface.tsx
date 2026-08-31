@@ -28,7 +28,14 @@ export default function ChatInterface() {
   const { messages, input, handleInputChange, handleSubmit, append, isLoading } = useChat({
     api: '/api/chat',
     body: {
-      userContext: profile ? `The user is currently Level ${profile.level} with ${profile.xp} XP and an active ${profile.streak}-day streak.` : ""
+      userContext: profile ? JSON.stringify({
+        level: profile.level,
+        xp: profile.xp,
+        streak: profile.streak,
+        goals: profile.goals || [],
+        preferences: profile.preferences || {},
+        recentActivity: profile.recentActivity || []
+      }) : ""
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (err: any) => {

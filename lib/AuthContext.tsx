@@ -10,6 +10,14 @@ export interface UserProfile {
   level: number;
   streak: number;
   lastActiveDate: string;
+  goals: string[];
+  preferences: {
+    dietary: string;
+    fitnessLevel: string;
+    focusAreas: string[];
+    [key: string]: string | number | boolean | string[] | undefined;
+  };
+  recentActivity: string[];
 }
 
 interface AuthContextType {
@@ -17,6 +25,8 @@ interface AuthContextType {
   profile: UserProfile | null;
   loading: boolean;
   addXP: (amount: number) => Promise<void>;
+  updateUserData: (data: Partial<UserProfile>) => Promise<void>;
+  logActivity: (activity: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({ user: null, profile: null, loading: true, addXP: async () => {} });
@@ -61,17 +71,34 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               xp: data.xp || 0,
               level: Math.floor((data.xp || 0) / 100) + 1,
               streak: currentStreak,
-              lastActiveDate: lastActive
+              lastActiveDate: lastActive,
+              goals: data.goals || [],
+              preferences: data.preferences || { dietary: "none", fitnessLevel: "beginner", focusAreas: [] },
+              recentActivity: data.recentActivity || []
             });
           } else {
             // Initialize profile
-            const initData = { xp: 0, streak: 0, lastActiveDate: "" };
+            const initData = { xp: 0, streak: 0, lastActiveDate: "", goals: [], preferences: { dietary: "none", fitnessLevel: "beginner", focusAreas: [] }, recentActivity: [] };
             setDoc(userRef, initData);
-            setProfile({ xp: 0, level: 1, streak: 0, lastActiveDate: "" });
+            setProfile({ xp: 0, level: 1, streak: 0, lastActiveDate: "", goals: [], preferences: { dietary: "none", fitnessLevel: "beginner", focusAreas: [] }, recentActivity: [] });
           }
         });
         setLoading(false);
-        return () => unsubProfile();
+      
+  const updateUserData = async (data: Partial<UserProfile>) => {
+    if (!user) return;
+    const userRef = doc(db, 'users', user.uid);
+    await updateDoc(userRef, data);
+  };
+
+  const logActivity = async (activity: string) => {
+    if (!user || !profile) return;
+    const userRef = doc(db, 'users', user.uid);
+    const newActivity = [activity, ...(profile.recentActivity || [])].slice(0, 10); // keep last 10
+    await updateDoc(userRef, { recentActivity: newActivity });
+  };
+
+  return () => unsubProfile();
       } else {
         setProfile(null);
         setLoading(false);
@@ -114,7 +141,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, addXP }}>
+    <AuthContext.Provider value={{ user, profile, loading, addXP, updateUserData, logActivity }}>
       {children}
     </AuthContext.Provider>
   );

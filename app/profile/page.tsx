@@ -8,7 +8,7 @@ import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
-  const { user, profile } = useAuth();
+  const { user, profile, updateUserData } = useAuth();
   const router = useRouter();
 
   const handleSignOut = () => {
@@ -48,17 +48,47 @@ export default function ProfilePage() {
 
         {/* Quick Actions */}
         <div className="bg-[#111127] border border-white/10 rounded-3xl p-6 flex flex-col justify-center gap-3">
-          <button className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-white/5 text-gray-300 hover:text-white transition-colors text-left font-medium">
-            <Target className="text-teal-400" size={20} /> Edit Goals
-          </button>
-          <button className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-white/5 text-gray-300 hover:text-white transition-colors text-left font-medium">
-            <Settings className="text-gray-400" size={20} /> Preferences
-          </button>
+          
           <button onClick={handleSignOut} className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-red-500/10 text-red-400 transition-colors text-left font-medium mt-2">
             <LogOut size={20} /> Sign Out
           </button>
         </div>
 
+      </div>
+
+      {/* Preferences Section */}
+      <div className="bg-[#111127] border border-white/10 rounded-3xl p-8 mb-8">
+        <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2"><Settings size={20} className="text-gray-400" /> AI Coach Preferences</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Dietary Preference</label>
+            <select 
+              value={profile?.preferences?.dietary || "none"}
+              onChange={(e) => updateUserData({ preferences: { ...profile?.preferences, dietary: e.target.value } })}
+              className="w-full bg-[#0a0a1a] border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-violet-500"
+            >
+              <option value="none">No Restrictions</option>
+              <option value="vegan">Vegan</option>
+              <option value="vegetarian">Vegetarian</option>
+              <option value="keto">Keto</option>
+              <option value="paleo">Paleo</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Fitness Level</label>
+            <select 
+              value={profile?.preferences?.fitnessLevel || "beginner"}
+              onChange={(e) => updateUserData({ preferences: { ...profile?.preferences, fitnessLevel: e.target.value } })}
+              className="w-full bg-[#0a0a1a] border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-violet-500"
+            >
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+              <option value="athlete">Pro Athlete</option>
+            </select>
+          </div>
+        </div>
       </div>
 
     </div>

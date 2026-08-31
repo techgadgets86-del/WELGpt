@@ -2,23 +2,37 @@
 
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PremiumModal from "@/components/PremiumModal";
 import { Brain, Flame } from "lucide-react";
 
 export default function Home() {
-  const { user, profile } = useAuth();
+  const { user, profile, updateUserData } = useAuth();
   const router = useRouter();
   const [showPremium, setShowPremium] = useState(false);
   
   // Selection state for goals
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   
+  // Sync with Firestore profile goals
+  useEffect(() => {
+    if (profile?.goals && profile.goals.length > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSelectedGoals(profile.goals);
+    }
+  }, [profile?.goals]);
+
   const toggleGoal = (goal: string) => {
+    let newGoals = [];
     if (selectedGoals.includes(goal)) {
-      setSelectedGoals(selectedGoals.filter(g => g !== goal));
+      newGoals = selectedGoals.filter(g => g !== goal);
     } else {
-      setSelectedGoals([...selectedGoals, goal]);
+      newGoals = [...selectedGoals, goal];
+    }
+    setSelectedGoals(newGoals);
+    // Auto-save to backend
+    if (user) {
+      updateUserData({ goals: newGoals });
     }
   };
 
