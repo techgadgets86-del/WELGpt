@@ -23,6 +23,19 @@ export default function RoutinePage() {
   const [custom, setCustom] = useState<Task[]>([]);
   const [showCustomModal, setShowCustomModal] = useState(false);
   const [customPrompt, setCustomPrompt] = useState("");
+
+  // Persist draft prompt across page navigations
+  useEffect(() => {
+    const saved = localStorage.getItem("welgpt_draft_routine_prompt");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (saved) setCustomPrompt(saved);
+  }, []);
+
+  const handlePromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value;
+    setCustomPrompt(val);
+    localStorage.setItem("welgpt_draft_routine_prompt", val);
+  };
   const [isGeneratingCustom, setIsGeneratingCustom] = useState(false);
   const { playingId, toggleSound } = useAudioFrequencies();
   const [user, setUser] = useState<User | null>(null);
@@ -201,7 +214,7 @@ export default function RoutinePage() {
               
               <textarea
                 value={customPrompt}
-                onChange={(e) => setCustomPrompt(e.target.value)}
+                onChange={handlePromptChange}
                 placeholder="e.g. 'I need to recover from a marathon', or 'I have a big presentation at 2pm and need to stay sharp'"
                 className="w-full h-32 bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-fuchsia-500 transition-colors mb-6 resize-none"
               />

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { Settings, User as UserIcon, Target, LogOut } from "lucide-react";
 import { auth } from "@/lib/firebase";
@@ -9,6 +10,28 @@ import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
   const { user, profile, updateUserData } = useAuth();
+  const prefsRef = useRef<HTMLDivElement>(null);
+  const goalsRef = useRef<HTMLDivElement>(null);
+  
+  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
+  const goals = ["Better Sleep", "Less Stress", "Better Fitness", "Nutrition", "Focus", "Better Habits"];
+
+  // Sync local goals state
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (profile?.goals) setSelectedGoals(profile.goals);
+  }, [profile?.goals]);
+
+  const toggleGoal = (goal: string) => {
+    let newGoals = [];
+    if (selectedGoals.includes(goal)) {
+      newGoals = selectedGoals.filter(g => g !== goal);
+    } else {
+      newGoals = [...selectedGoals, goal];
+    }
+    setSelectedGoals(newGoals);
+    if (user) updateUserData({ goals: newGoals });
+  };
   const router = useRouter();
 
   const handleSignOut = () => {
@@ -49,6 +72,12 @@ export default function ProfilePage() {
         {/* Quick Actions */}
         <div className="bg-[#111127] border border-white/10 rounded-3xl p-6 flex flex-col justify-center gap-3">
           
+          <button onClick={() => goalsRef.current?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-white/5 text-gray-300 hover:text-white transition-colors text-left font-medium">
+            <Target className="text-teal-400" size={20} /> Edit Goals
+          </button>
+          <button onClick={() => prefsRef.current?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-white/5 text-gray-300 hover:text-white transition-colors text-left font-medium">
+            <Settings className="text-gray-400" size={20} /> Preferences
+          </button>
           <button onClick={handleSignOut} className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-red-500/10 text-red-400 transition-colors text-left font-medium mt-2">
             <LogOut size={20} /> Sign Out
           </button>
@@ -57,7 +86,28 @@ export default function ProfilePage() {
       </div>
 
       {/* Preferences Section */}
-      <div className="bg-[#111127] border border-white/10 rounded-3xl p-8 mb-8">
+      
+      {/* Goals Section */}
+      <div ref={goalsRef} className="bg-[#111127] border border-white/10 rounded-3xl p-8 mb-8">
+        <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2"><Target size={20} className="text-teal-400" /> Your Active Goals</h3>
+        <div className="flex flex-wrap gap-3">
+          {goals.map(goal => (
+            <button
+              key={goal}
+              onClick={() => toggleGoal(goal)}
+              className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all ${
+                selectedGoals.includes(goal)
+                  ? "bg-teal-500 text-white shadow-[0_0_15px_rgba(20,184,166,0.4)]"
+                  : "bg-white/5 text-gray-400 hover:bg-white/10"
+              }`}
+            >
+              {goal}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div ref={prefsRef} className="bg-[#111127] border border-white/10 rounded-3xl p-8 mb-8">
         <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2"><Settings size={20} className="text-gray-400" /> AI Coach Preferences</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
