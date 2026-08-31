@@ -147,7 +147,7 @@ export default function SenseiPage() {
           color: json.data.color || "#d946ef",
           description: json.data.desc,
           exercise: json.data.exercise,
-          duration: json.data.duration || 180,
+          duration: parseInt(json.data.duration) || 180,
           createdAt: new Date().toISOString()
         };
         

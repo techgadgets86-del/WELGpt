@@ -17,13 +17,13 @@ export async function POST(req: Request) {
     const sysPrompt = `
       You are a hyper-accurate elite biomechanics and kinesiologist AI. The user wants to train a specific physiological target or movement pattern: "${prompt}".
       Generate a hyper-accurate, biomechanically optimal protocol to target this. If the user requests movement, walking, or running, make sure the exercise reflects cardiovascular locomotion. The description must include specific muscle insertions, neuro-muscular activation patterns, or joint mechanics.
-      Return a JSON object exactly matching this interface:
+      Return a JSON object exactly matching this interface. DO NOT include any comments (//) or markdown blocks (json) in your final output:
       {
-        "title": string, // short body part or goal name (e.g., "Neck", "Grip Strength", "Posture")
-        "color": string, // a cool neon hex color code like "#ff00ff"
-        "exercise": string, // specific exercise name
-        "desc": string, // 1-2 sentence biomechanical description
-        "duration": number // the duration of the exercise in seconds (default to 180 if unspecified, or calculate based on user request e.g. "20 Minutes" -> 1200)
+        "title": "string (short body part or goal name)",
+        "color": "string (a cool neon hex color code like #ff00ff)",
+        "exercise": "string (specific exercise name)",
+        "desc": "string (1-2 sentence biomechanical description)",
+        "duration": "number (the duration of the exercise in seconds. Calculate based on user request e.g. '20 Minutes' -> 1200, otherwise 180)"
       }
     `;
 
