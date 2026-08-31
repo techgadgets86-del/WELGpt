@@ -27,6 +27,7 @@ export default function RoutinePage() {
     // Load Daily Plan from Profile if it exists
   useEffect(() => {
     if (profile?.dailyPlan) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMorning(profile.dailyPlan.morning);
       setEvening(profile.dailyPlan.evening);
       setCustom(profile.dailyPlan.afternoon);
