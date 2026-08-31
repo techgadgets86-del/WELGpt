@@ -13,7 +13,7 @@ import { ShieldAlert, Play, XOctagon, Trophy, Flame } from "lucide-react";
 
 export default function DetoxHub() {
   const router = useRouter();
-  const { addXP } = useAuth();
+  const { addXP, logActivity } = useAuth();
   
   const [user, setUser] = useState<User | null>(null);
   const [activeDetox, setActiveDetox] = useState<{type: string, startTime: string} | null>(null);

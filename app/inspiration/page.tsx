@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Share2, Download, Image as ImageIcon, PaintBucket, Loader2 } from "lucide-react";
 import Image from "next/image";
 import * as htmlToImage from "html-to-image";
+import { useAuth } from "@/lib/AuthContext";
 
 const PAPER_TEXTURES = [
   "https://images.unsplash.com/photo-1601662528567-526cd06f6582?q=80&w=1080&auto=format&fit=crop", // standard crumpled
@@ -24,6 +25,7 @@ const OFFLINE_QUOTES = [
 ];
 
 export default function InspirationPage() {
+  const { logActivity, addXP } = useAuth();
   const [quote, setQuote] = useState("Peace comes from within. Do not seek it without.");
   const [author, setAuthor] = useState("Siddhartha Gautama");
   const [isLoading, setIsLoading] = useState(false);

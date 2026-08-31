@@ -88,8 +88,12 @@ export default function ChatInterface() {
             <div className="inline-flex items-center justify-center p-4 rounded-full mb-6">
               <Image src="/logo-icon.png" alt="WelGPT" width={48} height={48} className="object-contain" priority />
             </div>
-            <h1 className="text-4xl md:text-5xl font-semibold mb-3 tracking-tight text-white">Take a deep breath.</h1>
-            <p className="text-gray-400 text-lg mb-12">How can I support your mind today?</p>
+            <h1 className="text-4xl md:text-5xl font-semibold mb-3 tracking-tight text-white">
+              {profile?.streak && profile.streak > 1 ? `${user?.displayName?.split(' ')[0] || 'Hello'}, you're on a ${profile.streak}-day streak 🔥` : "Take a deep breath."}
+            </h1>
+            <p className="text-gray-400 text-lg mb-12">
+              {profile?.dailyPlan ? "I've reviewed your daily plan. Ready to optimize your day?" : "How can I support your mind today?"}
+            </p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left max-w-2xl mx-auto">
               {SUGGESTIONS.map((s, i) => (

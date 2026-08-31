@@ -16,9 +16,35 @@ interface FoodItem {
 export default function NutritionPage() {
   const [items, setItems] = useState<FoodItem[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [goal, setGoal] = useState("maximizing height growth, boosting HGH naturally, and increasing bone mineral density");
-  const [showPricing, setShowPricing] = useState(false);
   const { profile } = useAuth();
+  
+  // Auto-sync initial prompt from global profile!
+  const [goal, setGoal] = useState(() => {
+    let base = "maximizing height growth, boosting HGH naturally, and increasing bone mineral density";
+    if (typeof window !== "undefined" && profile) {
+      if (profile.goals && profile.goals.length > 0) {
+        base = profile.goals.join(" and ");
+      }
+      if (profile.preferences?.dietary && profile.preferences.dietary !== "none") {
+        base += ` (Dietary restriction: ${profile.preferences.dietary})`;
+      }
+    }
+    return base;
+  });
+  
+  // Re-sync if profile loads late
+  useEffect(() => {
+    if (profile?.goals && profile.goals.length > 0) {
+      let updated = profile.goals.join(" and ");
+      if (profile.preferences?.dietary && profile.preferences.dietary !== "none") {
+        updated += ` (Dietary restriction: ${profile.preferences.dietary})`;
+      }
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setGoal(updated);
+    }
+  }, [profile?.goals, profile?.preferences?.dietary]);
+
+  const [showPricing, setShowPricing] = useState(false);
   // gamification coming soon for nutrition
 
   const generateFood = async () => {

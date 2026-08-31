@@ -63,8 +63,7 @@ export default function Home() {
   // Sync with Firestore profile goals
   useEffect(() => {
     if (profile?.goals && profile.goals.length > 0) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSelectedGoals(profile.goals);
+            setSelectedGoals(profile.goals);
     }
   }, [profile?.goals]);
 
@@ -83,6 +82,20 @@ export default function Home() {
   };
 
   const goals = ["Better Sleep", "Less Stress", "Better Fitness", "Nutrition", "Focus", "Better Habits"];
+
+  
+  // Dynamic Greeting Logic
+  const hour = new Date().getHours();
+  const timeOfDay = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const firstName = user?.displayName ? user.displayName.split(' ')[0] : "";
+  
+  // Dynamic Subtitle Logic
+  let subtitle = "Tell us what you want to improve.";
+  if (hasPlan) {
+    if (progressPercent === 100) subtitle = "You crushed your entire daily plan. Rest well!";
+    else if (profile?.streak && profile.streak > 1) subtitle = `You're on a ${profile.streak}-day streak 🔥 Keep the momentum going!`;
+    else subtitle = "Your personalized plan is ready for action.";
+  }
 
   // Calculate Live Progress
   let progressPercent = 0;
@@ -196,12 +209,16 @@ export default function Home() {
       
       {/* 1. HERO & ONBOARDING (Tell us what you want to improve) */}
       <div className="w-full text-center mb-12">
-        <h2 className="text-xl font-bold tracking-widest text-white uppercase mb-2">WELGPT</h2>
+        {firstName ? (
+          <h2 className="text-xl font-bold tracking-widest text-white mb-2">{timeOfDay}, {firstName} 👋</h2>
+        ) : (
+          <h2 className="text-xl font-bold tracking-widest text-white uppercase mb-2">WELGPT</h2>
+        )}
         <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-teal-400 tracking-tight mb-8 drop-shadow-sm">
-          Your AI Wellness Coach
+          {hasPlan ? "Your Dashboard" : "Your AI Wellness Coach"}
         </h1>
         
-        <p className="text-gray-300 mb-6 font-medium">Tell us what you want to improve.</p>
+        <p className="text-gray-300 mb-6 font-medium">{subtitle}</p>
         
         <div className="flex flex-wrap justify-center gap-3 mb-8 max-w-2xl mx-auto">
           {goals.map(goal => (

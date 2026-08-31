@@ -7,10 +7,12 @@ import { Marquee } from "@/components/ui/marquee";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAudioFrequencies } from "@/lib/useAudioFrequencies";
+import { useAuth } from "@/lib/AuthContext";
 
 export default function WelGPTDashboard() {
   const router = useRouter();
   const { playingId, toggleSound } = useAudioFrequencies();
+  const { logActivity } = useAuth();
 
   const chunks = [
     { icon: "🌙", title: "Melatonin Boost", desc: "5 mins · 4-7-8 Breathing Method" },
