@@ -64,14 +64,69 @@ const INITIAL_BODY_DATA: Record<string, BodyDataConfig> = {
   }
 };
 
+
+const CARDIO_BODY_DATA: Record<string, BodyDataConfig> = {
+  chest: {
+    title: "Aerobic Engine",
+    icon: <Activity className="text-pink-400" size={24} />,
+    description: "20 Minutes Movement - Steady state cardiovascular output.",
+    diagram: "Zone 2 Heart Rate targeting for mitochondrial density.",
+    exercise: "Brisk Walking / Light Jogging",
+    duration: 1200,
+    color: "#f472b6",
+  },
+  core: {
+    title: "Core & Cardio HIIT",
+    icon: <Flame className="text-red-400" size={24} />,
+    description: "High-intensity intervals to scorch fat and build abdominal resilience.",
+    diagram: "Maximal oxygen uptake (VO2 Max) and transverse abdominis bracing.",
+    exercise: "Mountain Climbers & Burpees",
+    duration: 600,
+    color: "#ef4444",
+  },
+  arms: {
+    title: "Agility Skipping",
+    icon: <Zap className="text-yellow-400" size={24} />,
+    description: "Boxer skip and jump rope for wrist flick and calf elasticity.",
+    diagram: "Fascial recoil and fast-twitch shoulder/arm stamina.",
+    exercise: "Jump Rope Intervals",
+    duration: 600,
+    color: "#eab308",
+  },
+  legs: {
+    title: "Endurance Running",
+    icon: <Target className="text-emerald-400" size={24} />,
+    description: "Long-distance sustained leg mechanics and breathing rhythm.",
+    diagram: "Hamstring pull, glute drive, and mid-foot strike optimization.",
+    exercise: "Distance Running (Paced)",
+    duration: 1800,
+    color: "#34d399",
+  },
+  shoulders: {
+    title: "Sprint Mechanics",
+    icon: <Sparkles className="text-cyan-400" size={24} />,
+    description: "Explosive arm drive and shoulder swing to propel sprinting speed.",
+    diagram: "Anterior deltoid drive synchronized with opposite knee lift.",
+    exercise: "High-Intensity Sprints (10x100m)",
+    duration: 600,
+    color: "#22d3ee",
+  }
+};
+
 export default function SenseiPage() {
   
+  const [isCardioMode, setIsCardioMode] = useState(false);
   const [hoveredPart, setHoveredPart] = useState<BodyPart>(null);
   const [activeExercise, setActiveExercise] = useState<BodyPart>(null);
   const [timeLeft, setTimeLeft] = useState(0);
   
   // Customization State
   const [bodyData, setBodyData] = useState<Record<string, BodyDataConfig>>(INITIAL_BODY_DATA);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setBodyData(isCardioMode ? CARDIO_BODY_DATA : INITIAL_BODY_DATA);
+  }, [isCardioMode]);
+
   const [showQuestionnaire, setShowQuestionnaire] = useState(true);
   const [isOptimizing, setIsOptimizing] = useState(false);
   const { user, profile, addXP, logActivity } = useAuth();
@@ -341,8 +396,9 @@ export default function SenseiPage() {
           </motion.div>
         )}
       </AnimatePresence>
-      <header className="mb-8">
-        <motion.h1 
+      <header className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-5xl font-bold mb-2 tracking-tight text-white font-serif"
@@ -357,6 +413,26 @@ export default function SenseiPage() {
         >
           Hover over the muscular groups to analyze. Click to initiate the protocol.
         </motion.p>
+        </div>
+        
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex items-center gap-2 bg-[#111127] border border-white/10 p-1.5 rounded-full"
+        >
+          <button 
+            onClick={() => setIsCardioMode(false)}
+            className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${!isCardioMode ? 'bg-orange-500 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+          >
+            Strength
+          </button>
+          <button 
+            onClick={() => setIsCardioMode(true)}
+            className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${isCardioMode ? 'bg-pink-500 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+          >
+            Cardio
+          </button>
+        </motion.div>
       </header>
 
       <div className="flex-1 flex flex-col md:flex-row gap-8 relative">

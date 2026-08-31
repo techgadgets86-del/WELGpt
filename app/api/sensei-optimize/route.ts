@@ -46,8 +46,8 @@ Return ONLY a JSON object EXACTLY matching this structure, with no markdown form
 }`;
 
     const response = await model.generateContent(prompt);
-    const text = response.response.text();
-    
+    let text = response.response.text();
+    text = text.replace(/```json/g, "").replace(/```/g, "").trim();
     return new Response(text, { headers: { "Content-Type": "application/json" } });
     
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

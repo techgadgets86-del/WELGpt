@@ -28,7 +28,8 @@ export async function POST(req: Request) {
     `;
 
     const result = await model.generateContent(sysPrompt);
-    const text = result.response.text();
+    let text = result.response.text();
+    text = text.replace(/```json/g, "").replace(/```/g, "").trim();
     const data = JSON.parse(text);
 
     return new Response(JSON.stringify({ data }), {
