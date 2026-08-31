@@ -158,6 +158,34 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await updateDoc(userRef, { recentActivity: newActivity });
   };
 
+  const toggleTaskComplete = async (taskId: string, completed: boolean) => {
+    if (!user || !profile || !profile.dailyPlan) return;
+    
+    // Deep clone the daily plan
+    const newPlan = JSON.parse(JSON.stringify(profile.dailyPlan));
+    let found = false;
+    
+    ['morning', 'afternoon', 'evening'].forEach((timeOfDay) => {
+      newPlan[timeOfDay].forEach((task: RoutineTask) => {
+        if (task.id === taskId) {
+          task.completed = completed;
+          found = true;
+        }
+      });
+    });
+    
+    if (found) {
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, { dailyPlan: newPlan });
+      
+      // Auto-log activity and grant XP if completed
+      if (completed) {
+        logActivity(`Completed daily task`);
+        await addXP(25);
+      }
+    }
+  };
+
   return (
     <AuthContext.Provider value={{ user, profile, loading, addXP, updateUserData, logActivity, toggleTaskComplete }}>
       {children}
