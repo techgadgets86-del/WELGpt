@@ -14,7 +14,9 @@ export async function POST(req: Request) {
     });
 
     const prompt = `You are an elite AI neuroscience coach. Generate a completely fresh, highly optimized daily routine for maximum human potential and mental clarity.
-Return ONLY a JSON object EXACTLY matching this structure:
+
+You must respond ONLY with a valid JSON object. Do not include any markdown formatting like \`\`\`json or comments.
+Use exactly this schema for the JSON object:
 {
   "morning": [
     { "id": "m1", "time": "06:00 AM", "title": "Name of Habit", "desc": "Scientific description" },
@@ -31,7 +33,8 @@ Return ONLY a JSON object EXACTLY matching this structure:
 }`;
 
     const response = await model.generateContent(prompt);
-    const text = response.response.text();
+    let text = response.response.text();
+    text = text.replace(/```json/g, "").replace(/```/g, "").trim();
     
     return new Response(text, { headers: { "Content-Type": "application/json" } });
     

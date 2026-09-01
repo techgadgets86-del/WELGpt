@@ -16,11 +16,16 @@ export async function POST() {
     });
 
     const prompt = `Generate a highly profound, completely original 1-sentence quote about neuroplasticity, stoicism, extreme focus, or human potential. Also create a futuristic, fictional author name (like "Dr. Elias Vance" or "Neuro-Architect Kael").
-    Return ONLY a raw JSON object exactly like this:
-    {"quote": "The quote text here", "author": "Author Name"}`;
+    You must respond ONLY with a valid JSON object. Do not include any markdown formatting like \`\`\`json or comments.
+    Use exactly this schema for the JSON object:
+    {
+      "quote": "The quote text here",
+      "author": "Author Name"
+    }`;
 
     const response = await model.generateContent(prompt);
-    const text = response.response.text();
+    let text = response.response.text();
+    text = text.replace(/```json/g, "").replace(/```/g, "").trim();
     
     return new Response(text, {
       headers: { "Content-Type": "application/json" }

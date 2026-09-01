@@ -451,7 +451,7 @@ export default function SenseiPage() {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.8, type: "spring" }}
             style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-            className="relative z-10 w-[300px] h-[500px]"
+            className="relative z-10 w-full max-w-[300px] h-[500px]"
           >
             {/* Ambient Background Aura */}
             <div className="absolute inset-0 bg-cyan-500/10 blur-[80px] rounded-full pointer-events-none" style={{ transform: "translateZ(-50px)" }} />
@@ -592,7 +592,7 @@ export default function SenseiPage() {
         </div>
 
         {/* Right Side: Holographic UI Dashboard */}
-        <div className="flex-1 min-w-[300px] max-w-md flex flex-col justify-center">
+        <div className="flex-1 w-full md:min-w-[300px] max-w-md flex flex-col justify-center">
           <AnimatePresence mode="wait">
             {hoveredPart ? (
               <motion.div

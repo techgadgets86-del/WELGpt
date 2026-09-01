@@ -14,17 +14,26 @@ export async function POST(req: Request) {
       generationConfig: { responseMimeType: "application/json" }
     });
 
-    const sysPrompt = `
+        const sysPrompt = `
       You are a hyper-intelligent AI combining elite neuroscience, biomechanics, and chronobiology. Generate a highly accurate and physiologically precise daily routine (4-6 tasks) based on the user's specific physiological and psychological goals.
-      Return ONLY a JSON array of task objects matching this schema:
-      [{ "id": "c1", "time": "08:00 AM", "title": "...", "desc": "..." }]
-      Make it hyper-accurate, citing specific hormonal, neurochemical, or biomechanical rationales in the description. Ensure it is scientifically rigorous yet immediately actionable.
+      
+      You must respond ONLY with a valid JSON array. Do not include any markdown formatting like \`\`\`json or comments.
+      Use exactly this schema for the JSON array:
+      [
+        {
+          "id": "c1",
+          "time": "08:00 AM",
+          "title": "Short title",
+          "desc": "Detailed neurochemical/biomechanical rationale"
+        }
+      ]
       
       User Goal: ${prompt}
     `;
 
     const result = await model.generateContent(sysPrompt);
-    const text = result.response.text();
+    let text = result.response.text();
+    text = text.replace(/```json/g, "").replace(/```/g, "").trim();
     const tasks = JSON.parse(text);
 
     return new Response(JSON.stringify({ tasks }), {
