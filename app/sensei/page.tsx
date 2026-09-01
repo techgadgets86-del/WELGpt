@@ -207,7 +207,7 @@ export default function SenseiPage() {
         };
         
         // Save to Firestore if logged in
-        let routineId = "custom_" + Date.now();
+        const routineId = "custom_" + Date.now();
         if (user) {
           // Fire and forget so we don't block the UI if Firestore hangs
           addDoc(collection(db, `users/${user.uid}/customExercises`), newRoutine)
