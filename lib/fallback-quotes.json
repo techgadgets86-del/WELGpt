@@ -1,15 +1,383 @@
 [
   {
-    "quote": "Neuroplasticity is the muscle of the soul.",
-    "author": "Dr. Andrew Huberman"
+    "quote": "You have power over your mind - not outside events. Realize this, and you will find strength.",
+    "author": "Marcus Aurelius"
+  },
+  {
+    "quote": "Dwell on the beauty of life. Watch the stars, and see yourself running with them.",
+    "author": "Marcus Aurelius"
+  },
+  {
+    "quote": "The happiness of your life depends upon the quality of your thoughts.",
+    "author": "Marcus Aurelius"
+  },
+  {
+    "quote": "Waste no more time arguing about what a good man should be. Be one.",
+    "author": "Marcus Aurelius"
+  },
+  {
+    "quote": "If it is not right do not do it; if it is not true do not say it.",
+    "author": "Marcus Aurelius"
+  },
+  {
+    "quote": "Luck is what happens when preparation meets opportunity.",
+    "author": "Seneca"
   },
   {
     "quote": "We suffer more often in imagination than in reality.",
     "author": "Seneca"
   },
   {
+    "quote": "It is not the man who has too little, but the man who craves more, that is poor.",
+    "author": "Seneca"
+  },
+  {
+    "quote": "Difficulties strengthen the mind, as labor does the body.",
+    "author": "Seneca"
+  },
+  {
+    "quote": "No person has the power to have everything they want, but it is in their power not to want what they don't have.",
+    "author": "Seneca"
+  },
+  {
+    "quote": "He who fears death will never do anything worth of a man who is alive.",
+    "author": "Seneca"
+  },
+  {
+    "quote": "First say to yourself what you would be; and then do what you have to do.",
+    "author": "Epictetus"
+  },
+  {
+    "quote": "It's not what happens to you, but how you react to it that matters.",
+    "author": "Epictetus"
+  },
+  {
+    "quote": "Wealth consists not in having great possessions, but in having few wants.",
+    "author": "Epictetus"
+  },
+  {
+    "quote": "There is only one way to happiness and that is to cease worrying about things which are beyond the power of our will.",
+    "author": "Epictetus"
+  },
+  {
+    "quote": "Knowing yourself is the beginning of all wisdom.",
+    "author": "Aristotle"
+  },
+  {
+    "quote": "We are what we repeatedly do. Excellence, then, is not an act, but a habit.",
+    "author": "Aristotle"
+  },
+  {
+    "quote": "Quality is not an act, it is a habit.",
+    "author": "Aristotle"
+  },
+  {
+    "quote": "The energy of the mind is the essence of life.",
+    "author": "Aristotle"
+  },
+  {
+    "quote": "Courage is the first of human qualities because it is the quality which guarantees the others.",
+    "author": "Aristotle"
+  },
+  {
+    "quote": "The secret of change is to focus all of your energy, not on fighting the old, but on building the new.",
+    "author": "Socrates"
+  },
+  {
+    "quote": "To find yourself, think for yourself.",
+    "author": "Socrates"
+  },
+  {
+    "quote": "Strong minds discuss ideas, average minds discuss events, weak minds discuss people.",
+    "author": "Socrates"
+  },
+  {
+    "quote": "The greatest wealth is to live content with little.",
+    "author": "Plato"
+  },
+  {
+    "quote": "Reality is created by the mind, we can change our reality by changing our mind.",
+    "author": "Plato"
+  },
+  {
     "quote": "He who has a why to live for can bear almost any how.",
     "author": "Friedrich Nietzsche"
+  },
+  {
+    "quote": "That which does not kill us makes us stronger.",
+    "author": "Friedrich Nietzsche"
+  },
+  {
+    "quote": "In every real man a child is hidden that wants to play.",
+    "author": "Friedrich Nietzsche"
+  },
+  {
+    "quote": "To live is to suffer, to survive is to find some meaning in the suffering.",
+    "author": "Friedrich Nietzsche"
+  },
+  {
+    "quote": "I think, therefore I am.",
+    "author": "Rene Descartes"
+  },
+  {
+    "quote": "It is not enough to have a good mind; the main thing is to use it well.",
+    "author": "Rene Descartes"
+  },
+  {
+    "quote": "Simplicity is the ultimate sophistication.",
+    "author": "Leonardo da Vinci"
+  },
+  {
+    "quote": "Learning never exhausts the mind.",
+    "author": "Leonardo da Vinci"
+  },
+  {
+    "quote": "Time stays long enough for anyone who will use it.",
+    "author": "Leonardo da Vinci"
+  },
+  {
+    "quote": "I have been impressed with the urgency of doing. Knowing is not enough; we must apply. Being willing is not enough; we must do.",
+    "author": "Leonardo da Vinci"
+  },
+  {
+    "quote": "Imagination is more important than knowledge.",
+    "author": "Albert Einstein"
+  },
+  {
+    "quote": "Life is like riding a bicycle. To keep your balance, you must keep moving.",
+    "author": "Albert Einstein"
+  },
+  {
+    "quote": "A person who never made a mistake never tried anything new.",
+    "author": "Albert Einstein"
+  },
+  {
+    "quote": "In the middle of difficulty lies opportunity.",
+    "author": "Albert Einstein"
+  },
+  {
+    "quote": "The true sign of intelligence is not knowledge but imagination.",
+    "author": "Albert Einstein"
+  },
+  {
+    "quote": "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+    "author": "Winston Churchill"
+  },
+  {
+    "quote": "Continuous effort - not strength or intelligence - is the key to unlocking our potential.",
+    "author": "Winston Churchill"
+  },
+  {
+    "quote": "Attitude is a little thing that makes a big difference.",
+    "author": "Winston Churchill"
+  },
+  {
+    "quote": "To improve is to change; to be perfect is to change often.",
+    "author": "Winston Churchill"
+  },
+  {
+    "quote": "Nothing in life is to be feared, it is only to be understood.",
+    "author": "Marie Curie"
+  },
+  {
+    "quote": "We must have perseverance and above all confidence in ourselves.",
+    "author": "Marie Curie"
+  },
+  {
+    "quote": "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
+    "author": "Ralph Waldo Emerson"
+  },
+  {
+    "quote": "The only person you are destined to become is the person you decide to be.",
+    "author": "Ralph Waldo Emerson"
+  },
+  {
+    "quote": "Once you make a decision, the universe conspires to make it happen.",
+    "author": "Ralph Waldo Emerson"
+  },
+  {
+    "quote": "Do not go where the path may lead, go instead where there is no path and leave a trail.",
+    "author": "Ralph Waldo Emerson"
+  },
+  {
+    "quote": "Self-trust is the first secret of success.",
+    "author": "Ralph Waldo Emerson"
+  },
+  {
+    "quote": "Go confidently in the direction of your dreams. Live the life you have imagined.",
+    "author": "Henry David Thoreau"
+  },
+  {
+    "quote": "Things do not change; we change.",
+    "author": "Henry David Thoreau"
+  },
+  {
+    "quote": "As a single footstep will not make a path on the earth, so a single thought will not make a pathway in the mind.",
+    "author": "Henry David Thoreau"
+  },
+  {
+    "quote": "Success usually comes to those who are too busy to be looking for it.",
+    "author": "Henry David Thoreau"
+  },
+  {
+    "quote": "The secret of getting ahead is getting started.",
+    "author": "Mark Twain"
+  },
+  {
+    "quote": "Courage is resistance to fear, mastery of fear - not absence of fear.",
+    "author": "Mark Twain"
+  },
+  {
+    "quote": "Twenty years from now you will be more disappointed by the things that you didn't do than by the ones you did do.",
+    "author": "Mark Twain"
+  },
+  {
+    "quote": "Whenever you find yourself on the side of the majority, it is time to pause and reflect.",
+    "author": "Mark Twain"
+  },
+  {
+    "quote": "Believe you can and you're halfway there.",
+    "author": "Theodore Roosevelt"
+  },
+  {
+    "quote": "Do what you can, with what you have, where you are.",
+    "author": "Theodore Roosevelt"
+  },
+  {
+    "quote": "It is hard to fail, but it is worse never to have tried to succeed.",
+    "author": "Theodore Roosevelt"
+  },
+  {
+    "quote": "The only limit to our realization of tomorrow will be our doubts of today.",
+    "author": "Franklin D. Roosevelt"
+  },
+  {
+    "quote": "Character is the only secure foundation of the state.",
+    "author": "Calvin Coolidge"
+  },
+  {
+    "quote": "Nothing in the world can take the place of Persistence. Talent will not; genius will not; education will not. Persistence and determination alone are omnipotent.",
+    "author": "Calvin Coolidge"
+  },
+  {
+    "quote": "The greatest discovery of my generation is that a human being can alter his life by altering his attitudes.",
+    "author": "William James"
+  },
+  {
+    "quote": "Act as if what you do makes a difference. It does.",
+    "author": "William James"
+  },
+  {
+    "quote": "Genius is one percent inspiration and ninety-nine percent perspiration.",
+    "author": "Thomas Edison"
+  },
+  {
+    "quote": "Our greatest weakness lies in giving up. The most certain way to succeed is always to try just one more time.",
+    "author": "Thomas Edison"
+  },
+  {
+    "quote": "I have not failed. I've just found 10,000 ways that won't work.",
+    "author": "Thomas Edison"
+  },
+  {
+    "quote": "Whether you think you can, or you think you can't – you're right.",
+    "author": "Henry Ford"
+  },
+  {
+    "quote": "Anyone who stops learning is old, whether at twenty or eighty.",
+    "author": "Henry Ford"
+  },
+  {
+    "quote": "Failure is simply the opportunity to begin again, this time more intelligently.",
+    "author": "Henry Ford"
+  },
+  {
+    "quote": "Be a yardstick of quality. Some people aren't used to an environment where excellence is expected.",
+    "author": "Steve Jobs"
+  },
+  {
+    "quote": "Your time is limited, don't waste it living someone else's life.",
+    "author": "Steve Jobs"
+  },
+  {
+    "quote": "I think if you do something and it turns out pretty good, then you should go do something else wonderful.",
+    "author": "Steve Jobs"
+  },
+  {
+    "quote": "Optimism is the faith that leads to achievement. Nothing can be done without hope and confidence.",
+    "author": "Helen Keller"
+  },
+  {
+    "quote": "Character cannot be developed in ease and quiet. Only through experience of trial and suffering can the soul be strengthened.",
+    "author": "Helen Keller"
+  },
+  {
+    "quote": "You must do the things you think you cannot do.",
+    "author": "Eleanor Roosevelt"
+  },
+  {
+    "quote": "The future belongs to those who believe in the beauty of their dreams.",
+    "author": "Eleanor Roosevelt"
+  },
+  {
+    "quote": "If you can't fly then run, if you can't run then walk, if you can't walk then crawl, but whatever you do you have to keep moving forward.",
+    "author": "Martin Luther King Jr."
+  },
+  {
+    "quote": "The time is always right to do what is right.",
+    "author": "Martin Luther King Jr."
+  },
+  {
+    "quote": "We must accept finite disappointment, but never lose infinite hope.",
+    "author": "Martin Luther King Jr."
+  },
+  {
+    "quote": "I can accept failure, everyone fails at something. But I can't accept not trying.",
+    "author": "Michael Jordan"
+  },
+  {
+    "quote": "Some people want it to happen, some wish it would happen, others make it happen.",
+    "author": "Michael Jordan"
+  },
+  {
+    "quote": "Don't count the days, make the days count.",
+    "author": "Muhammad Ali"
+  },
+  {
+    "quote": "He who is not courageous enough to take risks will accomplish nothing in life.",
+    "author": "Muhammad Ali"
+  },
+  {
+    "quote": "I hated every minute of training, but I said, 'Don't quit. Suffer now and live the rest of your life as a champion.'",
+    "author": "Muhammad Ali"
+  },
+  {
+    "quote": "Success is not how high you have bounced, but how high you bounce when you hit bottom.",
+    "author": "George S. Patton"
+  },
+  {
+    "quote": "Do not let what you cannot do interfere with what you can do.",
+    "author": "John Wooden"
+  },
+  {
+    "quote": "Things turn out best for the people who make the best of the way things turn out.",
+    "author": "John Wooden"
+  },
+  {
+    "quote": "If you always put limit on everything you do, physical or anything else. It will spread into your work and into your life. There are no limits. There are only plateaus, and you must not stay there, you must go beyond them.",
+    "author": "Bruce Lee (American-born)"
+  },
+  {
+    "quote": "Absorb what is useful, discard what is useless and add what is specifically your own.",
+    "author": "Bruce Lee (American-born)"
+  },
+  {
+    "quote": "I fear not the man who has practiced 10,000 kicks once, but I fear the man who has practiced one kick 10,000 times.",
+    "author": "Bruce Lee (American-born)"
+  },
+  {
+    "quote": "Neuroplasticity is the muscle of the soul.",
+    "author": "Dr. Andrew Huberman"
   },
   {
     "quote": "Focus is a matter of deciding what things you're not going to do.",
@@ -570,10 +938,6 @@
   {
     "quote": "I wonder at a man who loses hope of salvation when the door of repentance is open for him.",
     "author": "Ali ibn Abi Talib (R.A)"
-  },
-  {
-    "quote": "Don't count the days, make the days count.",
-    "author": "Muhammad Ali"
   },
   {
     "quote": "Close your eyes, fall in Love, stay there.",
@@ -1832,10 +2196,6 @@
     "author": "Friedrich Nietzsche"
   },
   {
-    "quote": "It Is The Supreme Art Of The Teacher To Awaken Joy In Creative Expression And Knowledge.",
-    "author": "Albert Einstein"
-  },
-  {
     "quote": "He who does not live in the way of his beliefs starts to believe in the way he lives.",
     "author": "Umar ibn Al-Khattāb (R.A)"
   },
@@ -2460,10 +2820,6 @@
     "author": "Ali ibn Abi Talib (R.A)"
   },
   {
-    "quote": "I Don'T Know The Key To Success, But The Key To Failure Is Trying To Please Everybody.",
-    "author": "Bill Cosby"
-  },
-  {
     "quote": "Praise Allah, for by praise His blessings multiply.",
     "author": "Umar ibn Al-Khattāb (R.A)"
   },
@@ -2828,10 +3184,6 @@
     "author": "Rumi"
   },
   {
-    "quote": "This Is One Small Step For A Man, One Giant Leap For Mankind.",
-    "author": "Neil Armstrong"
-  },
-  {
     "quote": "If You Don'T Like Something, Change It. If You Can'T Change It, Change Your Attitude.",
     "author": "Maya Angelou"
   },
@@ -2992,10 +3344,6 @@
     "author": "William Shakespeare"
   },
   {
-    "quote": "Think Of All The Beauty Still Left Around You And Be Happy.",
-    "author": "Anne Frank"
-  },
-  {
     "quote": "Why Shouldn'T Truth Be Stranger Than Fiction? Fiction, After All, Has To Make Sense.",
     "author": "Mark Twain"
   },
@@ -3092,10 +3440,6 @@
     "author": "Muhammad Ali"
   },
   {
-    "quote": "Imagination Will Often Carry Us To Worlds That Never Were. But Without It We Go Nowhere.",
-    "author": "Carl Sagan"
-  },
-  {
     "quote": "A man's behavior is the index of the man, and his discourse is the index of his understanding.",
     "author": "Ali ibn Abi Talib (R.A)"
   },
@@ -3166,10 +3510,6 @@
   {
     "quote": "Many A Good Hanging Prevents A Bad Marriage.",
     "author": "William Shakespeare"
-  },
-  {
-    "quote": "Common Sense Is The Collection Of Prejudices Acquired By Age Eighteen.",
-    "author": "Albert Einstein"
   },
   {
     "quote": "If you look at the world the same way when you're 50 that you did when you were 20, then you wasted 30 years.",
@@ -3280,10 +3620,6 @@
     "author": "Rumi"
   },
   {
-    "quote": "The Only True Wisdom Is In Knowing You Know Nothing.",
-    "author": "Socrates"
-  },
-  {
     "quote": "True friends are a single soul divided between different bodies.",
     "author": "Ali ibn Abi Talib (R.A)"
   },
@@ -3314,10 +3650,6 @@
   {
     "quote": "Great dreams of great dreamers are always transcended.",
     "author": "Abdul Kalam"
-  },
-  {
-    "quote": "Failure Is A Detour, Not A Dead-End Street.",
-    "author": "Zig Ziglar"
   },
   {
     "quote": "Hide the good you do, and make known the good done to you.",
@@ -3366,10 +3698,6 @@
   {
     "quote": "Let'S Pray That The Human Race Never Escapes From Earth To Spread Its Iniquity Elsewhere.",
     "author": "C. S. Lewis"
-  },
-  {
-    "quote": "Spread Love Everywhere You Go. Let No One Ever Come To You Without Leaving Happier.",
-    "author": "Mother Teresa"
   },
   {
     "quote": "Do not follow vain desires; for verily he who prospers is preserved from lust, greed and anger.",
@@ -3988,10 +4316,6 @@
     "author": "Abdul Kalam"
   },
   {
-    "quote": "A Man Should Never Neglect His Family For Business.",
-    "author": "Walt Disney"
-  },
-  {
     "quote": "Isn'T It Strange That I Who Have Written Only Unpopular Books Should Be Such A Popular Fellow?",
     "author": "Albert Einstein"
   },
@@ -4016,16 +4340,8 @@
     "author": "Umar ibn Al-Khattāb (R.A)"
   },
   {
-    "quote": "Faith Is Taking The First Step Even When You Don'T See The Whole Staircase.",
-    "author": "Martin Luther King  Jr."
-  },
-  {
     "quote": "To Give Thanks In Solitude Is Enough. Thanksgiving Has Wings And Goes Where It Must Go. Your Prayer Knows Much More About It Than You Do.",
     "author": "Victor Hugo"
-  },
-  {
-    "quote": "Those Who Dare To Fail Miserably Can Achieve Greatly.",
-    "author": "John F. Kennedy"
   },
   {
     "quote": "Like your body your mind also gets tired so refresh it by wise sayings.",
@@ -4296,14 +4612,6 @@
     "author": "Ali ibn Abi Talib (R.A)"
   },
   {
-    "quote": "All My Life Through, The New Sights Of Nature Made Me Rejoice Like A Child.",
-    "author": "Marie Curie"
-  },
-  {
-    "quote": "He Who Avoids Complaint Invites Happiness.",
-    "author": "Abu Bakr"
-  },
-  {
     "quote": "Work with integrity and succeed with integrity.",
     "author": "Abdul Kalam"
   },
@@ -4448,10 +4756,6 @@
     "author": "Muhammad Ali"
   },
   {
-    "quote": "You Cannot Create Experience. You Must Undergo It.",
-    "author": "Albert Camus"
-  },
-  {
     "quote": "Indignation Is A Submission Of Our Thoughts, But Not Of Our Desires.",
     "author": "Bertrand Russell"
   },
@@ -4566,10 +4870,6 @@
   {
     "quote": "My soul is my guide, for my soul is of that abode. I will not speak of the earthly. I am of the unknown.",
     "author": "Rumi"
-  },
-  {
-    "quote": "Many Marriages Would Be Better If The Husband And The Wife Clearly Understood That They Are On The Same Side.",
-    "author": "Zig Ziglar"
   },
   {
     "quote": "Try not to resist the changes that come your way. Instead let life live through you. And do not worry that your life is turning upside down. How do you know that the side you are used to is better than the one to come?",
@@ -4688,10 +4988,6 @@
     "author": "Jim Courier"
   },
   {
-    "quote": "We Make A Living By What We Get, But We Make A Life By What We Give.",
-    "author": "Winston Churchill"
-  },
-  {
     "quote": "Indifference And Neglect Often Do Much More Damage Than Outright Dislike.",
     "author": "J. K. Rowling"
   },
@@ -4736,20 +5032,12 @@
     "author": "Charles Darwin"
   },
   {
-    "quote": "Never Do Anything Against Conscience Even If The State Demands It.",
-    "author": "Albert Einstein"
-  },
-  {
     "quote": "It'S Not What You'Ve Got, It'S What You Use That Makes A Difference.",
     "author": "Zig Ziglar"
   },
   {
     "quote": "Silence is the best reply to a fool.",
     "author": "Ali ibn Abi Talib (R.A)"
-  },
-  {
-    "quote": "Good Actions Are A Guard Against The Blows Of Adversity.",
-    "author": "Abu Bakr"
   },
   {
     "quote": "Nature Hath Framed Strange Fellows In Her Time.",
@@ -4778,10 +5066,6 @@
   {
     "quote": "He Who Laughs Best Today, Will Also Laughs Last.",
     "author": "Friedrich Nietzsche"
-  },
-  {
-    "quote": "He who is not courageous enough to take risks will accomplish nothing in life.",
-    "author": "Muhammad Ali"
   },
   {
     "quote": "There Are Several Good Protections Against Temptation, But The Surest Is Cowardice.",
@@ -4826,10 +5110,6 @@
   {
     "quote": "Your Time Is Limited, So Don'T Waste It Living Someone Else'S Life.",
     "author": "Steve Jobs"
-  },
-  {
-    "quote": "The Best Way To Find Out If You Can Trust Somebody Is To Trust Them.",
-    "author": "Ernest Hemingway"
   },
   {
     "quote": "Peace Is The Virtue Of Civilization. War Is Its Crime.",
@@ -4934,10 +5214,6 @@
   {
     "quote": "Often it isn't the mountains ahead that wear you out, it's the little pebble in your shoe.",
     "author": "Muhammad Ali"
-  },
-  {
-    "quote": "Wherever You Go, Go With All Your Heart.",
-    "author": "Confucius"
   },
   {
     "quote": "Renouncing the worldly pleasures is a comfort for both the human heart and body.",
@@ -5080,10 +5356,6 @@
     "author": "Winston Churchill"
   },
   {
-    "quote": "Learning Never Exhausts The Mind.",
-    "author": "Leonardo Da Vinci"
-  },
-  {
     "quote": "Our Prime Purpose In This Life Is To Help Others. And If You Can'T Help Them, At Least Don'T Hurt Them.",
     "author": "Dalai Lama"
   },
@@ -5142,10 +5414,6 @@
   {
     "quote": "In Order To Succeed, Your Desire For Success Should Be Greater Than Your Fear Of Failure.",
     "author": "Bill Cosby"
-  },
-  {
-    "quote": "It'S Better To Be A Lion For A Day Than A Sheep All Your Life.",
-    "author": "Elizabeth Kenny"
   },
   {
     "quote": "If You Can'T Fly Then Run, If You Can'T Run Then Walk, If You Can'T Walk Then Crawl, But Whatever You Do You Have To Keep Moving Forward.",
@@ -5216,10 +5484,6 @@
     "author": "Muhammad Ali"
   },
   {
-    "quote": "You Cannot Escape The Responsibility Of Tomorrow By Evading It Today.",
-    "author": "Abraham Lincoln"
-  },
-  {
     "quote": "If you lose a big fight, it will worry you all of your life. It will plague you - until you get your revenge.",
     "author": "Muhammad Ali"
   },
@@ -5276,10 +5540,6 @@
     "author": "Ali ibn Abi Talib (R.A)"
   },
   {
-    "quote": "I Like To Listen. I Have Learned A Great Deal From Listening Carefully. Most People Never Listen.",
-    "author": "Ernest Hemingway"
-  },
-  {
     "quote": "When a nation is surrounded by weaponized nations, she has to equip herself.",
     "author": "Abdul Kalam"
   },
@@ -5302,10 +5562,6 @@
   {
     "quote": "When setting out on a journey do not seek advice from someone who never left home.",
     "author": "Rumi"
-  },
-  {
-    "quote": "All Great Achievements Require Time.",
-    "author": "Maya Angelou"
   },
   {
     "quote": "Measuring nuclear yield depends on multiple parameters - the location and number of instruments, the geology of the area, the location of the seismic station in relation to the test site.",
@@ -5396,10 +5652,6 @@
     "author": "Abdul Kalam"
   },
   {
-    "quote": "Far And Away The Best Prize That Life Has To Offer Is The Chance To Work Hard At Work Worth Doing.",
-    "author": "Theodore Roosevelt"
-  },
-  {
     "quote": "Paintings Have A Life Of Their Own That Derives From The Painter'S Soul.",
     "author": "Vincent Van Gogh"
   },
@@ -5422,10 +5674,6 @@
   {
     "quote": "Beautiful people are not always good, but good people are always beautiful.",
     "author": "Ali ibn Abi Talib (R.A)"
-  },
-  {
-    "quote": "When The Solution Is Simple, God Is Answering.",
-    "author": "Albert Einstein"
   },
   {
     "quote": "My only fault is that I don't realize how great I really am.",
@@ -5598,10 +5846,6 @@
   {
     "quote": "Wherever you stand, be the soul of that place.",
     "author": "Rumi"
-  },
-  {
-    "quote": "Our Prime Purpose In This Life Is To Help Others. And If You Can'T Help Them, At Least Don'T Hurt Them.",
-    "author": "Dalai Lama"
   },
   {
     "quote": "Solitude Is Better Than The Society Of Evil Persons.",
