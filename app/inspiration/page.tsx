@@ -6,23 +6,12 @@ import { Sparkles, Share2, Download, Image as ImageIcon, PaintBucket, Loader2 } 
 import Image from "next/image";
 import * as htmlToImage from "html-to-image";
 import { useAuth } from "@/lib/AuthContext";
+import OFFLINE_QUOTES from "@/lib/fallback-quotes.json";
+import FALLBACK_IMAGES from "@/lib/fallback-images.json";
 
-const PAPER_TEXTURES = [
-  "https://images.unsplash.com/photo-1601662528567-526cd06f6582?q=80&w=1080&auto=format&fit=crop", // standard crumpled
-  "https://images.unsplash.com/photo-1615800098779-1be32e60cca3?q=80&w=1080&auto=format&fit=crop", // parchment
-  "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?q=80&w=1080&auto=format&fit=crop", // folded white
-  "https://images.unsplash.com/photo-1603513492128-ba7bc9b3e143?q=80&w=1080&auto=format&fit=crop", // soft crumpled
-  "https://images.unsplash.com/photo-1620392348544-59e663a8a0cb?q=80&w=1080&auto=format&fit=crop"  // stained paper
-];
+const PAPER_TEXTURES = FALLBACK_IMAGES;
 
-const OFFLINE_QUOTES = [
-  { quote: "The mind is everything. What you think you become.", author: "Siddhartha Gautama" },
-  { quote: "We suffer more often in imagination than in reality.", author: "Seneca" },
-  { quote: "Neuroplasticity is the muscle of the soul.", author: "Dr. Andrew Huberman" },
-  { quote: "He who has a why to live for can bear almost any how.", author: "Friedrich Nietzsche" },
-  { quote: "Focus is a matter of deciding what things you're not going to do.", author: "John Carmack" },
-  { quote: "You have power over your mind - not outside events.", author: "Marcus Aurelius" }
-];
+
 
 export default function InspirationPage() {
   const { logActivity, addXP } = useAuth();
