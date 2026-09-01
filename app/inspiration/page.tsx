@@ -9,7 +9,13 @@ import { useAuth } from "@/lib/AuthContext";
 import OFFLINE_QUOTES from "@/lib/fallback-quotes.json";
 import FALLBACK_IMAGES from "@/lib/fallback-images.json";
 
-const PAPER_TEXTURES = FALLBACK_IMAGES;
+const PAPER_TEXTURES = [
+  "https://images.unsplash.com/photo-1601662528567-526cd06f6582?q=80&w=1080&auto=format&fit=crop", // standard crumpled
+  "https://images.unsplash.com/photo-1615800098779-1be32e60cca3?q=80&w=1080&auto=format&fit=crop", // parchment
+  "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?q=80&w=1080&auto=format&fit=crop", // folded white
+  "https://images.unsplash.com/photo-1603513492128-ba7bc9b3e143?q=80&w=1080&auto=format&fit=crop", // soft crumpled
+  "https://images.unsplash.com/photo-1620392348544-59e663a8a0cb?q=80&w=1080&auto=format&fit=crop"  // stained paper
+];
 
 
 
@@ -51,7 +57,7 @@ export default function InspirationPage() {
     const randomQuote = OFFLINE_QUOTES[Math.floor(Math.random() * OFFLINE_QUOTES.length)];
     setQuote(randomQuote.quote);
     setAuthor(randomQuote.author);
-    if (bgMode === "realistic") setBgMode("gradient"); // Force gradient mode if realistic since images need internet
+    // Kept realistic mode active since we now have a 500+ fallback image library
     setIsLoading(false);
   };
 
@@ -174,7 +180,7 @@ export default function InspirationPage() {
                 initial={{ opacity: 0 }} animate={{ opacity: 0.6 }} exit={{ opacity: 0 }} transition={{ duration: 1 }}
                 className="absolute inset-0 w-full h-full object-cover"
                 crossOrigin="anonymous"
-                src={`https://picsum.photos/seed/${bgSeed}/800/800?blur=2`}
+                src={FALLBACK_IMAGES[(bgSeed + 5) % FALLBACK_IMAGES.length]}
                 alt="realistic background"
               />
             ) : (
