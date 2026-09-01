@@ -16,15 +16,19 @@ export async function POST(req: Request) {
 
     const sysPrompt = `
       You are a hyper-accurate elite biomechanics and kinesiologist AI. The user wants to train a specific physiological target or movement pattern: "${prompt}".
-      Generate a hyper-accurate, biomechanically optimal protocol to target this. If the user requests movement, walking, or running, make sure the exercise reflects cardiovascular locomotion. The description must include specific muscle insertions, neuro-muscular activation patterns, or joint mechanics.
-      Return a JSON object exactly matching this interface. DO NOT include any comments (//) or markdown blocks (json) in your final output:
+      Generate a hyper-accurate, biomechanically optimal protocol to target this. If the user requests movement, walking, or running, make sure the exercise reflects cardiovascular locomotion.
+      
+      You must respond ONLY with a valid JSON object. Do not include any markdown formatting like \`\`\`json or comments.
+      Use exactly this schema for the JSON object:
       {
-        "title": "string (short body part or goal name)",
-        "color": "string (a cool neon hex color code like #ff00ff)",
-        "exercise": "string (specific exercise name)",
-        "desc": "string (1-2 sentence biomechanical description)",
-        "duration": "number (the duration of the exercise in seconds. Calculate based on user request e.g. '20 Minutes' -> 1200, otherwise 180)"
+        "title": "Short body part or goal name (string)",
+        "color": "Neon hex color code like #ff00ff (string)",
+        "exercise": "Specific exercise name (string)",
+        "desc": "1-2 sentence biomechanical description (string)",
+        "duration": 1200
       }
+      
+      Provide the actual values for the keys, not the descriptions. Ensure duration is an integer (number of seconds). E.g. 20 minutes = 1200. Default is 180 if unspecified.
     `;
 
     const result = await model.generateContent(sysPrompt);
