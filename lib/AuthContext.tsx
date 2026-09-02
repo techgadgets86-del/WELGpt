@@ -26,6 +26,7 @@ export interface UserProfile {
     [key: string]: string | number | boolean | string[] | undefined;
   };
   recentActivity: string[];
+  coachMessage?: string;
   dailyPlan?: {
     date: string;
     morning: RoutineTask[];
