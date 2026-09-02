@@ -104,16 +104,15 @@ export default function Home() {
     if (total > 0) progressPercent = Math.round((completed / total) * 100);
   }
 
+    const showDashboard = hasPlan || !!profile?.dailyPlan;
+  
   // Dynamic Subtitle Logic
-  let subtitle = "Tell us what you want to improve.";
-  if (hasPlan) {
+  let subtitle = "What do you want to improve?";
+  if (showDashboard) {
     if (progressPercent === 100) subtitle = "You crushed your entire daily plan. Rest well!";
     else if (profile?.streak && profile.streak > 1) subtitle = `You're on a ${profile.streak}-day streak 🔥 Keep the momentum going!`;
     else subtitle = "Your personalized plan is ready for action.";
   }
-
-
-
 
   return (
     <div className="max-w-3xl mx-auto relative z-10 pt-8 pb-32 h-full flex flex-col items-center">
@@ -137,29 +136,6 @@ export default function Home() {
               >
                 {onboardingStep === 1 && (
                   <>
-                    <h2 className="text-3xl font-black text-white mb-2 text-center">What&apos;s your main goal?</h2>
-                    <p className="text-gray-400 text-center mb-8">Select what you want to focus on.</p>
-                    <div className="flex flex-wrap justify-center gap-3 mb-10">
-                      {goals.map(goal => (
-                        <button
-                          key={goal}
-                          onClick={() => toggleGoal(goal)}
-                          className={`px-6 py-4 rounded-xl border transition-all text-sm font-bold w-[45%] ${
-                            selectedGoals.includes(goal) 
-                              ? 'bg-violet-600 border-violet-500 text-white shadow-[0_0_15px_rgba(124,58,237,0.4)]'
-                              : 'bg-[#111127] border-white/10 text-gray-400'
-                          }`}
-                        >
-                          {goal}
-                        </button>
-                      ))}
-                    </div>
-                    <button onClick={() => setOnboardingStep(2)} disabled={selectedGoals.length === 0} className="w-full py-4 bg-white text-black font-bold rounded-2xl disabled:opacity-50">Next</button>
-                  </>
-                )}
-
-                {onboardingStep === 2 && (
-                  <>
                     <h2 className="text-3xl font-black text-white mb-2 text-center">How are you feeling?</h2>
                     <p className="text-gray-400 text-center mb-8">This helps WelGPT adjust your intensity.</p>
                     <div className="flex flex-col gap-3 mb-10">
@@ -177,11 +153,11 @@ export default function Home() {
                         </button>
                       ))}
                     </div>
-                    <button onClick={() => setOnboardingStep(3)} disabled={!feeling} className="w-full py-4 bg-white text-black font-bold rounded-2xl disabled:opacity-50">Next</button>
+                    <button onClick={() => setOnboardingStep(2)} disabled={!feeling} className="w-full py-4 bg-white text-black font-bold rounded-2xl disabled:opacity-50">Next</button>
                   </>
                 )}
 
-                {onboardingStep === 3 && (
+                {onboardingStep === 2 && (
                   <>
                     <h2 className="text-3xl font-black text-white mb-2 text-center">What does your day look like?</h2>
                     <p className="text-gray-400 text-center mb-8">WelGPT will schedule around your life.</p>
@@ -210,181 +186,141 @@ export default function Home() {
       </AnimatePresence>
 
       
-      {/* 1. HERO & ONBOARDING (Tell us what you want to improve) */}
-      <div className="w-full text-center mb-12">
-        {firstName ? (
-          <h2 className="text-xl font-bold tracking-widest text-white mb-2">{timeOfDay}, {firstName} 👋</h2>
-        ) : (
-          <h2 className="text-xl font-bold tracking-widest text-white uppercase mb-2">WELGPT</h2>
-        )}
-        <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-teal-400 tracking-tight mb-8 drop-shadow-sm">
-          {hasPlan ? "Your Dashboard" : "Your AI Wellness Coach"}
-        </h1>
-        
-        <p className="text-gray-300 mb-6 font-medium">{subtitle}</p>
-        
-        <div className="flex flex-wrap justify-center gap-3 mb-8 max-w-2xl mx-auto">
-          {goals.map(goal => (
-            <button
-              key={goal}
-              onClick={() => toggleGoal(goal)}
-              className={`px-6 py-3 rounded-full border transition-all text-sm font-bold ${
-                selectedGoals.includes(goal) 
-                  ? 'bg-violet-600 border-violet-500 text-white shadow-[0_0_15px_rgba(124,58,237,0.4)]'
-                  : 'bg-[#111127] border-white/10 text-gray-400 hover:border-white/30 hover:text-white'
-              }`}
-            >
-              {goal}
-            </button>
-          ))}
-        </div>
-        
-        <button 
-          onClick={handleBuildPlan}
-          className="w-full max-w-sm mx-auto px-8 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white rounded-2xl font-bold text-lg shadow-[0_0_30px_rgba(124,58,237,0.3)] transition-all hover:scale-105"
-        >
-          BUILD MY PLAN
-        </button>
-      </div>
-
-      <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-10" />
-
-      {/* 2. YOUR PLAN TODAY */}
-      <div className="w-full max-w-md mx-auto mb-12">
-        <h3 className="text-gray-400 font-bold tracking-widest uppercase text-sm mb-6 text-center">{hasPlan ? "Your WelGPT Plan" : "Your Plan Today"}</h3>
-        
-        <div className="bg-[#111127] border border-white/10 rounded-3xl p-6 mb-6">
-          {hasPlan ? (
-             <div className="space-y-6">
-                <div>
-                  <h4 className="text-violet-400 font-bold text-xs uppercase tracking-wider mb-3">Morning</h4>
-                  <div className="flex items-center gap-3 pb-4 border-b border-white/5">
-                    <span className="text-2xl">🧘</span>
-                    <span className="font-bold text-white text-lg">5 min breathing</span>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="text-teal-400 font-bold text-xs uppercase tracking-wider mb-3">Afternoon</h4>
-                  <div className="flex items-center gap-3 pb-4 border-b border-white/5">
-                    <span className="text-2xl">🏃</span>
-                    <span className="font-bold text-white text-lg">20 min movement</span>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="text-orange-400 font-bold text-xs uppercase tracking-wider mb-3">Evening</h4>
-                  <div className="flex items-center gap-3 pb-3">
-                    <span className="text-2xl">🥗</span>
-                    <span className="font-bold text-white text-lg">Nutrition goal</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">📓</span>
-                    <span className="font-bold text-white text-lg">Reflection</span>
-                  </div>
-                </div>
-             </div>
-          ) : (
-             <div className="space-y-4 opacity-50 pointer-events-none">
-                <div className="flex justify-between items-center pb-4 border-b border-white/5">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">🧘</span>
-                    <span className="font-bold text-white">Meditation</span>
-                  </div>
-                  <span className="text-gray-400 font-medium">10 min</span>
-                </div>
-                <div className="flex justify-between items-center pb-4 border-b border-white/5">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">🥗</span>
-                    <span className="font-bold text-white">Nutrition</span>
-                  </div>
-                  <span className="text-orange-400 font-medium">Today&apos;s goal</span>
-                </div>
-                <div className="flex justify-between items-center pb-4 border-b border-white/5">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">🏃</span>
-                    <span className="font-bold text-white">Movement</span>
-                  </div>
-                  <span className="text-gray-400 font-medium">20 min</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">📓</span>
-                    <span className="font-bold text-white">Reflection</span>
-                  </div>
-                  <span className="text-gray-400 font-medium">3 min</span>
-                </div>
-             </div>
-          )}
-        </div>
-        
-        {hasPlan ? (
-          <button 
-            onClick={() => router.push('/routine')}
-            className="w-full py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white rounded-2xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(124,58,237,0.3)]"
-          >
-            START TRACKING
-          </button>
-        ) : (
+      {!showDashboard ? (
+        /* 1. HERO & ONBOARDING (Tell us what you want to improve) - ONLY SHOW FOR NEW USERS */
+        <div className="w-full text-center mb-12 mt-12">
+          <h2 className="text-xl font-bold tracking-widest text-white uppercase mb-4">Welcome to</h2>
+          <h1 className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-teal-400 tracking-tight mb-8 drop-shadow-sm">
+            WELGPT
+          </h1>
+          
+          <p className="text-gray-300 mb-8 font-medium text-lg">{subtitle}</p>
+          
+          <div className="flex flex-wrap justify-center gap-3 mb-10 max-w-2xl mx-auto">
+            {goals.map(goal => (
+              <button
+                key={goal}
+                onClick={() => toggleGoal(goal)}
+                className={`px-6 py-3 rounded-full border transition-all text-sm font-bold ${
+                  selectedGoals.includes(goal) 
+                    ? 'bg-violet-600 border-violet-500 text-white shadow-[0_0_15px_rgba(124,58,237,0.4)]'
+                    : 'bg-[#111127] border-white/10 text-gray-400 hover:border-white/30 hover:text-white'
+                }`}
+              >
+                {goal}
+              </button>
+            ))}
+          </div>
+          
           <button 
             onClick={handleBuildPlan}
-            className="w-full py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-2xl font-bold text-lg transition-all"
+            disabled={selectedGoals.length === 0}
+            className="w-full max-w-sm mx-auto px-8 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white rounded-2xl font-bold text-lg shadow-[0_0_30px_rgba(124,58,237,0.3)] transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
           >
-            GENERATE PLAN
+            BUILD MY PLAN
           </button>
-        )}
-      </div>
-
-      <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-10" />
-
-      {/* 3. YOUR PROGRESS */}
-      <div className="w-full max-w-md mx-auto mb-12 text-center">
-        <h3 className="text-gray-400 font-bold tracking-widest uppercase text-sm mb-6">Your Progress</h3>
-        
-        <div className="bg-[#111127] border border-white/10 rounded-3xl p-8">
-          <div className="flex justify-between items-end mb-3">
-            <span className="text-gray-400 text-sm font-medium">Daily Completion</span>
-            <span className="text-white font-bold text-xl">{profile?.dailyPlan ? progressPercent : 80}%</span>
+        </div>
+      ) : (
+        /* DASHBOARD (ONLY SHOW IF THEY HAVE A PLAN) */
+        <div className="w-full">
+          {/* Header */}
+          <div className="w-full text-center mb-10">
+            {firstName && <h2 className="text-xl font-bold tracking-widest text-white mb-2">{timeOfDay}, {firstName} 👋</h2>}
+            <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-teal-400 tracking-tight mb-4 drop-shadow-sm">
+              Your Dashboard
+            </h1>
+            <p className="text-gray-300 font-medium">{subtitle}</p>
           </div>
-          <div className="w-full h-4 bg-white/5 rounded-full overflow-hidden mb-8">
-            <div className={`h-full bg-gradient-to-r from-teal-400 to-emerald-400 rounded-full shadow-[0_0_10px_rgba(45,212,191,0.5)]`} style={{ width: `${profile?.dailyPlan ? progressPercent : 80}%` }} />
-          </div>
-          
-          <div className="flex items-center justify-center gap-4">
-            <div className="p-3 bg-orange-500/20 text-orange-400 rounded-full">
-              <Flame size={24} />
+
+          {/* 4. AI COACH (MOVED TO TOP TO EMPHASIZE THE MOAT) */}
+          <div className="w-full max-w-md mx-auto mb-12">
+            <div 
+              onClick={() => setShowPremium(true)}
+              className="bg-gradient-to-b from-[#1a1a3a] to-[#111127] border border-violet-500/50 rounded-3xl p-8 text-center relative overflow-hidden group cursor-pointer shadow-[0_0_30px_rgba(124,58,237,0.15)]"
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/20 blur-3xl rounded-full" />
+              
+              <div className="flex justify-center mb-4 relative z-10">
+                <div className="p-3 bg-violet-500/20 rounded-full">
+                  <Brain size={28} className="text-violet-400" />
+                </div>
+              </div>
+              <p className="text-2xl text-white font-medium leading-relaxed relative z-10 tracking-tight">
+                &quot;Based on your week, I&apos;ve<br/>adjusted tomorrow&apos;s plan.&quot;
+              </p>
             </div>
-            <div className="text-left">
-              <p className="text-2xl font-black text-white">{profile?.streak || 0} Day</p>
-              <p className="text-orange-400 font-bold tracking-widest uppercase text-xs">Active Streak</p>
+          </div>
+
+          {/* 2. YOUR PLAN TODAY */}
+          <div className="w-full max-w-md mx-auto mb-12">
+            <h3 className="text-gray-400 font-bold tracking-widest uppercase text-sm mb-6 text-center">Your WelGPT Plan</h3>
+            
+            <div className="bg-[#111127] border border-white/10 rounded-3xl p-6 mb-6">
+               <div className="space-y-6">
+                  <div>
+                    <h4 className="text-violet-400 font-bold text-xs uppercase tracking-wider mb-3">Morning</h4>
+                    <div className="flex items-center gap-3 pb-4 border-b border-white/5">
+                      <span className="text-2xl">🧘</span>
+                      <span className="font-bold text-white text-lg">5 min breathing</span>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-teal-400 font-bold text-xs uppercase tracking-wider mb-3">Afternoon</h4>
+                    <div className="flex items-center gap-3 pb-4 border-b border-white/5">
+                      <span className="text-2xl">🏃</span>
+                      <span className="font-bold text-white text-lg">20 min movement</span>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-orange-400 font-bold text-xs uppercase tracking-wider mb-3">Evening</h4>
+                    <div className="flex items-center gap-3 pb-3">
+                      <span className="text-2xl">🥗</span>
+                      <span className="font-bold text-white text-lg">Nutrition goal</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">📓</span>
+                      <span className="font-bold text-white text-lg">Reflection</span>
+                    </div>
+                  </div>
+               </div>
+            </div>
+            
+            <button 
+              onClick={() => router.push('/routine')}
+              className="w-full py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white rounded-2xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(124,58,237,0.3)]"
+            >
+              START TRACKING
+            </button>
+          </div>
+
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-10" />
+
+          {/* 3. YOUR PROGRESS */}
+          <div className="w-full max-w-md mx-auto mb-6 text-center">
+            <h3 className="text-gray-400 font-bold tracking-widest uppercase text-sm mb-6">Your Progress</h3>
+            
+            <div className="bg-[#111127] border border-white/10 rounded-3xl p-8">
+              <div className="flex justify-between items-end mb-3">
+                <span className="text-gray-400 text-sm font-medium">Daily Completion</span>
+                <span className="text-white font-bold text-xl">{progressPercent}%</span>
+              </div>
+              <div className="w-full h-4 bg-white/5 rounded-full overflow-hidden mb-8">
+                <div className={`h-full bg-gradient-to-r from-teal-400 to-emerald-400 rounded-full shadow-[0_0_10px_rgba(45,212,191,0.5)]`} style={{ width: `${progressPercent}%` }} />
+              </div>
+              
+              <div className="flex items-center justify-center gap-4">
+                <div className="p-3 bg-orange-500/20 text-orange-400 rounded-full">
+                  <Flame size={24} />
+                </div>
+                <div className="text-left">
+                  <p className="text-2xl font-black text-white">{profile?.streak || 0} Day</p>
+                  <p className="text-orange-400 font-bold tracking-widest uppercase text-xs">Active Streak</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-10" />
-
-      {/* 4. AI COACH */}
-      <div className="w-full max-w-md mx-auto">
-        <h3 className="text-gray-400 font-bold tracking-widest uppercase text-sm mb-6 text-center">AI Coach</h3>
-        
-        <div 
-          onClick={() => setShowPremium(true)}
-          className="bg-gradient-to-b from-[#1a1a3a] to-[#111127] border border-violet-500/30 rounded-3xl p-8 text-center relative overflow-hidden group cursor-pointer mb-6"
-        >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/20 blur-3xl rounded-full" />
-          
-          <p className="text-xl text-white font-medium leading-relaxed mb-2 relative z-10">
-            &quot;Based on your week, I&apos;ve<br/>adjusted tomorrow&apos;s plan.&quot;
-          </p>
-        </div>
-        
-        <button 
-          onClick={() => router.push('/coach')}
-          className="w-full flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-2xl font-bold text-lg py-4 transition-all"
-        >
-          <Brain size={20} className="text-teal-400" />
-          TALK TO WELGPT
-        </button>
-      </div>
+      )}
       
       <PremiumModal isOpen={showPremium} onClose={() => setShowPremium(false)} />
     </div>
