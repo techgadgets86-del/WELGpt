@@ -28,11 +28,11 @@ export const INITIAL_EVENING_TASKS: Task[] = [
   { id: "e4", time: "09:30 PM", title: "Yoga Nidra", desc: "Non-sleep deep rest (NSDR) to transition into deep Delta sleep." }
 ];
 
-export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, eveningTasks = INITIAL_EVENING_TASKS, customTasks = [], customTitle = "Custom Routine", onGenerateCustom }: { morningTasks?: Task[], eveningTasks?: Task[], customTasks?: Task[], customTitle?: string, onGenerateCustom?: () => void }) {
-  const [activeTab, setActiveTab] = useState<"morning" | "evening" | "custom">("morning");
+export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, afternoonTasks = [], eveningTasks = INITIAL_EVENING_TASKS, customTasks = [], customTitle = "Custom Routine", onGenerateCustom }: { morningTasks?: Task[], afternoonTasks?: Task[], eveningTasks?: Task[], customTasks?: Task[], customTitle?: string, onGenerateCustom?: () => void }) {
+  const [activeTab, setActiveTab] = useState<"morning" | "afternoon" | "evening" | "custom">("morning");
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const router = useRouter();
-  const { addXP, profile, updateUserData } = useAuth();
+  const { addXP, profile, updateUserData, toggleTaskComplete } = useAuth();
 
   useEffect(() => {
     const initialCompleted = new Set<string>();
@@ -133,7 +133,7 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, e
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.5, ease: "easeOut" }}
-              className={`absolute top-0 left-0 h-full ${activeTab === "morning" ? "bg-violet-500" : activeTab === "evening" ? "bg-indigo-500" : "bg-fuchsia-500"}`}
+              className={`absolute top-0 left-0 h-full ${activeTab === "morning" ? "bg-violet-500" : activeTab === "afternoon" ? "bg-teal-500" : activeTab === "evening" ? "bg-indigo-500" : "bg-fuchsia-500"}`}
             />
           </div>
         </div>
@@ -177,7 +177,7 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, e
                       <motion.div 
                         initial={{ height: 0 }}
                         animate={{ height: "4rem" }}
-                        className={`absolute left-[11px] top-6 w-0.5 ${activeTab === "morning" ? "bg-violet-500" : activeTab === "evening" ? "bg-indigo-500" : "bg-fuchsia-500"} shadow-[0_0_10px_rgba(124,58,237,0.5)] z-0`}
+                        className={`absolute left-[11px] top-6 w-0.5 ${activeTab === "morning" ? "bg-violet-500" : activeTab === "afternoon" ? "bg-teal-500" : activeTab === "evening" ? "bg-indigo-500" : "bg-fuchsia-500"} shadow-[0_0_10px_rgba(124,58,237,0.5)] z-0`}
                       />
                     )}
                     
@@ -185,7 +185,7 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, e
                       onClick={() => toggleTask(task.id)}
                       className={`relative w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 z-10 bg-[#070714] ${
                         isDone 
-                          ? (activeTab === "morning" ? "border-violet-500 bg-violet-500 shadow-[0_0_15px_rgba(124,58,237,0.6)]" : activeTab === "evening" ? "border-indigo-500 bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.6)]" : "border-fuchsia-500 bg-fuchsia-500 shadow-[0_0_15px_rgba(217,70,239,0.6)]")
+                          ? (activeTab === "morning" ? "border-violet-500 bg-violet-500 shadow-[0_0_15px_rgba(124,58,237,0.6)]" : activeTab === "afternoon" ? "border-teal-500 bg-teal-500 shadow-[0_0_15px_rgba(20,184,166,0.6)]" : activeTab === "evening" ? "border-indigo-500 bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.6)]" : "border-fuchsia-500 bg-fuchsia-500 shadow-[0_0_15px_rgba(217,70,239,0.6)]")
                           : "border-gray-600 hover:border-gray-400"
                       }`}
                     >

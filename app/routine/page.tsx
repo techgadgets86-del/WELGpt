@@ -18,6 +18,7 @@ interface SavedRoutine { id: string; title: string; tasks: Task[]; createdAt?: s
 export default function RoutinePage() {
   const { logActivity, profile } = useAuth();
   const [morning, setMorning] = useState<Task[]>(INITIAL_MORNING_TASKS);
+  const [afternoon, setAfternoon] = useState<Task[]>([]);
   const [evening, setEvening] = useState<Task[]>(INITIAL_EVENING_TASKS);
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [custom, setCustom] = useState<Task[]>([]);
@@ -28,9 +29,11 @@ export default function RoutinePage() {
   useEffect(() => {
     if (profile?.dailyPlan) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setMorning(profile.dailyPlan.morning);
-      setEvening(profile.dailyPlan.evening);
-      setCustom(profile.dailyPlan.afternoon);
+      setMorning(profile.dailyPlan.morning || INITIAL_MORNING_TASKS);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setAfternoon(profile.dailyPlan.afternoon || []);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setEvening(profile.dailyPlan.evening || INITIAL_EVENING_TASKS);
     }
   }, [profile?.dailyPlan]);
 
@@ -186,7 +189,7 @@ export default function RoutinePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        <RoutineTracker morningTasks={morning} eveningTasks={evening} customTasks={custom} customTitle={currentCustomTitle} onGenerateCustom={() => setShowCustomModal(true)} />
+        <RoutineTracker morningTasks={morning} afternoonTasks={afternoon} eveningTasks={evening} customTasks={custom} customTitle={currentCustomTitle} onGenerateCustom={() => setShowCustomModal(true)} />
       </motion.div>
 
       {/* Custom Routine Modal */}
