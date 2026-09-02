@@ -91,13 +91,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               goals: data.goals || [],
               preferences: data.preferences || { dietary: "none", fitnessLevel: "beginner", focusAreas: [] },
               recentActivity: data.recentActivity || [],
-              dailyPlan: data.dailyPlan || null
+              dailyPlan: data.dailyPlan || null,
+              coachMessage: data.coachMessage || undefined
             });
           } else {
             // Initialize profile
             const initData = { xp: 0, streak: 0, lastActiveDate: "", goals: [], preferences: { dietary: "none", fitnessLevel: "beginner", focusAreas: [] }, recentActivity: [], dailyPlan: null };
             setDoc(userRef, initData);
-            setProfile({ xp: 0, level: 1, streak: 0, lastActiveDate: "", goals: [], preferences: { dietary: "none", fitnessLevel: "beginner", focusAreas: [] }, recentActivity: [] });
+            setProfile({ xp: 0, level: 1, streak: 0, lastActiveDate: "", goals: [], preferences: { dietary: "none", fitnessLevel: "beginner", focusAreas: [] }, recentActivity: [], coachMessage: undefined });
           }
         });
         setLoading(false);
