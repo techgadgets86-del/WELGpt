@@ -23,8 +23,11 @@ export async function POST(req: Request) {
       prompt = `You are an elite AI wellness coach. Generate a completely fresh, highly optimized daily routine for a user.
 User Context:
 Goals: ${goals?.join(", ")}
-Current Feeling: ${feeling}
-Day Type: ${dayType}
+Current Feeling: ${feeling || 'Okay'}
+Biggest Obstacle: ${body.obstacle || 'Time'}
+Time Commitment: ${body.timeCommitment || '15-30 mins'}
+Day Type: ${dayType || 'Flexible'}
+Fitness Level: ${body.fitnessLevel || 'Beginner'}
 
 You must respond ONLY with a valid JSON object. Do not include markdown formatting.
 Schema:

@@ -16,14 +16,20 @@ export default function Home() {
   
   const [onboardingStep, setOnboardingStep] = useState(0);
   const [feeling, setFeeling] = useState("");
+  const [obstacle, setObstacle] = useState("");
+  const [timeCommitment, setTimeCommitment] = useState("");
   const [dayType, setDayType] = useState("");
+  const [fitnessLevel, setFitnessLevel] = useState("");
   const [isBuilding, setIsBuilding] = useState(false);
   const [hasPlan, setHasPlan] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [generatedPlanPreview, setGeneratedPlanPreview] = useState<any>(null);
 
   const feelings = ["Great", "Good", "Okay", "Stressed", "Tired"];
-  const dayTypes = ["Work", "Student", "Flexible", "Busy"];
+  const obstacles = ["Time", "Motivation", "Energy", "Consistency"];
+  const timeCommitments = ["5-10 mins", "15-30 mins", "30-60 mins", "1+ hour"];
+  const dayTypes = ["9 to 5", "Student", "Flexible", "Hectic"];
+  const fitnessLevels = ["Beginner", "Intermediate", "Advanced"];
 
   const handleBuildPlan = () => {
     setOnboardingStep(1);
@@ -72,7 +78,10 @@ export default function Home() {
           action: 'create_new',
           goals: selectedGoals,
           feeling,
-          dayType
+          obstacle,
+          timeCommitment,
+          dayType,
+          fitnessLevel
         })
       });
       const data = await res.json();
@@ -83,7 +92,7 @@ export default function Home() {
           plan: data.plan,
           coachMessage: data.coachMessage || "I've built a custom plan to help you reach your goals."
         });
-        setOnboardingStep(3); // Go to step 3 to preview the plan
+        setOnboardingStep(6); // Go to step 6 to preview the plan
       } else {
         setOnboardingStep(0);
       }
@@ -97,7 +106,7 @@ export default function Home() {
   const handleSavePlan = () => {
     if (user && generatedPlanPreview) {
       updateUserData({ 
-        preferences: { ...profile?.preferences, feeling, dayType },
+        preferences: { ...profile?.preferences, feeling, obstacle, timeCommitment, dayType, fitnessLevel },
         recentActivity: ["Generated AI Wellness Plan", ...(profile?.recentActivity || [])].slice(0, 10),
         dailyPlan: generatedPlanPreview.plan,
         coachMessage: generatedPlanPreview.coachMessage
@@ -177,7 +186,7 @@ export default function Home() {
                 <h2 className="text-2xl font-bold text-white mb-2">Building your plan...</h2>
                 <p className="text-gray-400">Analyzing your profile and goals</p>
               </motion.div>
-            ) : onboardingStep === 3 && generatedPlanPreview ? (
+            ) : onboardingStep === 6 && generatedPlanPreview ? (
               <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="flex flex-col items-center w-full max-w-md">
                 <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-teal-400 mb-2 text-center">Your WelGPT Plan</h2>
                 <p className="text-gray-300 font-medium mb-8 text-center">Built around your goals: {selectedGoals.join(', ')}</p>
@@ -237,12 +246,15 @@ export default function Home() {
               >
                 {onboardingStep === 1 && (
                   <>
+                    <div className="flex justify-between items-center mb-6">
+                      <span className="text-gray-500 text-sm font-bold tracking-widest">STEP 1/5</span>
+                    </div>
                     <h2 className="text-2xl font-bold text-white mb-6 text-center">How are you feeling today?</h2>
                     <div className="grid grid-cols-2 gap-3 mb-8">
                       {feelings.map(f => (
                         <button 
                           key={f} onClick={() => setFeeling(f)}
-                          className={`p-4 rounded-xl font-bold transition-all ${feeling === f ? 'bg-violet-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
+                          className={`p-4 rounded-xl font-bold transition-all ${feeling === f ? 'bg-violet-600 text-white border-2 border-violet-400 shadow-[0_0_15px_rgba(124,58,237,0.4)]' : 'bg-white/5 text-gray-400 hover:bg-white/10 border-2 border-transparent'}`}
                         >
                           {f}
                         </button>
@@ -250,7 +262,7 @@ export default function Home() {
                     </div>
                     <button 
                       onClick={() => setOnboardingStep(2)} disabled={!feeling}
-                      className="w-full py-4 bg-white text-black rounded-xl font-bold disabled:opacity-50"
+                      className="w-full py-4 bg-white text-black rounded-xl font-bold transition-all disabled:opacity-50 hover:scale-105"
                     >
                       Continue
                     </button>
@@ -259,20 +271,102 @@ export default function Home() {
 
                 {onboardingStep === 2 && (
                   <>
-                    <h2 className="text-2xl font-bold text-white mb-6 text-center">What does your day look like?</h2>
+                    <div className="flex justify-between items-center mb-6">
+                      <button onClick={() => setOnboardingStep(1)} className="text-gray-400 hover:text-white">← Back</button>
+                      <span className="text-gray-500 text-sm font-bold tracking-widest">STEP 2/5</span>
+                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-6 text-center">What&apos;s holding you back the most?</h2>
+                    <div className="grid grid-cols-2 gap-3 mb-8">
+                      {obstacles.map(o => (
+                        <button 
+                          key={o} onClick={() => setObstacle(o)}
+                          className={`p-4 rounded-xl font-bold transition-all ${obstacle === o ? 'bg-violet-600 text-white border-2 border-violet-400 shadow-[0_0_15px_rgba(124,58,237,0.4)]' : 'bg-white/5 text-gray-400 hover:bg-white/10 border-2 border-transparent'}`}
+                        >
+                          {o}
+                        </button>
+                      ))}
+                    </div>
+                    <button 
+                      onClick={() => setOnboardingStep(3)} disabled={!obstacle}
+                      className="w-full py-4 bg-white text-black rounded-xl font-bold transition-all disabled:opacity-50 hover:scale-105"
+                    >
+                      Continue
+                    </button>
+                  </>
+                )}
+
+                {onboardingStep === 3 && (
+                  <>
+                    <div className="flex justify-between items-center mb-6">
+                      <button onClick={() => setOnboardingStep(2)} className="text-gray-400 hover:text-white">← Back</button>
+                      <span className="text-gray-500 text-sm font-bold tracking-widest">STEP 3/5</span>
+                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-6 text-center">How much time can you commit daily?</h2>
+                    <div className="grid grid-cols-2 gap-3 mb-8">
+                      {timeCommitments.map(t => (
+                        <button 
+                          key={t} onClick={() => setTimeCommitment(t)}
+                          className={`p-4 rounded-xl font-bold transition-all ${timeCommitment === t ? 'bg-violet-600 text-white border-2 border-violet-400 shadow-[0_0_15px_rgba(124,58,237,0.4)]' : 'bg-white/5 text-gray-400 hover:bg-white/10 border-2 border-transparent'}`}
+                        >
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                    <button 
+                      onClick={() => setOnboardingStep(4)} disabled={!timeCommitment}
+                      className="w-full py-4 bg-white text-black rounded-xl font-bold transition-all disabled:opacity-50 hover:scale-105"
+                    >
+                      Continue
+                    </button>
+                  </>
+                )}
+
+                {onboardingStep === 4 && (
+                  <>
+                    <div className="flex justify-between items-center mb-6">
+                      <button onClick={() => setOnboardingStep(3)} className="text-gray-400 hover:text-white">← Back</button>
+                      <span className="text-gray-500 text-sm font-bold tracking-widest">STEP 4/5</span>
+                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-6 text-center">What does your typical day look like?</h2>
                     <div className="grid grid-cols-2 gap-3 mb-8">
                       {dayTypes.map(d => (
                         <button 
                           key={d} onClick={() => setDayType(d)}
-                          className={`p-4 rounded-xl font-bold transition-all ${dayType === d ? 'bg-teal-500 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
+                          className={`p-4 rounded-xl font-bold transition-all ${dayType === d ? 'bg-violet-600 text-white border-2 border-violet-400 shadow-[0_0_15px_rgba(124,58,237,0.4)]' : 'bg-white/5 text-gray-400 hover:bg-white/10 border-2 border-transparent'}`}
                         >
                           {d}
                         </button>
                       ))}
                     </div>
                     <button 
-                      onClick={completeOnboarding} disabled={!dayType}
-                      className="w-full py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white rounded-xl font-bold shadow-[0_0_20px_rgba(124,58,237,0.4)] disabled:opacity-50"
+                      onClick={() => setOnboardingStep(5)} disabled={!dayType}
+                      className="w-full py-4 bg-white text-black rounded-xl font-bold transition-all disabled:opacity-50 hover:scale-105"
+                    >
+                      Continue
+                    </button>
+                  </>
+                )}
+
+                {onboardingStep === 5 && (
+                  <>
+                    <div className="flex justify-between items-center mb-6">
+                      <button onClick={() => setOnboardingStep(4)} className="text-gray-400 hover:text-white">← Back</button>
+                      <span className="text-gray-500 text-sm font-bold tracking-widest">STEP 5/5</span>
+                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-6 text-center">What is your current wellness/fitness level?</h2>
+                    <div className="grid grid-cols-1 gap-3 mb-8">
+                      {fitnessLevels.map(fl => (
+                        <button 
+                          key={fl} onClick={() => setFitnessLevel(fl)}
+                          className={`p-4 rounded-xl font-bold transition-all ${fitnessLevel === fl ? 'bg-teal-500 text-white border-2 border-teal-300 shadow-[0_0_15px_rgba(20,184,166,0.4)]' : 'bg-white/5 text-gray-400 hover:bg-white/10 border-2 border-transparent'}`}
+                        >
+                          {fl}
+                        </button>
+                      ))}
+                    </div>
+                    <button 
+                      onClick={completeOnboarding} disabled={!fitnessLevel}
+                      className="w-full py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white rounded-xl font-bold shadow-[0_0_20px_rgba(124,58,237,0.4)] disabled:opacity-50 hover:scale-105 transition-all"
                     >
                       Generate Plan
                     </button>
