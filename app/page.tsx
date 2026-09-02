@@ -27,35 +27,72 @@ export default function Home() {
     setOnboardingStep(1);
   };
 
-  const completeOnboarding = () => {
-    setIsBuilding(true);
-    setTimeout(() => {
-      setIsBuilding(false);
-      setOnboardingStep(0);
-      setHasPlan(true);
-      
-      const newPlan = {
-        date: new Date().toISOString().split('T')[0],
-        morning: [
-          { id: "m1", time: "Morning", title: "5 min breathing", desc: "Focus on deep diaphragm breathing", completed: false }
-        ],
-        afternoon: [
-          { id: "a1", time: "Afternoon", title: "20 min movement", desc: "Cardio or mobility work", completed: false }
-        ],
-        evening: [
-          { id: "e1", time: "Evening", title: "Nutrition goal", desc: "Hit protein macros", completed: false },
-          { id: "e2", time: "Evening", title: "Reflection", desc: "3 min gratitude journal", completed: false }
-        ]
-      };
-      
-      if (user) {
-        updateUserData({ 
-          preferences: { ...profile?.preferences, feeling, dayType },
-          recentActivity: ["Generated AI Wellness Plan", ...(profile?.recentActivity || [])].slice(0, 10),
-          dailyPlan: newPlan
-        });
+  const [isAdjustingPlan, setIsAdjustingPlan] = useState(false);
+
+  // Check for daily rollover
+  useEffect(() => {
+    if (profile?.dailyPlan && user && !isAdjustingPlan) {
+      const todayDate = new Date().toISOString().split('T')[0];
+      if (profile.dailyPlan.date !== todayDate) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setIsAdjustingPlan(true);
+        // Call adjust endpoint
+        fetch('/api/plan-generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'adjust_daily',
+            goals: profile.goals || [],
+            previousPlan: profile.dailyPlan
+          })
+        }).then(res => res.json()).then(data => {
+          if (data.plan) {
+            data.plan.date = todayDate;
+            updateUserData({
+              dailyPlan: data.plan,
+              coachMessage: data.coachMessage || "Based on yesterday, I've adjusted today's plan."
+            });
+          }
+        }).catch(err => console.error(err))
+        .finally(() => setIsAdjustingPlan(false));
       }
-    }, 2500);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile?.dailyPlan, user]);
+
+  const completeOnboarding = async () => {
+    setIsBuilding(true);
+    try {
+      const res = await fetch('/api/plan-generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'create_new',
+          goals: selectedGoals,
+          feeling,
+          dayType
+        })
+      });
+      const data = await res.json();
+      
+      if (data.plan) {
+        data.plan.date = new Date().toISOString().split('T')[0];
+        if (user) {
+          updateUserData({ 
+            preferences: { ...profile?.preferences, feeling, dayType },
+            recentActivity: ["Generated AI Wellness Plan", ...(profile?.recentActivity || [])].slice(0, 10),
+            dailyPlan: data.plan,
+            coachMessage: data.coachMessage || "I've built a custom plan to help you reach your goals."
+          });
+        }
+      }
+    } catch (err) {
+      console.error("Error generating plan:", err);
+    }
+    
+    setIsBuilding(false);
+    setOnboardingStep(0);
+    setHasPlan(true);
   };
 
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
@@ -246,7 +283,7 @@ export default function Home() {
                 </div>
               </div>
               <p className="text-2xl text-white font-medium leading-relaxed relative z-10 tracking-tight">
-                &quot;Based on your week, I&apos;ve<br/>adjusted tomorrow&apos;s plan.&quot;
+                {profile?.coachMessage || "Based on your week, I've adjusted tomorrow's plan."}
               </p>
             </div>
             
