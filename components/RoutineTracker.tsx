@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -32,7 +32,20 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, e
   const [activeTab, setActiveTab] = useState<"morning" | "evening" | "custom">("morning");
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const router = useRouter();
-  const { addXP } = useAuth();
+  const { addXP, profile, updateUserData } = useAuth();
+
+  useEffect(() => {
+    const initialCompleted = new Set<string>();
+    if (profile?.dailyPlan) {
+      (['morning', 'afternoon', 'evening'] as const).forEach(time => {
+        profile.dailyPlan![time]?.forEach(t => {
+          if (t.completed) initialCompleted.add(t.id);
+        });
+      });
+    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCompleted(initialCompleted);
+  }, [profile?.dailyPlan]);
 
   const currentTasks = activeTab === "morning" ? morningTasks : activeTab === "evening" ? eveningTasks : customTasks;
   const progress = Math.round((currentTasks.filter(t => completed.has(t.id)).length / currentTasks.length) * 100);
@@ -40,12 +53,28 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, e
     const toggleTask = (id: string) => {
     setCompleted(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
+      const isCompleting = !newSet.has(id);
+      
+      if (isCompleting) {
         newSet.add(id);
         addXP(10); // Reward XP for task completion!
+      } else {
+        newSet.delete(id);
       }
+      
+      // Sync immediately with Firebase so it persists across tabs
+      if (profile?.dailyPlan) {
+        const newPlan = { ...profile.dailyPlan };
+        (['morning', 'afternoon', 'evening'] as const).forEach(time => {
+          if (newPlan[time]) {
+            newPlan[time] = newPlan[time].map(t => 
+              t.id === id ? { ...t, completed: isCompleting } : t
+            );
+          }
+        });
+        updateUserData({ dailyPlan: newPlan });
+      }
+      
       return newSet;
     });
   };

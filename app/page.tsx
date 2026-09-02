@@ -236,7 +236,7 @@ export default function Home() {
           <div className="w-full max-w-md mx-auto mb-12">
             <div 
               onClick={() => setShowPremium(true)}
-              className="bg-gradient-to-b from-[#1a1a3a] to-[#111127] border border-violet-500/50 rounded-3xl p-8 text-center relative overflow-hidden group cursor-pointer shadow-[0_0_30px_rgba(124,58,237,0.15)]"
+              className="bg-gradient-to-b from-[#1a1a3a] to-[#111127] border border-violet-500/50 rounded-3xl p-8 text-center relative overflow-hidden group cursor-pointer shadow-[0_0_30px_rgba(124,58,237,0.15)] mb-6"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/20 blur-3xl rounded-full" />
               
@@ -248,6 +248,17 @@ export default function Home() {
               <p className="text-2xl text-white font-medium leading-relaxed relative z-10 tracking-tight">
                 &quot;Based on your week, I&apos;ve<br/>adjusted tomorrow&apos;s plan.&quot;
               </p>
+            </div>
+            
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-6 bg-[#111127] border border-white/10 rounded-3xl">
+              <p className="text-gray-300 font-medium">What are you working on today?</p>
+              <button 
+                onClick={() => router.push('/coach')}
+                className="w-full md:w-auto px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/10 text-white rounded-xl font-bold transition-all flex items-center justify-center gap-2"
+              >
+                <Brain size={18} className="text-teal-400" />
+                Ask Your Coach
+              </button>
             </div>
           </div>
 
@@ -297,24 +308,30 @@ export default function Home() {
 
           {/* 3. YOUR PROGRESS */}
           <div className="w-full max-w-md mx-auto mb-6 text-center">
-            <h3 className="text-gray-400 font-bold tracking-widest uppercase text-sm mb-6">Your Progress</h3>
             
-            <div className="bg-[#111127] border border-white/10 rounded-3xl p-8">
-              <div className="flex justify-between items-end mb-3">
-                <span className="text-gray-400 text-sm font-medium">Daily Completion</span>
-                <span className="text-white font-bold text-xl">{progressPercent}%</span>
-              </div>
-              <div className="w-full h-4 bg-white/5 rounded-full overflow-hidden mb-8">
-                <div className={`h-full bg-gradient-to-r from-teal-400 to-emerald-400 rounded-full shadow-[0_0_10px_rgba(45,212,191,0.5)]`} style={{ width: `${progressPercent}%` }} />
+            <div className="bg-[#111127] border border-white/10 rounded-3xl p-8 text-left">
+              <div className="mb-8">
+                <div className="flex justify-between items-end mb-3">
+                  <span className="text-white font-bold text-xl">Today</span>
+                  <span className="text-teal-400 font-bold">{progressPercent}% complete</span>
+                </div>
+                <div className="w-full h-4 bg-white/5 rounded-full overflow-hidden">
+                  <div className={`h-full bg-gradient-to-r from-teal-400 to-emerald-400 rounded-full shadow-[0_0_10px_rgba(45,212,191,0.5)]`} style={{ width: `${progressPercent}%` }} />
+                </div>
               </div>
               
-              <div className="flex items-center justify-center gap-4">
-                <div className="p-3 bg-orange-500/20 text-orange-400 rounded-full">
-                  <Flame size={24} />
-                </div>
-                <div className="text-left">
-                  <p className="text-2xl font-black text-white">{profile?.streak || 0} Day</p>
-                  <p className="text-orange-400 font-bold tracking-widest uppercase text-xs">Active Streak</p>
+              <div className="pt-6 border-t border-white/5">
+                <div className="flex flex-col gap-2">
+                  <span className="text-white font-bold text-lg">Streak</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">🔥</span>
+                    <span className="text-orange-400 font-bold">{profile?.streak || 0} days</span>
+                  </div>
+                  <p className="text-gray-400 text-sm mt-1 leading-relaxed">
+                    {progressPercent === 100 
+                      ? "Incredible job! You've secured your streak for today." 
+                      : (progressPercent > 0 ? "Complete the rest of your plan to build your streak." : "Complete one more activity to start your streak.")}
+                  </p>
                 </div>
               </div>
             </div>

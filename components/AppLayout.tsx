@@ -27,7 +27,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { icon: Home, label: "Home", href: "/" },
-    { icon: CheckSquare, label: "Today's Plan", href: "/routine" },
+    { icon: CheckSquare, label: "Today", href: "/routine" },
     { icon: Brain, label: "AI Coach", href: "/coach" },
     { icon: Compass, label: "Explore", href: "/explore" },
     { icon: BarChart3, label: "Progress", href: "/dashboard" },
