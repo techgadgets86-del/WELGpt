@@ -19,6 +19,8 @@ export default function Home() {
   const [dayType, setDayType] = useState("");
   const [isBuilding, setIsBuilding] = useState(false);
   const [hasPlan, setHasPlan] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [generatedPlanPreview, setGeneratedPlanPreview] = useState<any>(null);
 
   const feelings = ["Great", "Good", "Okay", "Stressed", "Tired"];
   const dayTypes = ["Work", "Student", "Flexible", "Busy"];
@@ -77,20 +79,30 @@ export default function Home() {
       
       if (data.plan) {
         data.plan.date = new Date().toISOString().split('T')[0];
-        if (user) {
-          updateUserData({ 
-            preferences: { ...profile?.preferences, feeling, dayType },
-            recentActivity: ["Generated AI Wellness Plan", ...(profile?.recentActivity || [])].slice(0, 10),
-            dailyPlan: data.plan,
-            coachMessage: data.coachMessage || "I've built a custom plan to help you reach your goals."
-          });
-        }
+        setGeneratedPlanPreview({
+          plan: data.plan,
+          coachMessage: data.coachMessage || "I've built a custom plan to help you reach your goals."
+        });
+        setOnboardingStep(3); // Go to step 3 to preview the plan
+      } else {
+        setOnboardingStep(0);
       }
     } catch (err) {
       console.error("Error generating plan:", err);
+      setOnboardingStep(0);
     }
-    
     setIsBuilding(false);
+  };
+
+  const handleSavePlan = () => {
+    if (user && generatedPlanPreview) {
+      updateUserData({ 
+        preferences: { ...profile?.preferences, feeling, dayType },
+        recentActivity: ["Generated AI Wellness Plan", ...(profile?.recentActivity || [])].slice(0, 10),
+        dailyPlan: generatedPlanPreview.plan,
+        coachMessage: generatedPlanPreview.coachMessage
+      });
+    }
     setOnboardingStep(0);
     setHasPlan(true);
   };
@@ -141,7 +153,7 @@ export default function Home() {
     if (total > 0) progressPercent = Math.round((completed / total) * 100);
   }
 
-    const showDashboard = hasPlan || !!profile?.dailyPlan;
+    const showDashboard = hasPlan || (profile?.dailyPlan && profile.dailyPlan.morning);
   
   // Dynamic Subtitle Logic
   let subtitle = "What do you want to improve?";
@@ -165,55 +177,105 @@ export default function Home() {
                 <h2 className="text-2xl font-bold text-white mb-2">Building your plan...</h2>
                 <p className="text-gray-400">Analyzing your profile and goals</p>
               </motion.div>
+            ) : onboardingStep === 3 && generatedPlanPreview ? (
+              <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="flex flex-col items-center w-full max-w-md">
+                <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-teal-400 mb-2 text-center">Your WelGPT Plan</h2>
+                <p className="text-gray-300 font-medium mb-8 text-center">Built around your goals: {selectedGoals.join(', ')}</p>
+                
+                <div className="bg-[#111127] border border-white/10 rounded-3xl p-6 w-full mb-8 max-h-[50vh] overflow-y-auto">
+                  <div className="space-y-6">
+                    {generatedPlanPreview.plan.morning && generatedPlanPreview.plan.morning.length > 0 && (
+                      <div>
+                        <h4 className="text-violet-400 font-bold text-xs uppercase tracking-wider mb-3">Morning</h4>
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                        {generatedPlanPreview.plan.morning.map((task: any, i: number) => (
+                          <div key={task.id} className={`flex items-center gap-3 ${i < generatedPlanPreview.plan.morning.length - 1 ? 'pb-4 border-b border-white/5 mb-4' : ''}`}>
+                            <span className="text-2xl">☀️</span>
+                            <span className="font-bold text-lg text-white">{task.title}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {generatedPlanPreview.plan.afternoon && generatedPlanPreview.plan.afternoon.length > 0 && (
+                      <div>
+                        <h4 className="text-teal-400 font-bold text-xs uppercase tracking-wider mb-3">Afternoon</h4>
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                        {generatedPlanPreview.plan.afternoon.map((task: any, i: number) => (
+                          <div key={task.id} className={`flex items-center gap-3 ${i < generatedPlanPreview.plan.afternoon.length - 1 ? 'pb-4 border-b border-white/5 mb-4' : ''}`}>
+                            <span className="text-2xl">⚡</span>
+                            <span className="font-bold text-lg text-white">{task.title}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {generatedPlanPreview.plan.evening && generatedPlanPreview.plan.evening.length > 0 && (
+                      <div>
+                        <h4 className="text-orange-400 font-bold text-xs uppercase tracking-wider mb-3">Evening</h4>
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                        {generatedPlanPreview.plan.evening.map((task: any, i: number) => (
+                          <div key={task.id} className={`flex items-center gap-3 ${i < generatedPlanPreview.plan.evening.length - 1 ? 'pb-4 border-b border-white/5 mb-4' : ''}`}>
+                            <span className="text-2xl">🌙</span>
+                            <span className="font-bold text-lg text-white">{task.title}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                <button 
+                  onClick={handleSavePlan}
+                  className="w-full px-8 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white rounded-2xl font-bold text-lg shadow-[0_0_30px_rgba(124,58,237,0.3)] transition-all hover:scale-105"
+                >
+                  SAVE & START TODAY
+                </button>
+              </motion.div>
             ) : (
               <motion.div 
-                key={onboardingStep}
-                initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }}
-                className="w-full max-w-md"
+                initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                className="bg-[#111127] border border-white/10 rounded-3xl p-8 w-full max-w-md"
               >
                 {onboardingStep === 1 && (
                   <>
-                    <h2 className="text-3xl font-black text-white mb-2 text-center">How are you feeling?</h2>
-                    <p className="text-gray-400 text-center mb-8">This helps WelGPT adjust your intensity.</p>
-                    <div className="flex flex-col gap-3 mb-10">
+                    <h2 className="text-2xl font-bold text-white mb-6 text-center">How are you feeling today?</h2>
+                    <div className="grid grid-cols-2 gap-3 mb-8">
                       {feelings.map(f => (
-                        <button
-                          key={f}
-                          onClick={() => setFeeling(f)}
-                          className={`px-6 py-4 rounded-xl border transition-all text-lg font-bold text-left ${
-                            feeling === f 
-                              ? 'bg-teal-500/20 border-teal-500 text-teal-300 shadow-[0_0_15px_rgba(20,184,166,0.2)]'
-                              : 'bg-[#111127] border-white/10 text-gray-300'
-                          }`}
+                        <button 
+                          key={f} onClick={() => setFeeling(f)}
+                          className={`p-4 rounded-xl font-bold transition-all ${feeling === f ? 'bg-violet-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
                         >
                           {f}
                         </button>
                       ))}
                     </div>
-                    <button onClick={() => setOnboardingStep(2)} disabled={!feeling} className="w-full py-4 bg-white text-black font-bold rounded-2xl disabled:opacity-50">Next</button>
+                    <button 
+                      onClick={() => setOnboardingStep(2)} disabled={!feeling}
+                      className="w-full py-4 bg-white text-black rounded-xl font-bold disabled:opacity-50"
+                    >
+                      Continue
+                    </button>
                   </>
                 )}
 
                 {onboardingStep === 2 && (
                   <>
-                    <h2 className="text-3xl font-black text-white mb-2 text-center">What does your day look like?</h2>
-                    <p className="text-gray-400 text-center mb-8">WelGPT will schedule around your life.</p>
-                    <div className="flex flex-col gap-3 mb-10">
+                    <h2 className="text-2xl font-bold text-white mb-6 text-center">What does your day look like?</h2>
+                    <div className="grid grid-cols-2 gap-3 mb-8">
                       {dayTypes.map(d => (
-                        <button
-                          key={d}
-                          onClick={() => setDayType(d)}
-                          className={`px-6 py-4 rounded-xl border transition-all text-lg font-bold text-left ${
-                            dayType === d 
-                              ? 'bg-orange-500/20 border-orange-500 text-orange-300 shadow-[0_0_15px_rgba(249,115,22,0.2)]'
-                              : 'bg-[#111127] border-white/10 text-gray-300'
-                          }`}
+                        <button 
+                          key={d} onClick={() => setDayType(d)}
+                          className={`p-4 rounded-xl font-bold transition-all ${dayType === d ? 'bg-teal-500 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
                         >
                           {d}
                         </button>
                       ))}
                     </div>
-                    <button onClick={completeOnboarding} disabled={!dayType} className="w-full py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold rounded-2xl disabled:opacity-50 shadow-[0_0_20px_rgba(124,58,237,0.3)]">Create My Plan</button>
+                    <button 
+                      onClick={completeOnboarding} disabled={!dayType}
+                      className="w-full py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white rounded-xl font-bold shadow-[0_0_20px_rgba(124,58,237,0.4)] disabled:opacity-50"
+                    >
+                      Generate Plan
+                    </button>
                   </>
                 )}
               </motion.div>
