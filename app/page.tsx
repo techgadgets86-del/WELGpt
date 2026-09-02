@@ -305,31 +305,39 @@ export default function Home() {
             
             <div className="bg-[#111127] border border-white/10 rounded-3xl p-6 mb-6">
                <div className="space-y-6">
-                  <div>
-                    <h4 className="text-violet-400 font-bold text-xs uppercase tracking-wider mb-3">Morning</h4>
-                    <div className="flex items-center gap-3 pb-4 border-b border-white/5">
-                      <span className="text-2xl">🧘</span>
-                      <span className="font-bold text-white text-lg">5 min breathing</span>
+                  {profile?.dailyPlan?.morning && profile.dailyPlan.morning.length > 0 && (
+                    <div>
+                      <h4 className="text-violet-400 font-bold text-xs uppercase tracking-wider mb-3">Morning</h4>
+                      {profile.dailyPlan.morning.map((task, i) => (
+                        <div key={task.id} className={`flex items-center gap-3 ${i < profile.dailyPlan!.morning.length - 1 ? 'pb-4 border-b border-white/5 mb-4' : ''}`}>
+                          <span className="text-2xl">{task.completed ? '✅' : '☀️'}</span>
+                          <span className={`font-bold text-lg ${task.completed ? 'text-gray-500 line-through' : 'text-white'}`}>{task.title}</span>
+                        </div>
+                      ))}
                     </div>
-                  </div>
-                  <div>
-                    <h4 className="text-teal-400 font-bold text-xs uppercase tracking-wider mb-3">Afternoon</h4>
-                    <div className="flex items-center gap-3 pb-4 border-b border-white/5">
-                      <span className="text-2xl">🏃</span>
-                      <span className="font-bold text-white text-lg">20 min movement</span>
+                  )}
+                  {profile?.dailyPlan?.afternoon && profile.dailyPlan.afternoon.length > 0 && (
+                    <div>
+                      <h4 className="text-teal-400 font-bold text-xs uppercase tracking-wider mb-3">Afternoon</h4>
+                      {profile.dailyPlan.afternoon.map((task, i) => (
+                        <div key={task.id} className={`flex items-center gap-3 ${i < profile.dailyPlan!.afternoon.length - 1 ? 'pb-4 border-b border-white/5 mb-4' : ''}`}>
+                          <span className="text-2xl">{task.completed ? '✅' : '⚡'}</span>
+                          <span className={`font-bold text-lg ${task.completed ? 'text-gray-500 line-through' : 'text-white'}`}>{task.title}</span>
+                        </div>
+                      ))}
                     </div>
-                  </div>
-                  <div>
-                    <h4 className="text-orange-400 font-bold text-xs uppercase tracking-wider mb-3">Evening</h4>
-                    <div className="flex items-center gap-3 pb-3">
-                      <span className="text-2xl">🥗</span>
-                      <span className="font-bold text-white text-lg">Nutrition goal</span>
+                  )}
+                  {profile?.dailyPlan?.evening && profile.dailyPlan.evening.length > 0 && (
+                    <div>
+                      <h4 className="text-orange-400 font-bold text-xs uppercase tracking-wider mb-3">Evening</h4>
+                      {profile.dailyPlan.evening.map((task, i) => (
+                        <div key={task.id} className={`flex items-center gap-3 ${i < profile.dailyPlan!.evening.length - 1 ? 'pb-4 border-b border-white/5 mb-4' : ''}`}>
+                          <span className="text-2xl">{task.completed ? '✅' : '🌙'}</span>
+                          <span className={`font-bold text-lg ${task.completed ? 'text-gray-500 line-through' : 'text-white'}`}>{task.title}</span>
+                        </div>
+                      ))}
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">📓</span>
-                      <span className="font-bold text-white text-lg">Reflection</span>
-                    </div>
-                  </div>
+                  )}
                </div>
             </div>
             
@@ -337,7 +345,7 @@ export default function Home() {
               onClick={() => router.push('/routine')}
               className="w-full py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white rounded-2xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(124,58,237,0.3)]"
             >
-              START TRACKING
+              VIEW TODAY&apos;S PLAN
             </button>
           </div>
 
