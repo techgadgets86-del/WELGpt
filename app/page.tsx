@@ -60,8 +60,21 @@ export default function Home() {
               dailyPlan: data.plan,
               coachMessage: data.coachMessage || "Based on yesterday, I've adjusted today's plan."
             });
+          } else {
+            // Fail gracefully to prevent infinite loop
+            updateUserData({
+              dailyPlan: { ...profile.dailyPlan, date: todayDate },
+              coachMessage: "Kept your previous routine."
+            });
           }
-        }).catch(err => console.error(err))
+        }).catch(err => {
+          console.error(err);
+          // Fail gracefully on catch to prevent infinite loop
+          updateUserData({
+            dailyPlan: { ...profile.dailyPlan, date: todayDate },
+            coachMessage: "Kept your previous routine."
+          });
+        })
         .finally(() => setIsAdjustingPlan(false));
       }
     }
