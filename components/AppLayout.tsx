@@ -11,6 +11,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { LogIn, LogOut } from "lucide-react";
+import DynamicIsland from "@/components/DynamicIsland";
 
 // 🌊 Smooth UI: Physical Spring Transitions
 const springTransition = {
@@ -122,7 +123,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* ============================================================== */}
       {/* MOBILE TOP BAR */}
       {/* ============================================================== */}
-      <div className="md:hidden flex items-center justify-between p-4 border-b border-white/10 bg-[#111127]/90 backdrop-blur-md sticky top-0 z-30 pt-[env(safe-area-inset-top)]">
+      <div className="md:hidden flex items-center justify-between p-4 border-b border-white/10 bg-[#111127]/90 backdrop-blur-md sticky top-0 z-30 pt-[env(safe-area-inset-top)] pl-[calc(1rem+env(safe-area-inset-left))] pr-[calc(1rem+env(safe-area-inset-right))]">
         <Link href="/">
           <Image src="/logo-full.png" alt="WelGPT" width={100} height={24} className="h-[24px] w-auto object-contain" priority />
         </Link>
@@ -192,16 +193,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="fixed bottom-1/4 right-[-10%] w-[250px] md:w-[400px] h-[250px] md:h-[400px] bg-teal-500/10 blur-[100px] rounded-full pointer-events-none z-0" />
       
       {/* ============================================================== */}
+      <DynamicIsland />
+
+      {/* ============================================================== */}
       {/* MAIN CONTENT AREA */}
       {/* ============================================================== */}
-      <main className="flex-1 overflow-y-auto overflow-x-hidden relative p-4 md:p-8 lg:p-12 pb-[140px] md:pb-8 no-scrollbar bg-[#0a0a1a]">        
+      <main className="flex-1 overflow-y-auto overflow-x-hidden relative p-4 md:p-8 lg:p-12 pb-[140px] md:pb-8 pl-[calc(1rem+env(safe-area-inset-left))] pr-[calc(1rem+env(safe-area-inset-right))] no-scrollbar bg-[#0a0a1a]">        
         {children}
       </main>
 
       {/* ============================================================== */}
       {/* MOBILE BOTTOM NAVIGATION BAR */}
       {/* ============================================================== */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[#111127]/90 backdrop-blur-md border-t border-white/10 pb-[calc(0.5rem+env(safe-area-inset-bottom))] z-50">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[#111127]/90 backdrop-blur-md border-t border-white/10 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] z-50">
         <div className="flex items-center justify-around p-2">
           {bottomNavItems.map((item, idx) => {
             const isActive = pathname === item.href;
