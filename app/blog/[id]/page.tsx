@@ -20,7 +20,7 @@ export default async function BlogPost({ params }: { params: Promise<{ id: strin
   }
 
   return (
-    <div className="max-w-4xl mx-auto relative z-10 pt-4 pb-20 h-full flex flex-col">
+    <div className="max-w-4xl mx-auto relative z-10 pt-4  min-h-full flex pb-[160px] md:pb-12 flex-col">
       <Link href="/blog" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8 group w-fit">
         <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
         <span className="font-mono text-sm tracking-widest uppercase">Back to Library</span>

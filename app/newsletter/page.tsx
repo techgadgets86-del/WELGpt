@@ -5,7 +5,7 @@ import { Mail, ArrowRight } from "lucide-react";
 
 export default function NewsletterPage() {
   return (
-    <div className="max-w-4xl mx-auto relative z-10 pt-12 h-full flex flex-col items-center justify-center text-center pb-20">
+    <div className="max-w-4xl mx-auto relative z-10 pt-12 min-h-full flex pb-[160px] md:pb-12 flex-col items-center justify-center text-center ">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}

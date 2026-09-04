@@ -74,7 +74,7 @@ export default function NutritionPage() {
   }, []);
 
   return (
-    <div className="max-w-5xl mx-auto relative z-10 pt-4 pb-20 h-full flex flex-col">
+    <div className="max-w-5xl mx-auto relative z-10 pt-4  min-h-full flex pb-[160px] md:pb-12 flex-col">
       
       {profile?.dailyPlan && (
         <div className="bg-orange-500/20 border border-orange-500/50 rounded-2xl p-4 mb-8 flex items-center justify-between text-orange-300 w-full">

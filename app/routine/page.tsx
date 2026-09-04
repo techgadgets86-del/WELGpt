@@ -129,7 +129,7 @@ export default function RoutinePage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto relative z-10 pt-4 pb-20 h-full flex flex-col">
+    <div className="max-w-5xl mx-auto relative z-10 pt-4  min-h-full flex pb-[160px] md:pb-12 flex-col">
       <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <motion.h1 

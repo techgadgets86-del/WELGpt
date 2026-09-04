@@ -5,7 +5,7 @@ import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 
 export default function DashboardPage() {
   return (
-    <div className="max-w-6xl mx-auto relative z-10 pt-4 pb-20 h-full flex flex-col">
+    <div className="max-w-6xl mx-auto relative z-10 pt-4  min-h-full flex pb-[160px] md:pb-12 flex-col">
       <header className="mb-10">
         <motion.h1 
             initial={{ opacity: 0, y: 20 }}

@@ -173,7 +173,7 @@ export default function Home() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto relative z-10 pt-8 pb-32 h-full flex flex-col items-center">
+    <div className="max-w-3xl mx-auto relative z-10 pt-8  min-h-full flex pb-[160px] md:pb-12 flex-col items-center">
       <AnimatePresence>
         {onboardingStep > 0 && (
           <motion.div 
@@ -198,7 +198,7 @@ export default function Home() {
                         <h4 className="text-violet-400 font-bold text-xs uppercase tracking-wider mb-3">Morning</h4>
                         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                         {generatedPlanPreview.plan.morning.map((task: any, i: number) => (
-                          <div key={task.id} className={`flex items-center gap-3 ${i < generatedPlanPreview.plan.morning.length - 1 ? 'pb-4 border-b border-white/5 mb-4' : ''}`}>
+                          <div key={task.id} className={`flex items-center gap-3 ${i < generatedPlanPreview.plan.morning.length - 1 ? ' border-b border-white/5 mb-4' : ''}`}>
                             <span className="text-2xl">☀️</span>
                             <span className="font-bold text-lg text-white">{task.title}</span>
                           </div>
@@ -210,7 +210,7 @@ export default function Home() {
                         <h4 className="text-teal-400 font-bold text-xs uppercase tracking-wider mb-3">Afternoon</h4>
                         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                         {generatedPlanPreview.plan.afternoon.map((task: any, i: number) => (
-                          <div key={task.id} className={`flex items-center gap-3 ${i < generatedPlanPreview.plan.afternoon.length - 1 ? 'pb-4 border-b border-white/5 mb-4' : ''}`}>
+                          <div key={task.id} className={`flex items-center gap-3 ${i < generatedPlanPreview.plan.afternoon.length - 1 ? ' border-b border-white/5 mb-4' : ''}`}>
                             <span className="text-2xl">⚡</span>
                             <span className="font-bold text-lg text-white">{task.title}</span>
                           </div>
@@ -222,7 +222,7 @@ export default function Home() {
                         <h4 className="text-orange-400 font-bold text-xs uppercase tracking-wider mb-3">Evening</h4>
                         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                         {generatedPlanPreview.plan.evening.map((task: any, i: number) => (
-                          <div key={task.id} className={`flex items-center gap-3 ${i < generatedPlanPreview.plan.evening.length - 1 ? 'pb-4 border-b border-white/5 mb-4' : ''}`}>
+                          <div key={task.id} className={`flex items-center gap-3 ${i < generatedPlanPreview.plan.evening.length - 1 ? ' border-b border-white/5 mb-4' : ''}`}>
                             <span className="text-2xl">🌙</span>
                             <span className="font-bold text-lg text-white">{task.title}</span>
                           </div>
@@ -465,7 +465,7 @@ export default function Home() {
                     <div>
                       <h4 className="text-violet-400 font-bold text-xs uppercase tracking-wider mb-3">Morning</h4>
                       {profile.dailyPlan.morning.map((task, i) => (
-                        <div key={task.id} onClick={() => toggleTaskComplete(task.id, !task.completed)} className={`flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity ${i < profile.dailyPlan!.morning.length - 1 ? 'pb-4 border-b border-white/5 mb-4' : ''}`}>
+                        <div key={task.id} onClick={() => toggleTaskComplete(task.id, !task.completed)} className={`flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity ${i < profile.dailyPlan!.morning.length - 1 ? ' border-b border-white/5 mb-4' : ''}`}>
                           <span className="text-2xl">{task.completed ? '✅' : '☀️'}</span>
                           <span className={`font-bold text-lg ${task.completed ? 'text-gray-500 line-through' : 'text-white'}`}>{task.title}</span>
                         </div>
@@ -476,7 +476,7 @@ export default function Home() {
                     <div>
                       <h4 className="text-teal-400 font-bold text-xs uppercase tracking-wider mb-3">Afternoon</h4>
                       {profile.dailyPlan.afternoon.map((task, i) => (
-                        <div key={task.id} onClick={() => toggleTaskComplete(task.id, !task.completed)} className={`flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity ${i < profile.dailyPlan!.afternoon.length - 1 ? 'pb-4 border-b border-white/5 mb-4' : ''}`}>
+                        <div key={task.id} onClick={() => toggleTaskComplete(task.id, !task.completed)} className={`flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity ${i < profile.dailyPlan!.afternoon.length - 1 ? ' border-b border-white/5 mb-4' : ''}`}>
                           <span className="text-2xl">{task.completed ? '✅' : '⚡'}</span>
                           <span className={`font-bold text-lg ${task.completed ? 'text-gray-500 line-through' : 'text-white'}`}>{task.title}</span>
                         </div>
@@ -487,7 +487,7 @@ export default function Home() {
                     <div>
                       <h4 className="text-orange-400 font-bold text-xs uppercase tracking-wider mb-3">Evening</h4>
                       {profile.dailyPlan.evening.map((task, i) => (
-                        <div key={task.id} onClick={() => toggleTaskComplete(task.id, !task.completed)} className={`flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity ${i < profile.dailyPlan!.evening.length - 1 ? 'pb-4 border-b border-white/5 mb-4' : ''}`}>
+                        <div key={task.id} onClick={() => toggleTaskComplete(task.id, !task.completed)} className={`flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity ${i < profile.dailyPlan!.evening.length - 1 ? ' border-b border-white/5 mb-4' : ''}`}>
                           <span className="text-2xl">{task.completed ? '✅' : '🌙'}</span>
                           <span className={`font-bold text-lg ${task.completed ? 'text-gray-500 line-through' : 'text-white'}`}>{task.title}</span>
                         </div>

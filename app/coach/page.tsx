@@ -7,7 +7,7 @@ import Image from "next/image";
 function ChatLoadingSkeleton() {
   return (
     <div className="flex flex-col h-full w-full max-w-4xl mx-auto relative z-10 pt-4">
-      <div className="flex-1 flex flex-col items-center justify-center pb-8 opacity-50 animate-pulse">
+      <div className="flex-1 flex flex-col items-center justify-center  opacity-50 animate-pulse">
         <div className="inline-flex items-center justify-center p-4 rounded-full mb-6">
           <Image src="/logo-icon.png" alt="WelGPT" width={48} height={48} className="object-contain" priority />
         </div>

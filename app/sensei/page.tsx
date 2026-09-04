@@ -320,7 +320,7 @@ export default function SenseiPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto relative z-10 pt-4 h-full flex flex-col">
+    <div className="max-w-6xl mx-auto relative z-10 pt-4 min-h-full flex pb-[160px] md:pb-12 flex-col">
       {/* AI Optimize Questionnaire Modal */}
       <AnimatePresence>
         {showQuestionnaire && (

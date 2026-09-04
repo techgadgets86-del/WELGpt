@@ -104,7 +104,7 @@ export default function DetoxHub() {
   ];
 
   return (
-    <div className="max-w-5xl mx-auto relative z-10 pt-4 h-full flex flex-col">
+    <div className="max-w-5xl mx-auto relative z-10 pt-4 min-h-full flex pb-[160px] md:pb-12 flex-col">
       <header className="mb-12">
         <motion.h1 
             initial={{ opacity: 0, y: 20 }}
@@ -189,7 +189,7 @@ export default function DetoxHub() {
       </AnimatePresence>
 
 
-      <section className="mt-8 pb-12">
+      <section className="mt-8 ">
         <h2 className="text-2xl font-semibold text-white mb-6">Benefits of Detoxification</h2>
         <div className="relative border border-white/10 rounded-3xl bg-[#111127]/50 overflow-hidden py-8">
           {/* Gradient Masks for Marquee */}
