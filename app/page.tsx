@@ -8,7 +8,7 @@ import { Brain, Flame, Loader2, Activity, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
-  const { user, profile, updateUserData, toggleTaskComplete } = useAuth();
+  const { user, profile, updateUserData, toggleTaskComplete, loading } = useAuth();
   const router = useRouter();
   const [showPremium, setShowPremium] = useState(false);
   
@@ -170,6 +170,15 @@ export default function Home() {
     if (progressPercent === 100) subtitle = "You crushed your entire daily plan. Rest well!";
     else if (profile?.streak && profile.streak > 1) subtitle = `You're on a ${profile.streak}-day streak 🔥 Keep the momentum going!`;
     else subtitle = "Your personalized plan is ready for action.";
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-[80vh] flex flex-col items-center justify-center">
+        <Loader2 size={48} className="text-violet-500 animate-spin mb-4" />
+        <p className="text-gray-400 font-medium animate-pulse">Initializing WelGPT...</p>
+      </div>
+    );
   }
 
   return (
