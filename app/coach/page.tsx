@@ -1,24 +1,32 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Suspense } from "react";
 import ChatInterface from "@/components/ChatInterface";
+import Image from "next/image";
+
+function ChatLoadingSkeleton() {
+  return (
+    <div className="flex flex-col h-full w-full max-w-4xl mx-auto relative z-10 pt-4">
+      <div className="flex-1 flex flex-col items-center justify-center pb-8 opacity-50 animate-pulse">
+        <div className="inline-flex items-center justify-center p-4 rounded-full mb-6">
+          <Image src="/logo-icon.png" alt="WelGPT" width={48} height={48} className="object-contain" priority />
+        </div>
+        <h1 className="text-4xl md:text-5xl font-semibold mb-3 tracking-tight text-white">
+          Hey 👋 I&apos;m your WelGPT Coach.
+        </h1>
+        <p className="text-gray-400 text-lg mb-12">
+          What would you like to work on today?
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export default function CoachPage() {
   return (
     <div className="max-w-5xl mx-auto relative z-10 pt-4 h-full flex flex-col">
-      <header className="mb-6">
-        <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl font-bold mb-2 tracking-tight text-white"
-        >
-          AI Personal <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-teal-400">Coach.</span>
-        </motion.h1>
-      </header>
-
       <div className="flex-1 overflow-hidden relative">
-        <Suspense fallback={<div className="text-white text-center mt-10">Loading...</div>}>
+        <Suspense fallback={<ChatLoadingSkeleton />}>
           <ChatInterface />
         </Suspense>
       </div>

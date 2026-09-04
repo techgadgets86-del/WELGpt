@@ -95,7 +95,7 @@ export default function NutritionPage() {
               animate={{ opacity: 1, y: 0 }}
               className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white"
           >
-            Clinical <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-rose-400">Nutrition.</span>
+            AI Nutrition <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-rose-400">Coach.</span>
           </motion.h1>
           <motion.p 
               initial={{ opacity: 0 }} 
@@ -103,7 +103,7 @@ export default function NutritionPage() {
               transition={{ delay: 0.2 }}
               className="text-gray-400 text-lg max-w-2xl"
           >
-            Hyper-optimized daily intake protocols tailored for your physiological goals.
+            Personalized nutrition guidance built around your goals, preferences and lifestyle.
           </motion.p>
         </div>
         <div className="flex gap-4 self-start md:self-end">

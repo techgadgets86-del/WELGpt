@@ -115,26 +115,29 @@ export default function ChatInterface() {
               <Image src="/logo-icon.png" alt="WelGPT" width={48} height={48} className="object-contain" priority />
             </div>
             <h1 className="text-4xl md:text-5xl font-semibold mb-3 tracking-tight text-white">
-              {profile?.streak && profile.streak > 1 ? `${user?.displayName?.split(' ')[0] || 'Hello'}, you're on a ${profile.streak}-day streak 🔥` : "Take a deep breath."}
+              Hey 👋 I&apos;m your WelGPT Coach.
             </h1>
-            <p className="text-gray-400 text-lg mb-12">
-              {profile?.dailyPlan ? "I've reviewed your daily plan. Ready to optimize your day?" : "How can I support your mind today?"}
+            <p className="text-gray-400 text-lg mb-10">
+              What would you like to work on today?
             </p>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left max-w-2xl mx-auto">
-              {SUGGESTIONS.map((s, i) => (
+            <div className="flex flex-wrap items-center justify-center gap-3 max-w-2xl mx-auto">
+              {[
+                { label: "Sleep", icon: "🌙", prompt: "I want to improve my sleep quality." },
+                { label: "Stress", icon: "🧘", prompt: "I&apos;m feeling stressed and need to calm down." },
+                { label: "Nutrition", icon: "🥑", prompt: "Help me optimize my nutrition." },
+                { label: "Fitness", icon: "💪", prompt: "I need a workout or fitness protocol." },
+                { label: "Focus", icon: "🧠", prompt: "I need to do deep work. How can I improve my focus?" }
+              ].map((s, i) => (
                 <motion.button
                   key={i}
-                  whileHover={{ scale: 1.02, backgroundColor: "rgba(255,255,255,0.08)" }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleSuggestion(s.title)}
-                  className="p-5 rounded-2xl bg-white/5 border border-white/10 flex items-start gap-4 transition-colors text-left"
+                  whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleSuggestion(s.prompt)}
+                  className="px-6 py-3 rounded-full bg-white/5 border border-white/10 flex items-center gap-2 transition-colors text-white font-medium"
                 >
-                  <span className="text-2xl drop-shadow-md">{s.icon}</span>
-                  <div>
-                    <h3 className="text-white font-medium">{s.title}</h3>
-                    <p className="text-gray-400 text-sm mt-1">{s.desc}</p>
-                  </div>
+                  <span>{s.icon}</span>
+                  {s.label}
                 </motion.button>
               ))}
             </div>

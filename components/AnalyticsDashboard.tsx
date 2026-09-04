@@ -16,40 +16,36 @@ export default function AnalyticsDashboard() {
   const xpToNextLevel = (level * 100) - xp;
 
   const weeklyScores = [
-    { label: "Meditation", score: "5/7", percent: (5/7)*100, icon: Sparkles, color: "text-cyan-400", bg: "bg-cyan-500/20" },
-    { label: "Movement", score: "4/7", percent: (4/7)*100, icon: Activity, color: "text-rose-400", bg: "bg-rose-500/20" },
-    { label: "Nutrition", score: "6/7", percent: (6/7)*100, icon: Utensils, color: "text-orange-400", bg: "bg-orange-500/20" },
-    { label: "Routine", score: "82%", percent: 82, icon: Calendar, color: "text-violet-400", bg: "bg-violet-500/20" },
+    { label: "Focus", score: "88%", percent: 88, icon: Target, color: "text-cyan-400", bg: "bg-cyan-500/20" },
+    { label: "Calm", score: "72%", percent: 72, icon: Sparkles, color: "text-violet-400", bg: "bg-violet-500/20" },
+    { label: "Energy", score: "94%", percent: 94, icon: Flame, color: "text-orange-400", bg: "bg-orange-500/20" },
   ];
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-8 pb-12">
       
       {/* Top Gamification row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-6 rounded-3xl bg-[#111127] border border-white/10 flex items-center justify-between">
-          <div>
-            <h3 className="text-gray-400 text-sm font-medium mb-1">Neuro Level</h3>
-            <p className="text-3xl font-bold text-white">Lvl {level}</p>
-          </div>
-          <div className="p-4 rounded-full bg-violet-500/10 text-violet-400"><Brain size={24} /></div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-5 rounded-3xl bg-[#111127] border border-white/10 flex flex-col justify-center relative overflow-hidden group">
+          <h3 className="text-gray-400 text-xs font-medium mb-1 uppercase tracking-wider">Wellness Level</h3>
+          <p className="text-2xl font-bold text-white">Level {level}</p>
         </motion.div>
         
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="p-6 rounded-3xl bg-[#111127] border border-white/10 flex items-center justify-between">
-          <div>
-            <h3 className="text-gray-400 text-sm font-medium mb-1">Total XP</h3>
-            <p className="text-3xl font-bold text-white">{xp} XP</p>
-          </div>
-          <div className="p-4 rounded-full bg-emerald-500/10 text-emerald-400"><Target size={24} /></div>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="p-5 rounded-3xl bg-[#111127] border border-white/10 flex flex-col justify-center relative overflow-hidden group">
+          <h3 className="text-gray-400 text-xs font-medium mb-1 uppercase tracking-wider">Total XP</h3>
+          <p className="text-2xl font-bold text-white">{xp} XP</p>
         </motion.div>
         
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="p-6 rounded-3xl bg-[#111127] border border-white/10 flex items-center justify-between relative overflow-hidden group">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="p-5 rounded-3xl bg-[#111127] border border-white/10 flex flex-col justify-center relative overflow-hidden group">
           <div className="absolute inset-0 bg-orange-500/5 group-hover:bg-orange-500/10 transition-colors" />
-          <div className="relative z-10">
-            <h3 className="text-gray-400 text-sm font-medium mb-1">Active Streak</h3>
-            <p className="text-3xl font-bold text-white">{streak} Days</p>
-          </div>
-          <div className="relative z-10 p-4 rounded-full bg-orange-500/20 text-orange-400"><Flame size={24} /></div>
+          <h3 className="text-gray-400 text-xs font-medium mb-1 uppercase tracking-wider">Streak</h3>
+          <p className="text-2xl font-bold text-white">{streak} days</p>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="p-5 rounded-3xl bg-[#111127] border border-white/10 flex flex-col justify-center relative overflow-hidden group">
+          <div className="absolute inset-0 bg-teal-500/5 group-hover:bg-teal-500/10 transition-colors" />
+          <h3 className="text-gray-400 text-xs font-medium mb-1 uppercase tracking-wider">Today&apos;s Completion</h3>
+          <p className="text-2xl font-bold text-teal-400">80%</p>
         </motion.div>
       </div>
 
@@ -62,7 +58,10 @@ export default function AnalyticsDashboard() {
           transition={{ delay: 0.3 }}
           className="lg:col-span-2 p-8 rounded-3xl bg-[#111127] border border-white/10 flex flex-col"
         >
-          <h3 className="text-2xl font-bold text-white mb-8">This Week</h3>
+          <div className="mb-8">
+            <h3 className="text-2xl font-bold text-white mb-1">Weekly Wellness Trend</h3>
+            <p className="text-gray-400 text-sm">Based on your check-ins and activity patterns</p>
+          </div>
           
           <div className="space-y-6 flex-1 flex flex-col justify-center">
             {weeklyScores.map((stat, i) => (

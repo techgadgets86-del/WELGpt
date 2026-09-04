@@ -12,16 +12,8 @@ export default function DashboardPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white"
         >
-          Neuro <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">Analytics.</span>
+          Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">Progress.</span>
         </motion.h1>
-        <motion.p 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            transition={{ delay: 0.2 }}
-            className="text-gray-400 text-lg max-w-2xl"
-        >
-          Real-time visualization of your dopamine baseline, circadian rhythms, and cognitive performance.
-        </motion.p>
       </header>
 
       <AnalyticsDashboard />
