@@ -175,7 +175,7 @@ export default function Home() {
     if (total > 0) progressPercent = Math.round((completed / total) * 100);
   }
 
-    const showDashboard = hasPlan || (profile?.dailyPlan && profile.dailyPlan.morning);
+    const showDashboard = hasPlan || !!(profile?.dailyPlan && profile.dailyPlan.date);
   
   // Dynamic Subtitle Logic
   let subtitle = "What do you want to improve?";
@@ -428,11 +428,17 @@ export default function Home() {
           </div>
           
           <button 
-            onClick={handleBuildPlan}
+            onClick={() => {
+              if (!user) {
+                router.push('/login');
+                return;
+              }
+              handleBuildPlan();
+            }}
             disabled={selectedGoals.length === 0}
             className="w-full max-w-sm mx-auto px-8 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white rounded-2xl font-bold text-lg shadow-[0_0_30px_rgba(124,58,237,0.3)] transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
           >
-            BUILD MY PLAN
+            {!user ? "SIGN IN TO BUILD PLAN" : "BUILD MY PLAN"}
           </button>
         </div>
       ) : (
