@@ -35,24 +35,24 @@ export default function DynamicIsland() {
           animate={{ y: 0, opacity: 1, scale: 1, filter: "blur(0px)" }}
           exit={{ y: -50, opacity: 0, scale: 0.9, filter: "blur(10px)" }}
           transition={{ type: "spring", stiffness: 350, damping: 25 }}
-          // Anchored below the top navigation bar to avoid colliding with the notch or header
-          className="fixed top-[calc(env(safe-area-inset-top)+70px)] left-1/2 -translate-x-1/2 z-[100] pointer-events-none md:hidden"
+          // We position this exactly where the physical Dynamic Island sits (roughly 11px from the physical top edge)
+          // When apple-mobile-web-app-status-bar-style="black-translucent" is active (via fresh PWA install), 
+          // this will draw *behind* the status bar, and visually merge with the opaque black hardware cutout!
+          className="fixed top-[11px] left-1/2 -translate-x-1/2 z-[9999] pointer-events-none md:hidden"
         >
-          {/* Floating PWA Live Activity Pill */}
-          <div className="bg-[#111127]/90 backdrop-blur-md text-white px-5 py-2 rounded-full flex items-center justify-between gap-4 min-w-[180px] shadow-[0_10px_40px_rgba(124,58,237,0.3)] border border-white/10">
+          <div className="bg-black text-white px-8 py-3 rounded-full flex items-center justify-between gap-6 min-w-[240px] shadow-[0_20px_50px_rgba(0,0,0,0.9)]">
             <div className="flex items-center gap-3">
-              {/* Audio waveform / pulsing indicator */}
               <div className="flex items-center gap-[2px]">
                 <motion.div animate={{ height: [6, 14, 6] }} transition={{ repeat: Infinity, duration: 1 }} className={`w-[2px] rounded-full ${color}`} />
                 <motion.div animate={{ height: [6, 18, 6] }} transition={{ repeat: Infinity, duration: 1, delay: 0.15 }} className={`w-[2px] rounded-full ${color}`} />
                 <motion.div animate={{ height: [6, 10, 6] }} transition={{ repeat: Infinity, duration: 1, delay: 0.3 }} className={`w-[2px] rounded-full ${color}`} />
               </div>
-              <span className={`text-xs font-bold tracking-wider uppercase ${color} opacity-90`}>
+              <span className={`text-xs font-bold tracking-widest uppercase ${color} opacity-100`}>
                 {label}
               </span>
             </div>
             
-            <span className="text-sm font-medium opacity-80 pl-2">
+            <span className="text-sm font-medium opacity-90 pl-2">
               {time}
             </span>
           </div>
