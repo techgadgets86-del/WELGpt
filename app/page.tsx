@@ -443,6 +443,21 @@ export default function Home() {
               </p>
             </div>
             
+            <div className="w-full flex justify-end mb-4 -mt-2">
+              <button 
+                onClick={async () => {
+                  if (profile?.dailyPlan && user) {
+                    const pastDate = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+                    await updateUserData({ dailyPlan: { ...profile.dailyPlan, date: pastDate } });
+                    window.location.reload();
+                  }
+                }}
+                className="text-xs bg-fuchsia-500/20 hover:bg-fuchsia-500/40 text-fuchsia-300 px-4 py-2 rounded-lg border border-fuchsia-500/30 transition-all font-bold tracking-wide"
+              >
+                🛠️ DEBUG: SIMULATE TOMORROW
+              </button>
+            </div>
+            
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-6 bg-[#111127] border border-white/10 rounded-3xl">
               <p className="text-gray-300 font-medium">What are you working on today?</p>
               <button 
