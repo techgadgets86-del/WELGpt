@@ -147,24 +147,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
        }
     }
     
-    await updateDoc(userRef, {
+    await setDoc(userRef, {
       xp: increment(amount),
       streak: newStreak,
       lastActiveDate: today
-    });
+    }, { merge: true });
   };
 
   const updateUserData = async (data: Partial<UserProfile>) => {
     if (!user) return;
     const userRef = doc(db, 'users', user.uid);
-    await updateDoc(userRef, data);
+    await setDoc(userRef, data, { merge: true });
   };
 
   const logActivity = async (activity: string) => {
     if (!user || !profile) return;
     const userRef = doc(db, 'users', user.uid);
     const newActivity = [activity, ...(profile.recentActivity || [])].slice(0, 10); // keep last 10
-    await updateDoc(userRef, { recentActivity: newActivity });
+    await setDoc(userRef, { recentActivity: newActivity }, { merge: true });
   };
 
   const toggleTaskComplete = async (taskId: string, completed: boolean) => {
@@ -185,7 +185,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     
     if (found) {
       const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, { dailyPlan: newPlan });
+      await setDoc(userRef, { dailyPlan: newPlan }, { merge: true });
       
       // Auto-log activity and grant XP if completed
       if (completed) {

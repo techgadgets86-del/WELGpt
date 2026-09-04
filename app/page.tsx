@@ -63,7 +63,7 @@ export default function Home() {
           } else {
             // Fail gracefully to prevent infinite loop
             updateUserData({
-              dailyPlan: { ...profile.dailyPlan, date: todayDate },
+              dailyPlan: { morning: [], afternoon: [], evening: [], ...profile.dailyPlan, date: todayDate },
               coachMessage: "Kept your previous routine."
             });
           }
@@ -71,7 +71,7 @@ export default function Home() {
           console.error(err);
           // Fail gracefully on catch to prevent infinite loop
           updateUserData({
-            dailyPlan: { ...profile.dailyPlan, date: todayDate },
+            dailyPlan: { morning: [], afternoon: [], evening: [], ...profile.dailyPlan, date: todayDate },
             coachMessage: "Kept your previous routine."
           });
         })
