@@ -28,6 +28,11 @@ export const metadata: Metadata = {
   title: "WelGPT - Your AI Wellness Coach",
   description: "One personalized plan for your mind, movement, nutrition and daily habits—adapted as you progress.",
   manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "WelGPT",
+  },
 };
 
 export default function RootLayout({
