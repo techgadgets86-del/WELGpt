@@ -35,15 +35,11 @@ export default function DynamicIsland() {
           animate={{ y: 0, opacity: 1, scale: 1, filter: "blur(0px)" }}
           exit={{ y: -50, opacity: 0, scale: 0.9, filter: "blur(10px)" }}
           transition={{ type: "spring", stiffness: 350, damping: 25 }}
-          // We use top-[11px] instead of safe-area to explicitly bleed into the Apple physical hardware island
-          className="fixed top-[11px] left-1/2 -translate-x-1/2 z-[100] pointer-events-none md:hidden"
+          // Anchored below the top navigation bar to avoid colliding with the notch or header
+          className="fixed top-[calc(env(safe-area-inset-top)+70px)] left-1/2 -translate-x-1/2 z-[100] pointer-events-none md:hidden"
         >
-          {/* 
-            Hardware-simulated PWA Dynamic Island. 
-            By keeping bg-black with no borders and a specific min-height/padding, 
-            this visually merges with the physical iPhone 14/15/16 Pro Dynamic Island.
-          */}
-          <div className="bg-black text-white px-6 py-2.5 rounded-full flex items-center justify-between gap-4 min-w-[220px] shadow-[0_10px_40px_rgba(0,0,0,0.8)]">
+          {/* Floating PWA Live Activity Pill */}
+          <div className="bg-[#111127]/90 backdrop-blur-md text-white px-5 py-2 rounded-full flex items-center justify-between gap-4 min-w-[180px] shadow-[0_10px_40px_rgba(124,58,237,0.3)] border border-white/10">
             <div className="flex items-center gap-3">
               {/* Audio waveform / pulsing indicator */}
               <div className="flex items-center gap-[2px]">
