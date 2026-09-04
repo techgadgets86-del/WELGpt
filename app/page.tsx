@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import { useState, useEffect } from "react";
 import PremiumModal from "@/components/PremiumModal";
-import { Brain, Flame, Loader2 } from "lucide-react";
+import { Brain, Flame, Loader2, Activity, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
