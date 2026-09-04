@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { onAuthStateChanged, User } from 'firebase/auth';
+import { onAuthStateChanged, User, signInAnonymously } from 'firebase/auth';
 import { doc, onSnapshot, setDoc, updateDoc, getDoc, increment } from 'firebase/firestore';
 import { auth, db } from './firebase';
 
@@ -108,8 +108,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return () => unsubProfile();
       } else {
-        setProfile(null);
-        setLoading(false);
+        // Automatically sign in anonymous users so their session persists
+        try {
+          await signInAnonymously(auth);
+        } catch (err) {
+          console.error("Anonymous auth failed", err);
+          setProfile(null);
+          setLoading(false);
+        }
       }
     });
 
