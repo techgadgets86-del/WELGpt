@@ -95,11 +95,41 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               dailyPlan: data.dailyPlan || null,
               coachMessage: data.coachMessage || undefined
             });
+            
+            // Failsafe Restore if Firestore was wiped or blocked
+            if (!data.dailyPlan) {
+              try {
+                const backup = localStorage.getItem('welgpt_backup_plan');
+                if (backup) {
+                  const parsed = JSON.parse(backup);
+                  setProfile(prev => prev ? { 
+                    ...prev, 
+                    dailyPlan: parsed, 
+                    coachMessage: localStorage.getItem('welgpt_backup_msg') || prev.coachMessage 
+                  } : null);
+                  // Attempt to re-sync
+                  setDoc(doc(db, 'users', currentUser.uid), { dailyPlan: parsed, coachMessage: localStorage.getItem('welgpt_backup_msg') }, { merge: true });
+                }
+              } catch(e) {}
+            }
           } else {
             // Initialize profile
             const initData = { xp: 0, streak: 0, lastActiveDate: "", goals: [], preferences: { dietary: "none", fitnessLevel: "beginner", focusAreas: [] }, recentActivity: [], dailyPlan: null };
+            let restoredPlan = null;
+            let restoredMsg = undefined;
+            try {
+              const backup = localStorage.getItem('welgpt_backup_plan');
+              if (backup) {
+                restoredPlan = JSON.parse(backup);
+                restoredMsg = localStorage.getItem('welgpt_backup_msg') || undefined;
+                initData.dailyPlan = restoredPlan;
+                // @ts-ignore
+                initData.coachMessage = restoredMsg;
+              }
+            } catch(e) {}
+            
             setDoc(userRef, initData);
-            setProfile({ xp: 0, level: 1, streak: 0, lastActiveDate: "", goals: [], preferences: { dietary: "none", fitnessLevel: "beginner", focusAreas: [] }, recentActivity: [], coachMessage: undefined });
+            setProfile({ xp: 0, level: 1, streak: 0, lastActiveDate: "", goals: [], preferences: { dietary: "none", fitnessLevel: "beginner", focusAreas: [] }, recentActivity: [], dailyPlan: restoredPlan, coachMessage: restoredMsg });
           }
         });
         setLoading(false);
@@ -158,6 +188,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (!user) return;
     const userRef = doc(db, 'users', user.uid);
     await setDoc(userRef, data, { merge: true });
+    
+    // Failsafe Backup
+    if (data.dailyPlan) {
+      try {
+        localStorage.setItem('welgpt_backup_plan', JSON.stringify(data.dailyPlan));
+        if (data.coachMessage) {
+          localStorage.setItem('welgpt_backup_msg', data.coachMessage);
+        }
+      } catch (e) {}
+    }
   };
 
   const logActivity = async (activity: string) => {
