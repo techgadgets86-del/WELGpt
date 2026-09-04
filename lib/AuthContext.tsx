@@ -93,7 +93,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               preferences: data.preferences || { dietary: "none", fitnessLevel: "beginner", focusAreas: [] },
               recentActivity: data.recentActivity || [],
               dailyPlan: data.dailyPlan || null,
-              coachMessage: data.coachMessage || undefined
+              coachMessage: data.coachMessage || undefined,
+              nutritionPlan: data.nutritionPlan || undefined
             });
             
             // Failsafe Restore if Firestore was wiped or blocked
@@ -129,7 +130,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             } catch(e) {}
             
             setDoc(userRef, initData);
-            setProfile({ xp: 0, level: 1, streak: 0, lastActiveDate: "", goals: [], preferences: { dietary: "none", fitnessLevel: "beginner", focusAreas: [] }, recentActivity: [], dailyPlan: restoredPlan, coachMessage: restoredMsg });
+            setProfile({ xp: 0, level: 1, streak: 0, lastActiveDate: "", goals: [], preferences: { dietary: "none", fitnessLevel: "beginner", focusAreas: [] }, recentActivity: [], dailyPlan: restoredPlan, coachMessage: restoredMsg, nutritionPlan: undefined });
           }
         });
         setLoading(false);
