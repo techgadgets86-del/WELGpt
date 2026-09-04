@@ -16,7 +16,7 @@ interface FoodItem {
 export default function NutritionPage() {
   const [items, setItems] = useState<FoodItem[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const { profile } = useAuth();
+  const { profile, updateUserData } = useAuth();
   
   // Auto-sync initial prompt from global profile!
   const [goal, setGoal] = useState(() => {
@@ -58,6 +58,9 @@ export default function NutritionPage() {
       const data = await res.json();
       if (data && data.items) {
         setItems(data.items);
+        if (profile) {
+          updateUserData({ nutritionPlan: data.items });
+        }
       }
     } catch (err) {
       console.error(err);
@@ -65,13 +68,15 @@ export default function NutritionPage() {
     setIsGenerating(false);
   };
 
-  // Generate on first mount if empty
+  // Load saved plan or generate on first mount
   useEffect(() => {
-    if (items.length === 0) {
+    if (profile?.nutritionPlan && profile.nutritionPlan.length > 0) {
+      setItems(profile.nutritionPlan);
+    } else if (items.length === 0 && !isGenerating) {
       setTimeout(() => generateFood(), 0);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [profile?.nutritionPlan]);
 
   return (
     <div className="max-w-5xl mx-auto relative z-10 pt-4  min-h-full flex pb-[160px] md:pb-12 flex-col">

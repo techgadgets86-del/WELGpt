@@ -117,6 +117,37 @@ export default function AnalyticsDashboard() {
 
       </div>
 
+
+      {/* RECENT ACTIVITY FEED */}
+      {profile?.recentActivity && profile.recentActivity.length > 0 && (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="mt-6 p-6 md:p-8 rounded-3xl bg-[#111127] border border-white/10"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <Activity className="text-teal-400" size={24} />
+            <h3 className="text-xl font-bold text-white">Recent Activity</h3>
+          </div>
+          <div className="flex flex-col gap-4">
+            {profile.recentActivity.map((activity, i) => (
+              <div key={i} className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
+                <div className="p-2 rounded-full bg-teal-500/20 text-teal-400 mt-1">
+                  <Sparkles size={16} />
+                </div>
+                <div>
+                  <p className="text-white font-medium">{activity}</p>
+                  <p className="text-gray-400 text-sm mt-1">
+                    {i === 0 ? "Just now" : i === 1 ? "Earlier today" : "Yesterday or older"}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      )}
+
       <PremiumModal isOpen={showPremium} onClose={() => setShowPremium(false)} />
     </div>
   );

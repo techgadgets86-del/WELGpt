@@ -14,7 +14,16 @@ const firebaseConfig = {
 // Initialize Firebase (prevent double initialization in Next.js)
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
-const db = getFirestore(app);
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from "firebase/firestore";
+
+let db;
+if (!getApps().length) {
+  db = initializeFirestore(app, {
+    localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+  });
+} else {
+  db = getFirestore(app);
+}
 const googleProvider = new GoogleAuthProvider();
 
 export { app, auth, db, googleProvider };
