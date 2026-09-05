@@ -97,19 +97,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               nutritionPlan: data.nutritionPlan || undefined
             });
             
-            // Failsafe Restore if Firestore was wiped or blocked
-            if (!data.dailyPlan) {
+            // Full State Failsafe Restore if Firestore is missing critical data
+            if (!data.dailyPlan || !data.nutritionPlan) {
               try {
-                const backup = localStorage.getItem('welgpt_backup_plan');
-                if (backup) {
-                  const parsed = JSON.parse(backup);
-                  setProfile(prev => prev ? { 
-                    ...prev, 
-                    dailyPlan: parsed, 
-                    coachMessage: localStorage.getItem('welgpt_backup_msg') || prev.coachMessage 
-                  } : null);
-                  // Attempt to re-sync
-                  setDoc(doc(db, 'users', currentUser.uid), { dailyPlan: parsed, coachMessage: localStorage.getItem('welgpt_backup_msg') }, { merge: true });
+                const fullBackupStr = localStorage.getItem('welgpt_full_backup');
+                if (fullBackupStr) {
+                  const fullBackup = JSON.parse(fullBackupStr);
+                  setProfile(prev => prev ? { ...prev, ...fullBackup } : null);
+                  
+                  // Attempt to aggressively re-sync the entire backup to Firestore to heal it
+                  setDoc(doc(db, 'users', currentUser.uid), fullBackup, { merge: true });
+                } else {
+                  // Legacy fallback
+                  const backup = localStorage.getItem('welgpt_backup_plan');
+                  if (backup) {
+                    const parsed = JSON.parse(backup);
+                    setProfile(prev => prev ? { ...prev, dailyPlan: parsed, coachMessage: localStorage.getItem('welgpt_backup_msg') || prev.coachMessage } : null);
+                    setDoc(doc(db, 'users', currentUser.uid), { dailyPlan: parsed, coachMessage: localStorage.getItem('welgpt_backup_msg') }, { merge: true });
+                  }
                 }
               } catch(e) {}
             }
@@ -118,19 +123,36 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const initData = { xp: 0, streak: 0, lastActiveDate: "", goals: [], preferences: { dietary: "none", fitnessLevel: "beginner", focusAreas: [] }, recentActivity: [], dailyPlan: null };
             let restoredPlan = null;
             let restoredMsg = undefined;
+            let fullBackup = {};
             try {
-              const backup = localStorage.getItem('welgpt_backup_plan');
-              if (backup) {
-                restoredPlan = JSON.parse(backup);
-                restoredMsg = localStorage.getItem('welgpt_backup_msg') || undefined;
-                initData.dailyPlan = restoredPlan;
-                // @ts-ignore
-                initData.coachMessage = restoredMsg;
+              const fullBackupStr = localStorage.getItem('welgpt_full_backup');
+              if (fullBackupStr) {
+                 fullBackup = JSON.parse(fullBackupStr);
+              } else {
+                const backup = localStorage.getItem('welgpt_backup_plan');
+                if (backup) {
+                  restoredPlan = JSON.parse(backup);
+                  restoredMsg = localStorage.getItem('welgpt_backup_msg') || undefined;
+                  fullBackup = { dailyPlan: restoredPlan, coachMessage: restoredMsg };
+                }
               }
             } catch(e) {}
             
-            setDoc(userRef, initData);
-            setProfile({ xp: 0, level: 1, streak: 0, lastActiveDate: "", goals: [], preferences: { dietary: "none", fitnessLevel: "beginner", focusAreas: [] }, recentActivity: [], dailyPlan: restoredPlan, coachMessage: restoredMsg, nutritionPlan: undefined });
+            const mergedInit: any = { ...initData, ...fullBackup };
+            setDoc(userRef, mergedInit);
+            
+            setProfile({ 
+              xp: mergedInit.xp || 0, 
+              level: mergedInit.level || 1, 
+              streak: mergedInit.streak || 0, 
+              lastActiveDate: mergedInit.lastActiveDate || "", 
+              goals: mergedInit.goals || [], 
+              preferences: mergedInit.preferences || { dietary: "none", fitnessLevel: "beginner", focusAreas: [] }, 
+              recentActivity: mergedInit.recentActivity || [], 
+              dailyPlan: mergedInit.dailyPlan || null, 
+              coachMessage: mergedInit.coachMessage || undefined, 
+              nutritionPlan: mergedInit.nutritionPlan || undefined 
+            });
           }
         });
         setLoading(false);
@@ -190,15 +212,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const updateUserData = async (data: Partial<UserProfile>) => {
     if (!user) return;
     const userRef = doc(db, 'users', user.uid);
-    // Failsafe Backup First!
-    if (data.dailyPlan) {
-      try {
-        localStorage.setItem('welgpt_backup_plan', JSON.stringify(data.dailyPlan));
-        if (data.coachMessage) {
-          localStorage.setItem('welgpt_backup_msg', data.coachMessage);
-        }
-      } catch (e) {}
-    }
+    // Full State Failsafe Backup First!
+    try {
+      const existingBackupStr = localStorage.getItem('welgpt_full_backup');
+      const existingBackup = existingBackupStr ? JSON.parse(existingBackupStr) : {};
+      const newBackup = { ...existingBackup, ...data };
+      localStorage.setItem('welgpt_full_backup', JSON.stringify(newBackup));
+      
+      // Legacy keys for backward compatibility during transition
+      if (data.dailyPlan) localStorage.setItem('welgpt_backup_plan', JSON.stringify(data.dailyPlan));
+      if (data.coachMessage) localStorage.setItem('welgpt_backup_msg', data.coachMessage);
+    } catch (e) {}
 
     try {
       await setDoc(userRef, data, { merge: true });
