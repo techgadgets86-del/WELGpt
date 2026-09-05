@@ -14,6 +14,10 @@ export interface RoutineTask {
 }
 
 export interface UserProfile {
+  isPremium?: boolean;
+  aiChatTokens?: number;
+  aiPlanTokens?: number;
+  tokenResetDate?: string;
   xp: number;
   level: number;
   streak: number;
@@ -84,7 +88,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               }
             }
 
+            // Token Reset Logic
+            let currentChatTokens = data.aiChatTokens ?? 10;
+            let currentPlanTokens = data.aiPlanTokens ?? 3;
+            let currentResetDate = data.tokenResetDate || today;
+            
+            if (currentResetDate !== today && !data.isPremium) {
+              currentChatTokens = 10;
+              currentPlanTokens = 3;
+              currentResetDate = today;
+              setDoc(userRef, { aiChatTokens: 10, aiPlanTokens: 3, tokenResetDate: today }, { merge: true });
+            }
+
             setProfile({
+              isPremium: data.isPremium || false,
+              aiChatTokens: currentChatTokens,
+              aiPlanTokens: currentPlanTokens,
+              tokenResetDate: currentResetDate,
               xp: data.xp || 0,
               level: Math.floor((data.xp || 0) / 100) + 1,
               streak: currentStreak,
@@ -120,7 +140,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             }
           } else {
             // Initialize profile
-            const initData = { xp: 0, streak: 0, lastActiveDate: "", goals: [], preferences: { dietary: "none", fitnessLevel: "beginner", focusAreas: [] }, recentActivity: [], dailyPlan: null };
+            const initData = { isPremium: false, aiChatTokens: 10, aiPlanTokens: 3, tokenResetDate: new Date().toISOString().split('T')[0], xp: 0, streak: 0, lastActiveDate: "", goals: [], preferences: { dietary: "none", fitnessLevel: "beginner", focusAreas: [] }, recentActivity: [], dailyPlan: null };
             let restoredPlan = null;
             let restoredMsg = undefined;
             let fullBackup = {};
@@ -142,6 +162,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setDoc(userRef, mergedInit);
             
             setProfile({ 
+              isPremium: mergedInit.isPremium || false,
+              aiChatTokens: mergedInit.aiChatTokens ?? 10,
+              aiPlanTokens: mergedInit.aiPlanTokens ?? 3,
+              tokenResetDate: mergedInit.tokenResetDate || new Date().toISOString().split('T')[0],
               xp: mergedInit.xp || 0, 
               level: mergedInit.level || 1, 
               streak: mergedInit.streak || 0, 

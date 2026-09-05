@@ -82,6 +82,13 @@ export default function Home() {
   }, [profile?.dailyPlan, user]);
 
   const completeOnboarding = async () => {
+    if (profile && !profile.isPremium) {
+      if ((profile.aiPlanTokens || 0) <= 0) {
+        alert("You have run out of free AI Plan Generations for today. Upgrade to Premium to continue!");
+        return;
+      }
+    }
+    
     setIsBuilding(true);
     try {
       const res = await fetch('/api/plan-generate', {
@@ -101,10 +108,25 @@ export default function Home() {
       
       if (data.plan) {
         data.plan.date = new Date().toISOString().split('T')[0];
+        
+        // Deduct token
+        if (profile && !profile.isPremium) {
+          updateUserData({ aiPlanTokens: (profile.aiPlanTokens || 0) - 1 });
+        }
+
         setGeneratedPlanPreview({
           plan: data.plan,
           coachMessage: data.coachMessage || "I've built a custom plan to help you reach your goals."
         });
+        // Analytics
+        import('@/lib/firebase').then(({ analytics }) => {
+          if (analytics) {
+            import('firebase/analytics').then(({ logEvent }) => {
+              logEvent(analytics, 'plan_created');
+            });
+          }
+        }).catch(e => console.log(e));
+
         setOnboardingStep(6); // Go to step 6 to preview the plan
       } else if (data.error) {
         alert("AI Coach Error: " + data.error);
