@@ -189,9 +189,18 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-[80vh] flex flex-col items-center justify-center">
-        <Loader2 size={48} className="text-violet-500 animate-spin mb-4" />
-        <p className="text-gray-400 font-medium animate-pulse">Initializing WelGPT...</p>
+      <div className="w-full animate-pulse">
+        <div className="w-full text-center mb-10">
+          <div className="h-6 w-32 bg-white/10 rounded-full mx-auto mb-4"></div>
+          <div className="h-12 w-64 bg-white/10 rounded-xl mx-auto mb-4"></div>
+          <div className="h-4 w-48 bg-white/5 rounded-full mx-auto"></div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="bg-[#111127] border border-white/5 rounded-3xl p-6 h-48"></div>
+          ))}
+        </div>
       </div>
     );
   }
