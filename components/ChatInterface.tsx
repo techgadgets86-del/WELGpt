@@ -7,6 +7,8 @@ import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useChat } from "ai/react";
 import { useAuth } from "@/lib/AuthContext";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 const SUGGESTIONS = [
   { icon: "🌿", title: "Guided Meditation", desc: "5 minutes to center yourself" },
