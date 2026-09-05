@@ -178,19 +178,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
        }
     }
     
-    await setDoc(userRef, {
-      xp: increment(amount),
-      streak: newStreak,
-      lastActiveDate: today
-    }, { merge: true });
+    try {
+      await setDoc(userRef, {
+        xp: increment(amount),
+        streak: newStreak,
+        lastActiveDate: today
+      }, { merge: true });
+    } catch(e) {}
   };
 
   const updateUserData = async (data: Partial<UserProfile>) => {
     if (!user) return;
     const userRef = doc(db, 'users', user.uid);
-    await setDoc(userRef, data, { merge: true });
-    
-    // Failsafe Backup
+    // Failsafe Backup First!
     if (data.dailyPlan) {
       try {
         localStorage.setItem('welgpt_backup_plan', JSON.stringify(data.dailyPlan));
@@ -199,13 +199,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
       } catch (e) {}
     }
+
+    try {
+      await setDoc(userRef, data, { merge: true });
+    } catch (e) {
+      console.error("Firestore write failed, but local backup succeeded:", e);
+    }
   };
 
   const logActivity = async (activity: string) => {
     if (!user || !profile) return;
     const userRef = doc(db, 'users', user.uid);
     const newActivity = [activity, ...(profile.recentActivity || [])].slice(0, 10); // keep last 10
-    await setDoc(userRef, { recentActivity: newActivity }, { merge: true });
+    try { await setDoc(userRef, { recentActivity: newActivity }, { merge: true }); } catch(e) {}
   };
 
   const toggleTaskComplete = async (taskId: string, completed: boolean) => {
@@ -226,7 +232,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     
     if (found) {
       const userRef = doc(db, 'users', user.uid);
-      await setDoc(userRef, { dailyPlan: newPlan }, { merge: true });
+      try {
+        await setDoc(userRef, { dailyPlan: newPlan }, { merge: true });
+      } catch(e) {}
+      // Sync completion to local backup
+      try {
+        localStorage.setItem('welgpt_backup_plan', JSON.stringify(newPlan));
+      } catch(e) {}
       
       // Auto-log activity and grant XP if completed
       if (completed) {
