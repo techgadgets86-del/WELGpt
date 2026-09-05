@@ -106,8 +106,10 @@ export default function Home() {
           coachMessage: data.coachMessage || "I've built a custom plan to help you reach your goals."
         });
         setOnboardingStep(6); // Go to step 6 to preview the plan
+      } else if (data.error) {
+        alert("AI Coach Error: " + data.error);
       } else {
-        setOnboardingStep(0);
+        alert("AI Coach returned an invalid plan. Please try again.");
       }
     } catch (err) {
       console.error("Error generating plan:", err);

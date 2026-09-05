@@ -39,7 +39,7 @@ Schema:
     "evening": [ { "id": "e1", "time": "Evening", "title": "Name of Habit", "desc": "Scientific description", "completed": false } ]
   }
 }
-Limit to 2-3 tasks per time block maximum. Focus heavily on their stated goals.`;
+CRITICAL: You must generate the JSON instantly. Limit to exactly 1 task per time block (Morning, Afternoon, Evening). Keep descriptions extremely short (1 sentence max). Speed is prioritized over detail.`;
     } else {
       // adjust_daily
       const previousStr = JSON.stringify(previousPlan);
@@ -62,7 +62,7 @@ Schema:
     "evening": [ { "id": "e1", "time": "Evening", "title": "Name of Habit", "desc": "Scientific description", "completed": false } ]
   }
 }
-Keep tasks extremely relevant. Limit to 2-3 tasks per block.`;
+CRITICAL: You must generate the JSON instantly. Limit to exactly 1 task per block. Keep descriptions extremely short (1 sentence max). Speed is prioritized.`;
     }
 
     const response = await model.generateContent(prompt);
