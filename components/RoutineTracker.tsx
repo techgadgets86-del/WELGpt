@@ -25,7 +25,7 @@ export const INITIAL_EVENING_TASKS: Task[] = [
   { id: "e1", time: "08:00 PM", title: "Lux Reduction", desc: "Dim all overhead artificial lighting to signal melatonin production." },
   { id: "e2", time: "08:30 PM", title: "Digital Sunset", desc: "Strict blue-light blocking. Put all screens in another room." },
   { id: "e3", time: "09:00 PM", title: "Neuro-Supplements", desc: "Magnesium L-Threonate & Apigenin protocol." },
-  { id: "e4", time: "09:30 PM", title: "Yoga Nidra", desc: "Non-sleep deep rest (NSDR) to transition into deep Delta sleep." }
+  { id: "e4", time: "09:30 PM", title: "Yoga Nidra", desc: "Guided relaxation session to transition into deep Delta sleep." }
 ];
 
 export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, afternoonTasks = [], eveningTasks = INITIAL_EVENING_TASKS, customTasks = [], customTitle = "Custom Routine", onGenerateCustom }: { morningTasks?: Task[], afternoonTasks?: Task[], eveningTasks?: Task[], customTasks?: Task[], customTitle?: string, onGenerateCustom?: () => void }) {

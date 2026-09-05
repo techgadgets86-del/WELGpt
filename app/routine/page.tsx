@@ -145,7 +145,7 @@ export default function RoutinePage() {
               transition={{ delay: 0.2 }}
               className="text-gray-400 text-lg max-w-2xl"
           >
-            Your personalized daily schedule based on your neuroscience profile.
+            Your personalized daily schedule based on your behavioral profile.
           </motion.p>
         </div>
         <div className="flex flex-wrap gap-4 self-start md:self-end">

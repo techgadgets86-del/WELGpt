@@ -60,7 +60,7 @@ export default function DetoxTimer() {
           <h2 className="text-2xl font-bold tracking-widest uppercase font-mono text-white">Receptor Reset Protocol</h2>
         </div>
         <p className="text-gray-400 text-center max-w-md mb-12">
-          Initiate a dopamine fast. The neuro-core visualizer will track your receptor up-regulation in real time.
+          Initiate a distraction fast. The focus visualizer will track your sustained attention in real time.
         </p>
 
         {/* Completely new designed element: The Neuro-Core Visualizer */}

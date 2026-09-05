@@ -34,7 +34,7 @@ export default async function BlogPost({ params }: { params: Promise<{ id: strin
             {post.icon}
           </div>
           <div className="flex flex-col">
-            <span className="text-xs font-mono text-fuchsia-400 tracking-widest uppercase mb-1">Neuroscience Research</span>
+            <span className="text-xs font-mono text-fuchsia-400 tracking-widest uppercase mb-1">Behavioral Research</span>
             <div className="flex items-center gap-3 text-sm text-gray-400 font-mono">
               <span className="flex items-center gap-1"><Clock size={14} /> {post.readTime}</span>
             </div>
@@ -64,7 +64,7 @@ export default async function BlogPost({ params }: { params: Promise<{ id: strin
         dangerouslySetInnerHTML={{ __html: post.content }}
       />
 
-      {resolvedParams.id === "dopamine" && (
+      {resolvedParams.id === "focus" && (
         <DetoxTimer />
       )}
     </div>

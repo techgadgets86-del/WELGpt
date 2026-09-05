@@ -11,7 +11,7 @@ export default function ExploreHub() {
     { icon: Utensils, label: "Nutrition", desc: "AI generated meal protocols", href: "/nutrition", color: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20" },
     { icon: Activity, label: "Training", desc: "Sensei gamified workouts", href: "/sensei", color: "text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20" },
     { icon: Waves, label: "Meditation", desc: "Find your center", href: "/meditation", color: "text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/20" },
-    { icon: Leaf, label: "Detox Reset", desc: "Dopamine fasting tracker", href: "/detox", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
+    { icon: Leaf, label: "Detox Reset", desc: "Distraction fasting tracker", href: "/detox", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
     { icon: Sparkles, label: "Inspiration", desc: "Daily philosophy & quotes", href: "/inspiration", color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
     { icon: Headphones, label: "Soundscapes", desc: "Binaural & nature sounds", href: "/meditation", color: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20" },
   ];
@@ -32,7 +32,7 @@ export default function ExploreHub() {
             transition={{ delay: 0.2 }}
             className="text-gray-400 text-lg max-w-2xl"
         >
-          Access all specialized neuroscience and wellness modules.
+          Access all specialized evidence-informed wellness modules.
         </motion.p>
       </header>
 

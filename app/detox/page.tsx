@@ -89,7 +89,7 @@ export default function DetoxHub() {
   };
 
   const protocols = [
-    { icon: "📱", title: "Dopamine Detox", desc: "Reset your dopamine loops by unplugging.", prompt: "I'd like to do a dopamine detox." },
+    { icon: "📱", title: "Digital Detox", desc: "Reset your distraction loops by unplugging.", prompt: "I'd like to do a digital detox." },
     { icon: "🥤", title: "3-Day Juice Cleanse", desc: "Flood your system with micronutrients.", prompt: "Please provide me with a comprehensive 3-Day Juice Cleanse protocol to flood my system with micronutrients and reset my digestion." },
     { icon: "🔥", title: "Heavy Metal Sweep", desc: "Niacin flush and sauna protocol.", prompt: "Walk me through the Heavy Metal Sweep protocol, including the Niacin flush and sauna timing guidelines." },
     { icon: "🦠", title: "Microbiome Reset", desc: "Clear out bad bacteria and repopulate the gut.", prompt: "I want to initiate a Microbiome Reset. How do I clear out bad gut bacteria and repopulate my gut flora?" },
@@ -111,7 +111,7 @@ export default function DetoxHub() {
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white"
         >
-          Dopamine <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-400">Detox.</span>
+          Digital <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-400">Detox.</span>
         </motion.h1>
         <motion.p 
             initial={{ opacity: 0 }} 

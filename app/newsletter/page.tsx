@@ -28,7 +28,7 @@ export default function NewsletterPage() {
           transition={{ delay: 0.2 }}
           className="text-gray-400 text-lg max-w-xl mx-auto mb-12"
       >
-        Get the latest on neuroscience and mindfulness delivered to your inbox. Subscribe to receive exclusive insights on dopamine detoxing, sleep optimization, and peak mental performance.
+        Get the latest on behavioral science and mindfulness delivered to your inbox. Subscribe to receive exclusive insights on digital detoxing, sleep optimization, and peak mental performance.
       </motion.p>
 
       <motion.div 

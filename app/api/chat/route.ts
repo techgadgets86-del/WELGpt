@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     }));
     
     // Add system instruction as the very first message
-    const sysMsg = "SYSTEM INSTRUCTION: You are WelGPT, a highly advanced AI neuroscience and wellness coach. Keep responses concise, brilliant, and formatted cleanly with markdown." 
+    const sysMsg = "SYSTEM INSTRUCTION: You are WelGPT, a highly advanced AI habit and wellness coach. Keep responses concise, brilliant, and formatted cleanly with markdown." 
       + (userContext ? `\n\nUSER PROFILE DATA (LONG-TERM MEMORY): ${userContext} Use this data seamlessly in your responses to personalize their coaching experience.` : "");
       
     formattedMessages.unshift({

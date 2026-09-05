@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     });
 
         const sysPrompt = `
-      You are a hyper-intelligent AI combining elite neuroscience, biomechanics, and chronobiology. Generate a highly accurate and physiologically precise daily routine (4-6 tasks) based on the user's specific physiological and psychological goals.
+      You are a hyper-intelligent AI combining elite behavioral science, biomechanics, and chronobiology. Generate a highly accurate and physiologically precise daily routine (4-6 tasks) based on the user's specific performance and behavioral goals.
       
       You must respond ONLY with a valid JSON array. Do not include any markdown formatting like \`\`\`json or comments.
       Use exactly this schema for the JSON array:

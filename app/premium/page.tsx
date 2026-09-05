@@ -82,7 +82,7 @@ export default function PremiumPage() {
           <div className="mb-8">
             <h3 className="text-2xl font-bold text-amber-400 mb-2">Premium</h3>
             <div className="flex items-baseline gap-2 mb-2">
-              <span className="text-4xl font-black text-white">$14.99</span>
+              <span className="text-4xl font-black text-white">$9.99</span>
               <span className="text-gray-400 font-medium">/ month</span>
             </div>
             <p className="text-sm text-amber-200/60 font-medium">Or $49.99 / year (Save 72%)</p>
@@ -100,8 +100,8 @@ export default function PremiumPage() {
             <button onClick={() => handleSubscribe("49.99")} className="w-full py-4 rounded-xl font-bold bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-black transition-all hover:scale-[1.02] shadow-[0_0_20px_rgba(245,158,11,0.3)]">
               Subscribe Annually ($49.99)
             </button>
-            <button onClick={() => handleSubscribe("14.99")} className="w-full py-3 rounded-xl font-bold bg-white/5 hover:bg-white/10 text-white transition-all border border-white/10">
-              Subscribe Monthly ($14.99)
+            <button onClick={() => handleSubscribe("9.99")} className="w-full py-3 rounded-xl font-bold bg-white/5 hover:bg-white/10 text-white transition-all border border-white/10">
+              Subscribe Monthly ($9.99)
             </button>
           </div>
         </motion.div>

@@ -61,7 +61,7 @@ export default function PremiumModal({ isOpen, onClose }: PremiumModalProps) {
               {/* FREE TIER */}
               <div className="bg-white/5 border border-white/10 rounded-3xl p-8 flex flex-col">
                 <h3 className="text-2xl font-bold text-gray-400 mb-2">Free</h3>
-                <p className="text-gray-500 text-sm mb-6 pb-6 border-b border-white/5">The foundational neuroscience toolkit.</p>
+                <p className="text-gray-500 text-sm mb-6 pb-6 border-b border-white/5">The foundational wellness toolkit.</p>
                 
                 <div className="space-y-4 flex-1">
                   {[
@@ -121,7 +121,7 @@ export default function PremiumModal({ isOpen, onClose }: PremiumModalProps) {
               <button className="w-full py-5 rounded-2xl font-black tracking-wide text-white text-lg bg-gradient-to-r from-violet-600 to-teal-600 hover:scale-[1.02] transition-transform shadow-[0_0_30px_rgba(45,212,191,0.3)] mb-4 uppercase">
                 Unlock Adaptive Premium
               </button>
-              <p className="text-gray-500 text-sm">Cancel anytime. Only $14.99/month.</p>
+              <p className="text-gray-500 text-sm">Cancel anytime. Only $9.99/month.</p>
             </div>
             
           </motion.div>

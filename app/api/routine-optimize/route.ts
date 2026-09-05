@@ -13,7 +13,7 @@ export async function POST(req: Request) {
       generationConfig: { responseMimeType: "application/json" }
     });
 
-    const prompt = `You are an elite AI neuroscience coach. Generate a completely fresh, highly optimized daily routine for maximum human potential and mental clarity.
+    const prompt = `You are an elite AI habit coach. Generate a completely fresh, highly optimized daily routine for maximum human potential and mental clarity.
 
 You must respond ONLY with a valid JSON object. Do not include any markdown formatting like \`\`\`json or comments.
 Use exactly this schema for the JSON object:
