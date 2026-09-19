@@ -105,7 +105,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             }
 
             // Token Reset Logic
-            let currentChatTokens = data.aiChatTokens ?? 10;
+            let currentChatTokens = data.aiChatTokens ?? 5;
             let currentPlanTokens = data.aiPlanTokens ?? 3;
             let currentResetDate = data.tokenResetDate || today;
             
@@ -114,7 +114,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               currentPlanTokens = 3;
               currentResetDate = today;
               setDoc(userRef, { 
-                aiChatTokens: 10, 
+                aiChatTokens: 5, 
                 aiPlanTokens: 3, 
                 tokenResetDate: today 
               }, { merge: true });
@@ -150,7 +150,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             }
           } else {
             // Initialize profile
-            const initData = { isPremium: false, aiChatTokens: 10, aiPlanTokens: 3, tokenResetDate: new Date().toISOString().split('T')[0], xp: 0, streak: 0, lastActiveDate: "", goals: [], preferences: { dietary: "none", fitnessLevel: "beginner", focusAreas: [] }, recentActivity: [], dailyPlan: null };
+            const initData = { isPremium: false, aiChatTokens: 5, aiPlanTokens: 3, tokenResetDate: new Date().toISOString().split('T')[0], xp: 0, streak: 0, lastActiveDate: "", goals: [], preferences: { dietary: "none", fitnessLevel: "beginner", focusAreas: [] }, recentActivity: [], dailyPlan: null };
             let fullBackup = {};
             try {
               const fullBackupStr = localStorage.getItem('welgpt_full_backup');
@@ -162,7 +162,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             
             setProfile({ 
               isPremium: mergedInit.isPremium || false,
-              aiChatTokens: mergedInit.aiChatTokens ?? 10,
+              aiChatTokens: mergedInit.aiChatTokens ?? 5,
               aiPlanTokens: mergedInit.aiPlanTokens ?? 3,
               tokenResetDate: mergedInit.tokenResetDate || new Date().toISOString().split('T')[0],
               xp: mergedInit.xp || 0, 

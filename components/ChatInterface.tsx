@@ -1,37 +1,31 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Send, Paperclip, Loader2 } from "lucide-react";
-import Image from "next/image";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
 import { useChat } from "ai/react";
 import { useAuth } from "@/lib/AuthContext";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-
-const SUGGESTIONS = [
-  { icon: "🌿", title: "Guided Meditation", desc: "5 minutes to center yourself" },
-  { icon: "🫁", title: "Breathing Exercise", desc: "Box breathing for anxiety" },
-  { icon: "🧠", title: "Mental Reframing", desc: "Shift a negative thought" },
-  { icon: "📓", title: "Gratitude Journal", desc: "Log 3 things you are grateful for" }
-];
+import { Send, Paperclip, Loader2, Sparkles } from "lucide-react";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { useSearchParams, useRouter } from "next/navigation";
+import PremiumModal from "./PremiumModal";
 
 export default function ChatInterface() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
+  const { user, profile, updateUserData } = useAuth();
+  const [isFocused, setIsFocused] = useState(false);
+  const [loadedSessionCount, setLoadedSessionCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  const [isFocused, setIsFocused] = useState(false);
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [hasAutoPrompted, setHasAutoPrompted] = useState(false);
-
-  const { user, profile } = useAuth();
-  const [loadedSessionCount, setLoadedSessionCount] = useState(0);
+  
+  const [isPersonalized, setIsPersonalized] = useState(false);
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
   
   const { messages, setMessages, input, handleInputChange, handleSubmit, append, isLoading } = useChat({
     api: '/api/chat',
     body: {
-      userContext: profile ? JSON.stringify({
+      userContext: (profile && isPersonalized) ? JSON.stringify({
         level: profile.level,
         xp: profile.xp,
         streak: profile.streak,
@@ -72,7 +66,6 @@ export default function ChatInterface() {
     }
   }, [messages]);
 
-
   // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -102,6 +95,25 @@ export default function ChatInterface() {
     });
   };
 
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+
+    if (isPersonalized && profile && !profile.isPremium) {
+      if ((profile.aiChatTokens || 0) <= 0) {
+        setShowPremiumModal(true);
+        return;
+      }
+      updateUserData({ aiChatTokens: (profile.aiChatTokens || 0) - 1 });
+    }
+    
+    try {
+      handleSubmit(e);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full w-full max-w-4xl mx-auto relative z-10 pt-4">
       {/* Chat History / Greeting */}
@@ -110,7 +122,7 @@ export default function ChatInterface() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} // Unlumen UI smooth easing curve
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} 
             className="m-auto w-full text-center"
           >
             <div className="inline-flex items-center justify-center p-4 rounded-full mb-6">
@@ -126,7 +138,7 @@ export default function ChatInterface() {
             <div className="flex flex-wrap items-center justify-center gap-3 max-w-2xl mx-auto">
               {[
                 { label: "Sleep", icon: "🌙", prompt: "I want to improve my sleep quality." },
-                { label: "Stress", icon: "🧘", prompt: "I&apos;m feeling stressed and need to calm down." },
+                { label: "Stress", icon: "🧘", prompt: "I'm feeling stressed and need to calm down." },
                 { label: "Nutrition", icon: "🥑", prompt: "Help me optimize my nutrition." },
                 { label: "Fitness", icon: "💪", prompt: "I need a workout or fitness protocol." },
                 { label: "Focus", icon: "🧠", prompt: "I need to do deep work. How can I improve my focus?" }
@@ -160,7 +172,7 @@ export default function ChatInterface() {
                 <motion.div
                   initial={{ opacity: 0, y: 15, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 25 }} // Smooth UI physics
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
                   className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div className={`max-w-[80%] p-4 rounded-2xl text-[1.05rem] leading-relaxed shadow-lg whitespace-pre-wrap ${
@@ -180,18 +192,34 @@ export default function ChatInterface() {
       </div>
 
       {/* Magic UI Animated Input */}
-      <div className="pt-2 pb-6 relative">
-        <form 
-          onSubmit={(e) => {
-            e.preventDefault();
-            try {
-              handleSubmit(e);
-            } catch (err) {
-              console.error(err);
-            }
-          }}
-          className="relative"
-        >
+      <div className="pt-2 pb-6 relative flex flex-col gap-3">
+        <div className="flex items-center justify-between px-2">
+          <button
+            type="button"
+            onClick={() => {
+               if (!isPersonalized && profile && !profile.isPremium && (profile.aiChatTokens || 0) <= 0) {
+                 setShowPremiumModal(true);
+                 return;
+               }
+               setIsPersonalized(!isPersonalized);
+            }}
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all border ${
+              isPersonalized 
+                ? "bg-violet-500/20 text-violet-300 border-violet-500/30 shadow-[0_0_15px_rgba(124,58,237,0.15)]" 
+                : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10"
+            }`}
+          >
+            <Sparkles size={14} className={isPersonalized ? "text-violet-400" : "text-gray-500"} />
+            {isPersonalized ? "PERSONALIZED CONTEXT ENABLED" : "ENABLE PERSONALIZED CONTEXT"}
+            {profile && !profile.isPremium && (
+              <span className={`ml-2 px-1.5 py-0.5 rounded text-[10px] ${isPersonalized ? "bg-violet-500/30" : "bg-gray-800"}`}>
+                {profile.aiChatTokens || 0} left
+              </span>
+            )}
+          </button>
+        </div>
+
+        <form onSubmit={onSubmit} className="relative">
           <motion.div 
             animate={{ 
               boxShadow: isFocused ? "0 0 40px rgba(124,58,237,0.2)" : "0 0 0px rgba(124,58,237,0)",
@@ -208,7 +236,7 @@ export default function ChatInterface() {
               onChange={handleInputChange}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
-              placeholder="Message WelGPT..."
+              placeholder={isPersonalized ? "Message your personalized WelGPT Coach..." : "Message WelGPT..."}
               className="flex-1 bg-transparent border-none outline-none text-white placeholder:text-gray-500 py-4 font-medium"
             />
             <button 
@@ -220,10 +248,12 @@ export default function ChatInterface() {
             </button>
           </motion.div>
         </form>
-        <p className="text-center text-xs text-gray-500 mt-4">
+        <p className="text-center text-xs text-gray-500 mt-2">
           WelGPT can make mistakes. Consider verifying important information.
         </p>
       </div>
+      
+      <PremiumModal isOpen={showPremiumModal} onClose={() => setShowPremiumModal(false)} />
     </div>
   );
 }

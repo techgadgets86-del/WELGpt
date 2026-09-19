@@ -84,7 +84,7 @@ export default function Home() {
   const completeOnboarding = async () => {
     if (profile && !profile.isPremium) {
       if ((profile.aiPlanTokens || 0) <= 0) {
-        alert("You have run out of free AI Plan Generations for today. Upgrade to Premium to continue!");
+        setShowPremium(true);
         return;
       }
     }

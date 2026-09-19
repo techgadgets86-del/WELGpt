@@ -80,26 +80,26 @@ export default function PremiumModal({ isOpen, onClose }: PremiumModalProps) {
                 
                 <div className="space-y-4 flex-1">
                   {[
-                    "Basic daily plan",
-                    "Limited AI Coach",
-                    "Basic nutrition",
-                    "Basic meditation",
-                    "Basic movement",
-                    "Basic progress"
+                    "Standard Daily Plan",
+                    "Unlimited General AI Chat",
+                    "5 Personalized AI Messages",
+                    "Basic Nutrition Tracking",
+                    "Basic Meditation Library",
+                    "Standard Analytics"
                   ].map((feat, i) => (
                     <div key={i} className="flex items-center gap-3 text-gray-400">
                       <Minus size={16} className="text-gray-600 shrink-0" />
                       <span className="text-sm">{feat}</span>
                     </div>
                   ))}
-                  <div className="flex items-center gap-3 text-gray-400 opacity-50 mt-4">
+                  <div className="flex items-center gap-3 text-gray-400 opacity-50 mt-4 pt-4 border-t border-white/5">
                     <span className="text-xs uppercase tracking-wider font-bold border border-gray-600 px-2 py-0.5 rounded text-gray-500">Ad-Supported</span>
                   </div>
                 </div>
               </div>
 
               {/* PREMIUM TIER */}
-              <div className="bg-gradient-to-b from-violet-900/40 to-teal-900/20 border border-violet-500/40 rounded-3xl p-8 flex flex-col relative shadow-[0_0_30px_rgba(124,58,237,0.15)] transform md:scale-105">
+              <div className="bg-gradient-to-b from-violet-900/40 to-teal-900/20 border border-violet-500/40 rounded-3xl p-8 flex flex-col relative shadow-[0_0_40px_rgba(124,58,237,0.15)] transform md:scale-105">
                 <div className="absolute -top-4 right-8 bg-gradient-to-r from-violet-500 to-teal-500 text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg">
                   Recommended
                 </div>
@@ -109,21 +109,19 @@ export default function PremiumModal({ isOpen, onClose }: PremiumModalProps) {
                 
                 <div className="space-y-4 flex-1">
                   {[
-                    "Personalized daily plan",
-                    "Expanded AI Coach",
-                    "Personalized nutrition",
-                    "Adaptive training",
-                    "Personalized meditation",
-                    "Advanced routines",
-                    "Weekly AI review",
-                    "Advanced analytics"
+                    "Adaptive Daily Plans",
+                    "Unlimited Personalized AI Coach",
+                    "Unlimited AI Plan Generations",
+                    "Personalized Nutrition Logic",
+                    "Adaptive Training Routines",
+                    "Advanced Health Analytics"
                   ].map((feat, i) => (
                     <div key={i} className="flex items-center gap-3 text-white">
                       <Check size={18} className="text-teal-400 shrink-0" />
                       <span className="text-sm font-bold">{feat}</span>
                     </div>
                   ))}
-                  <div className="flex items-center gap-3 text-emerald-400 mt-4">
+                  <div className="flex items-center gap-3 text-emerald-400 mt-4 pt-4 border-t border-violet-500/20">
                     <Sparkles size={16} className="shrink-0" />
                     <span className="text-sm font-bold">Completely Ad-Free</span>
                   </div>
@@ -136,9 +134,20 @@ export default function PremiumModal({ isOpen, onClose }: PremiumModalProps) {
               <button 
                 onClick={handleSubscribe}
                 disabled={isProcessing}
-                className="w-full py-5 rounded-2xl font-black tracking-wide text-white text-lg bg-gradient-to-r from-violet-600 to-teal-600 hover:scale-[1.02] transition-transform shadow-[0_0_30px_rgba(45,212,191,0.3)] mb-4 uppercase disabled:opacity-50 disabled:scale-100"
+                className="w-full flex items-center justify-center gap-3 py-5 rounded-2xl font-black tracking-wide text-white text-lg bg-gradient-to-r from-violet-600 to-teal-600 hover:scale-[1.02] transition-transform shadow-[0_0_30px_rgba(45,212,191,0.3)] mb-4 uppercase disabled:opacity-80 disabled:scale-100"
               >
-                {isProcessing ? "Processing..." : "Unlock Adaptive Premium"}
+                {isProcessing ? (
+                  <>
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                      className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full"
+                    />
+                    <span>Processing Securely...</span>
+                  </>
+                ) : (
+                  "Unlock Adaptive Premium"
+                )}
               </button>
               <p className="text-gray-500 text-sm">Cancel anytime. Only $9.99/month.</p>
             </div>
