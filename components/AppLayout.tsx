@@ -25,9 +25,30 @@ const springTransition = {
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const { user, profile, loading, setShowGuestModal } = useAuth();
+
+  // Enforce Sign-In Popup if Guest for > 1 Day
+  useEffect(() => {
+    if (user && user.isAnonymous && user.metadata.creationTime) {
+      const createdAt = new Date(user.metadata.creationTime);
+      const now = new Date();
+      const diffMs = now.getTime() - createdAt.getTime();
+      const diffDays = diffMs / (1000 * 60 * 60 * 24);
+      if (diffDays >= 1) {
+        setShowGuestModal(true);
+      }
+    }
+  }, [user, setShowGuestModal]);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const navItems = [
     { icon: Home, label: "Home", href: "/", restricted: false },
@@ -217,6 +238,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* ============================================================== */}
       <DynamicIsland />
       <NotificationSystem />
+      <GuestLoginModal />
 
       {/* ============================================================== */}
       {/* MAIN CONTENT AREA */}

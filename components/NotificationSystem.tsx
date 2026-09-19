@@ -44,6 +44,20 @@ export default function NotificationSystem() {
     setActiveToasts(prev => prev.filter(t => t.id !== id));
   };
 
+  // Function to ask for Notification permissions on web
+  useEffect(() => {
+    // Only ask if user is signed in, NOT anonymous, and browser supports it
+    if (user && !user.isAnonymous && typeof window !== "undefined" && 'Notification' in window) {
+      if (Notification.permission === "default") {
+        // We delay it slightly so it doesn't jarringly block the initial load animation
+        const timer = setTimeout(() => {
+          Notification.requestPermission();
+        }, 3000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [user]);
+
   useEffect(() => {
     if (!profile || !user) return;
 
