@@ -7,17 +7,22 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
-import { doc, onSnapshot, setDoc, updateDoc, increment } from "firebase/firestore";
+import { doc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import { useAuth } from "@/lib/AuthContext";
-import { ShieldAlert, Play, XOctagon, Trophy, Flame } from "lucide-react";
+import { ShieldAlert, Play, XOctagon, Trophy, Flame, Award, Download } from "lucide-react";
+import { getCertificateFallback } from "@/lib/certificateDb";
 
 export default function DetoxHub() {
   const router = useRouter();
   const { addXP, logActivity } = useAuth();
   
   const [user, setUser] = useState<User | null>(null);
-  const [activeDetox, setActiveDetox] = useState<{type: string, startTime: string} | null>(null);
+  const [activeDetox, setActiveDetox] = useState<{type: string, startTime: string, targetDuration: number} | null>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [selectedDuration, setSelectedDuration] = useState(600); // Default 10 mins (600s)
+  
+  const [showCertificate, setShowCertificate] = useState(false);
+  const [earnedCert, setEarnedCert] = useState<any>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -28,7 +33,8 @@ export default function DetoxHub() {
           if (docSnap.exists() && docSnap.data().active) {
             setActiveDetox({
               type: docSnap.data().type,
-              startTime: docSnap.data().startTime
+              startTime: docSnap.data().startTime,
+              targetDuration: docSnap.data().targetDuration || 600
             });
           } else {
             setActiveDetox(null);
@@ -46,13 +52,35 @@ export default function DetoxHub() {
       interval = setInterval(() => {
         const start = new Date(activeDetox.startTime).getTime();
         const now = new Date().getTime();
-        setElapsedTime(Math.floor((now - start) / 1000));
+        const elapsed = Math.floor((now - start) / 1000);
+        setElapsedTime(elapsed);
+
+        // Auto-complete if target reached
+        if (elapsed >= activeDetox.targetDuration) {
+          clearInterval(interval);
+          handleAutoCompletion(activeDetox.type);
+        }
       }, 1000);
     } else {
       setTimeout(() => setElapsedTime(0), 0);
     }
     return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeDetox]);
+
+  const handleAutoCompletion = async (type: string) => {
+    if (!user) return;
+    const cert = getCertificateFallback(type);
+    setEarnedCert(cert);
+    setShowCertificate(true);
+    
+    // End the detox in db
+    const docRef = doc(db, `users/${user.uid}/detoxTracker`, 'current');
+    await updateDoc(docRef, { active: false });
+    
+    const xpReward = Math.floor(100); 
+    addXP(xpReward);
+  };
 
   const startDetox = async (type: string) => {
     if (!user) {
@@ -63,7 +91,8 @@ export default function DetoxHub() {
     await setDoc(docRef, {
       active: true,
       type,
-      startTime: new Date().toISOString()
+      startTime: new Date().toISOString(),
+      targetDuration: selectedDuration
     });
   };
 
@@ -73,26 +102,25 @@ export default function DetoxHub() {
     await updateDoc(docRef, { active: false });
     
     if (success) {
-      // Base XP + Bonus XP for time
-      const hoursCompleted = elapsedTime / 3600;
-      const xpReward = Math.floor(50 + (hoursCompleted * 10)); 
-      addXP(xpReward);
+      handleAutoCompletion(activeDetox.type);
+    } else {
+      setActiveDetox(null);
     }
-    setActiveDetox(null);
   };
 
   const formatTime = (totalSeconds: number) => {
     const h = Math.floor(totalSeconds / 3600);
     const m = Math.floor((totalSeconds % 3600) / 60);
     const s = totalSeconds % 60;
-    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    if (h > 0) return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
   const protocols = [
-    { icon: "📱", title: "Digital Detox", desc: "Reset your distraction loops by unplugging.", prompt: "I'd like to do a digital detox." },
-    { icon: "🥤", title: "3-Day Juice Cleanse", desc: "Flood your system with micronutrients.", prompt: "Please provide me with a comprehensive 3-Day Juice Cleanse protocol to flood my system with micronutrients and reset my digestion." },
-    { icon: "🔥", title: "Heavy Metal Sweep", desc: "Niacin flush and sauna protocol.", prompt: "Walk me through the Heavy Metal Sweep protocol, including the Niacin flush and sauna timing guidelines." },
-    { icon: "🦠", title: "Microbiome Reset", desc: "Clear out bad bacteria and repopulate the gut.", prompt: "I want to initiate a Microbiome Reset. How do I clear out bad gut bacteria and repopulate my gut flora?" },
+    { icon: "📱", title: "Digital Detox", desc: "Reset your distraction loops by unplugging." },
+    { icon: "🥤", title: "3-Day Juice Cleanse", desc: "Flood your system with micronutrients." },
+    { icon: "🔥", title: "Heavy Metal Sweep", desc: "Niacin flush and sauna protocol." },
+    { icon: "🦠", title: "Microbiome Reset", desc: "Clear out bad bacteria and repopulate the gut." },
   ];
 
   const benefits = [
@@ -102,10 +130,13 @@ export default function DetoxHub() {
     { icon: "🧬", title: "Cellular Repair", desc: "Trigger autophagy & renewal." },
     { icon: "😌", title: "Stress Relief", desc: "Lower cortisol levels." },
   ];
+  
+  // Calculate fill percentage (max 100)
+  const progressPercent = activeDetox ? Math.min((elapsedTime / activeDetox.targetDuration) * 100, 100) : 0;
 
   return (
     <div className="max-w-5xl mx-auto relative z-10 pt-4 min-h-full flex pb-[160px] md:pb-12 flex-col">
-      <header className="mb-12">
+      <header className="mb-8">
         <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -119,10 +150,51 @@ export default function DetoxHub() {
             transition={{ delay: 0.2 }}
             className="text-gray-400 text-lg max-w-2xl"
         >
-          Reset your focus and reclaim your attention span.
+          Reset your focus, lock in, and reclaim your attention span.
         </motion.p>
       </header>
 
+      {/* Certificate Modal */}
+      <AnimatePresence>
+        {showCertificate && earnedCert && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              className="bg-[#111127] border border-teal-500/30 rounded-3xl p-8 md:p-12 max-w-xl text-center relative overflow-hidden shadow-[0_0_50px_rgba(20,184,166,0.2)]"
+            >
+              <div className="absolute inset-0 bg-gradient-to-tr from-teal-500/10 to-transparent pointer-events-none" />
+              <div className="text-6xl mb-6">{earnedCert.badge}</div>
+              <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-white mb-2">
+                {earnedCert.title}
+              </h2>
+              <p className="text-teal-400 font-bold tracking-widest uppercase text-sm mb-6">Official Certification</p>
+              
+              <p className="text-gray-300 italic mb-6">"{earnedCert.quote}"</p>
+              <p className="text-gray-400 text-sm mb-8">{earnedCert.description}</p>
+              
+              <div className="flex flex-col gap-3">
+                <button 
+                  onClick={() => {
+                    // Simulating download/save
+                    alert("Certificate saved to your achievements!");
+                    setShowCertificate(false);
+                    setEarnedCert(null);
+                  }}
+                  className="w-full py-4 rounded-xl bg-teal-500 text-white font-bold flex justify-center items-center gap-2 hover:bg-teal-400 transition-all shadow-[0_0_20px_rgba(20,184,166,0.4)]"
+                >
+                  <Download size={20} /> Claim & Save Certificate
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       
       {/* Active Tracker */}
       <AnimatePresence mode="wait">
@@ -132,38 +204,72 @@ export default function DetoxHub() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="mb-12 border border-teal-500/30 rounded-3xl p-8 bg-teal-500/10 flex flex-col items-center justify-center text-center relative overflow-hidden"
+            className="mb-12 border border-white/10 rounded-3xl bg-[#050505] flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[400px]"
           >
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#111127] opacity-80" />
-            <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-500/20 text-teal-400 text-sm font-bold tracking-widest uppercase mb-6 border border-teal-500/30">
-                <Flame size={16} className="animate-pulse" />
+            {/* The Blacked out timer washing with white droplets effect */}
+            <div 
+              className="absolute bottom-0 left-0 right-0 bg-white/10 transition-all duration-1000 ease-linear backdrop-blur-[2px]"
+              style={{ height: `${progressPercent}%` }}
+            >
+              {/* Droplet overlay effect using CSS borders/shadows to simulate liquid edge */}
+              <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-white/20 to-transparent opacity-50" />
+            </div>
+
+            <div className="relative z-10 flex flex-col items-center p-8">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/50 text-white/50 text-sm font-bold tracking-widest uppercase mb-6 border border-white/10 backdrop-blur-md">
+                <Flame size={16} className="animate-pulse text-white" />
                 Active Fast: {activeDetox.type}
               </div>
-              <h2 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-500 font-mono tracking-tighter mb-8 drop-shadow-2xl">
-                {formatTime(elapsedTime)}
+              
+              {/* Timer text that gets slightly brighter as progress increases */}
+              <h2 
+                className="text-7xl md:text-9xl font-black font-mono tracking-tighter mb-4 drop-shadow-2xl transition-all duration-1000"
+                style={{ color: `rgba(255, 255, 255, ${0.3 + (progressPercent / 100) * 0.7})` }}
+              >
+                {formatTime(activeDetox.targetDuration - elapsedTime)}
               </h2>
+              
+              <p className="text-white/40 font-bold uppercase tracking-widest mb-12">Remaining Time</p>
+
               <div className="flex flex-wrap justify-center gap-4">
                 <button 
                   onClick={() => endDetox(false)}
-                  className="px-6 py-3 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 font-bold flex items-center gap-2 hover:bg-red-500/20 transition-all"
+                  className="px-6 py-3 rounded-xl border border-white/10 bg-black text-white/50 font-bold flex items-center gap-2 hover:bg-white/5 hover:text-white transition-all backdrop-blur-md"
                 >
                   <XOctagon size={20} />
-                  Relapsed
-                </button>
-                <button 
-                  onClick={() => endDetox(true)}
-                  className="px-6 py-3 rounded-xl border border-teal-500/50 bg-teal-500 text-white font-bold flex items-center gap-2 hover:bg-teal-400 shadow-[0_0_30px_rgba(20,184,166,0.3)] transition-all"
-                >
-                  <Trophy size={20} />
-                  Complete Fast
+                  Abort
                 </button>
               </div>
             </div>
           </motion.div>
         ) : (
           <motion.div key="inactive" className="mb-12">
-            <h2 className="text-2xl font-semibold text-white mb-6">Start a Protocol</h2>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+              <h2 className="text-2xl font-semibold text-white">Start a Protocol</h2>
+              
+              {/* Duration Selector */}
+              <div className="flex items-center gap-2 bg-[#111127] border border-white/10 rounded-xl p-1">
+                {[
+                  { label: "10 Min", val: 600 },
+                  { label: "30 Min", val: 1800 },
+                  { label: "1 Hour", val: 3600 },
+                  { label: "24 Hours", val: 86400 }
+                ].map(dur => (
+                  <button
+                    key={dur.val}
+                    onClick={() => setSelectedDuration(dur.val)}
+                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+                      selectedDuration === dur.val 
+                        ? 'bg-teal-500 text-white shadow-[0_0_10px_rgba(20,184,166,0.3)]' 
+                        : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    {dur.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {protocols.map((protocol, idx) => (
                 <motion.div
@@ -178,7 +284,7 @@ export default function DetoxHub() {
                     <h3 className="text-lg font-medium text-white mb-2">{protocol.title}</h3>
                     <p className="text-gray-400 text-sm mb-4">{protocol.desc}</p>
                     <button className="text-teal-400 font-bold text-sm flex items-center gap-2 bg-teal-500/10 px-4 py-2 rounded-lg w-full justify-center border border-teal-500/20">
-                      <Play size={14} /> Begin Fast
+                      <Play size={14} /> Begin {selectedDuration < 3600 ? `${selectedDuration/60}m` : `${selectedDuration/3600}h`} Fast
                     </button>
                   </MagicCard>
                 </motion.div>
@@ -187,7 +293,6 @@ export default function DetoxHub() {
           </motion.div>
         )}
       </AnimatePresence>
-
 
       <section className="mt-8 ">
         <h2 className="text-2xl font-semibold text-white mb-6">Benefits of Detoxification</h2>
