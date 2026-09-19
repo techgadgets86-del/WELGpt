@@ -4,13 +4,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MagicCard } from "@/components/ui/magic-card";
 import { Marquee } from "@/components/ui/marquee";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { doc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import { useAuth } from "@/lib/AuthContext";
 import { ShieldAlert, Play, XOctagon, Trophy, Flame, Award, Download } from "lucide-react";
 import { getCertificateFallback } from "@/lib/certificateDb";
+import { toPng } from 'html-to-image';
 
 export default function DetoxHub() {
   const router = useRouter();
@@ -23,6 +24,30 @@ export default function DetoxHub() {
   
   const [showCertificate, setShowCertificate] = useState(false);
   const [earnedCert, setEarnedCert] = useState<any>(null);
+  
+  const certRef = useRef<HTMLDivElement>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const downloadCertificate = async () => {
+    if (!certRef.current) return;
+    try {
+      setIsDownloading(true);
+      const dataUrl = await toPng(certRef.current, { quality: 1.0, pixelRatio: 2 });
+      const link = document.createElement('a');
+      link.download = `WELGPT-Detox-${earnedCert?.title || 'Certificate'}.png`;
+      link.href = dataUrl;
+      link.click();
+      
+      // Cleanup
+      setShowCertificate(false);
+      setEarnedCert(null);
+    } catch (err) {
+      console.error("Failed to generate certificate image", err);
+      alert("Failed to save certificate. Please try again.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -166,29 +191,33 @@ export default function DetoxHub() {
             <motion.div
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
-              className="bg-[#111127] border border-teal-500/30 rounded-3xl p-8 md:p-12 max-w-xl text-center relative overflow-hidden shadow-[0_0_50px_rgba(20,184,166,0.2)]"
+              className="bg-[#111127] border border-teal-500/30 rounded-3xl p-8 md:p-12 max-w-xl text-center relative shadow-[0_0_50px_rgba(20,184,166,0.2)]"
             >
-              <div className="absolute inset-0 bg-gradient-to-tr from-teal-500/10 to-transparent pointer-events-none" />
-              <div className="text-6xl mb-6">{earnedCert.badge}</div>
-              <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-white mb-2">
-                {earnedCert.title}
-              </h2>
-              <p className="text-teal-400 font-bold tracking-widest uppercase text-sm mb-6">Official Certification</p>
-              
-              <p className="text-gray-300 italic mb-6">"{earnedCert.quote}"</p>
-              <p className="text-gray-400 text-sm mb-8">{earnedCert.description}</p>
+              {/* This is the portion we capture as an image */}
+              <div ref={certRef} className="bg-[#111127] p-8 rounded-2xl relative overflow-hidden mb-6 border border-teal-500/10">
+                <div className="absolute inset-0 bg-gradient-to-tr from-teal-500/10 to-transparent pointer-events-none" />
+                <div className="text-6xl mb-6">{earnedCert.badge}</div>
+                <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-white mb-2">
+                  {earnedCert.title}
+                </h2>
+                <p className="text-teal-400 font-bold tracking-widest uppercase text-sm mb-6">Official Certification</p>
+                
+                <p className="text-gray-300 italic mb-6">"{earnedCert.quote}"</p>
+                <p className="text-gray-400 text-sm">{earnedCert.description}</p>
+                
+                <div className="mt-8 pt-4 border-t border-white/10 flex justify-between items-center opacity-50">
+                  <span className="text-xs text-white font-mono tracking-widest">WELGPT</span>
+                  <span className="text-xs text-white font-mono">{new Date().toLocaleDateString()}</span>
+                </div>
+              </div>
               
               <div className="flex flex-col gap-3">
                 <button 
-                  onClick={() => {
-                    // Simulating download/save
-                    alert("Certificate saved to your achievements!");
-                    setShowCertificate(false);
-                    setEarnedCert(null);
-                  }}
-                  className="w-full py-4 rounded-xl bg-teal-500 text-white font-bold flex justify-center items-center gap-2 hover:bg-teal-400 transition-all shadow-[0_0_20px_rgba(20,184,166,0.4)]"
+                  onClick={downloadCertificate}
+                  disabled={isDownloading}
+                  className="w-full py-4 rounded-xl bg-teal-500 text-white font-bold flex justify-center items-center gap-2 hover:bg-teal-400 transition-all shadow-[0_0_20px_rgba(20,184,166,0.4)] disabled:opacity-50"
                 >
-                  <Download size={20} /> Claim & Save Certificate
+                  <Download size={20} /> {isDownloading ? "Generating..." : "Claim & Save Certificate"}
                 </button>
               </div>
             </motion.div>
