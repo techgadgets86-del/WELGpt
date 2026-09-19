@@ -14,7 +14,7 @@ export default function ProfilePage() {
   const goalsRef = useRef<HTMLDivElement>(null);
   
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
-  const goals = ["Better Sleep", "Less Stress", "Better Fitness", "Nutrition", "Focus", "Better Habits"];
+  const goals = ["Better Sleep", "Less Stress", "Better Fitness", "Posture", "Nutrition", "Focus", "Better Habits"];
 
   // Sync local goals state
   useEffect(() => {
