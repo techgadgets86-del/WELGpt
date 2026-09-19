@@ -47,17 +47,29 @@ export default function NotificationSystem() {
   useEffect(() => {
     if (!profile || !user) return;
 
+    // Helper to parse "07:15 AM" into { h: 7, m: 15 }
+    const parseTime = (timeStr: string) => {
+      if (!timeStr) return null;
+      const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+      if (!match) return null;
+      let h = parseInt(match[1], 10);
+      const m = parseInt(match[2], 10);
+      const ampm = match[3].toUpperCase();
+      if (ampm === "PM" && h !== 12) h += 12;
+      if (ampm === "AM" && h === 12) h = 0;
+      return { h, m };
+    };
+
     // The advanced checking loop (runs every minute)
     const checkInterval = setInterval(() => {
       const now = new Date();
       const currentHour = now.getHours();
       const currentMinutes = now.getMinutes();
       
-      // 1. Hyper-Real Meditation Reminders (Triggers around 2PM or randomly if stressed)
-      // Let's trigger a mindfulness check at random times or specifically at 2:30 PM (afternoon slump)
-      if (currentHour === 14 && currentMinutes === 30) {
+      // 1. Hyper-Real Meditation Reminders (Every 3 hours: 9AM, 12PM, 3PM, 6PM)
+      if ([9, 12, 15, 18].includes(currentHour) && currentMinutes === 0) {
         triggerToast({
-          id: `meditation-${now.toDateString()}-1430`,
+          id: `meditation-${now.toDateString()}-${currentHour}`,
           title: "Mindfulness Check",
           message: "Take a deep breath. Drop your shoulders. Unclench your jaw. You are doing great.",
           icon: "meditation",
@@ -67,39 +79,29 @@ export default function NotificationSystem() {
         });
       }
 
-      // 2. Routine Reminders based on profile's Daily Plan
+      // 2. Exact Routine Reminders (Based on the exact task time in their plan)
       if (profile.dailyPlan && profile.dailyPlan.date === now.toISOString().split('T')[0]) {
-        // Morning Routine Reminder (8 AM)
-        if (currentHour === 8 && currentMinutes === 0) {
-          const incomplete = profile.dailyPlan.morning?.filter(t => !t.completed);
-          if (incomplete && incomplete.length > 0) {
-            triggerToast({
-              id: `routine-morning-${now.toDateString()}`,
-              title: "Morning Routine",
-              message: `You have ${incomplete.length} morning tasks waiting for you. Let's start the day right!`,
-              icon: "routine",
-              timestamp: now,
-              read: false,
-              actionUrl: "/routine"
+        (['morning', 'afternoon', 'evening'] as const).forEach((timeOfDay) => {
+          const tasks = profile.dailyPlan![timeOfDay];
+          if (Array.isArray(tasks)) {
+            tasks.forEach(task => {
+              if (!task.completed && task.time) {
+                const parsed = parseTime(task.time);
+                if (parsed && parsed.h === currentHour && parsed.m === currentMinutes) {
+                  triggerToast({
+                    id: `routine-task-${task.id}-${now.toDateString()}`,
+                    title: "Activity Reminder",
+                    message: `It's time for: ${task.title}. Stay on track!`,
+                    icon: "routine",
+                    timestamp: now,
+                    read: false,
+                    actionUrl: "/routine"
+                  });
+                }
+              }
             });
           }
-        }
-        
-        // Evening Routine Reminder (8 PM)
-        if (currentHour === 20 && currentMinutes === 0) {
-          const incomplete = profile.dailyPlan.evening?.filter(t => !t.completed);
-          if (incomplete && incomplete.length > 0) {
-            triggerToast({
-              id: `routine-evening-${now.toDateString()}`,
-              title: "Wind Down",
-              message: `It's time to prep for bed. You have ${incomplete.length} evening tasks left.`,
-              icon: "routine",
-              timestamp: now,
-              read: false,
-              actionUrl: "/routine"
-            });
-          }
-        }
+        });
       }
 
     }, 60000); // Check every minute
