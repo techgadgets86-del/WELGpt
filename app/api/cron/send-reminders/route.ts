@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { adminDb, adminMessaging } from '@/lib/firebaseAdmin';
 
-// Vercel Cron Jobs send a Bearer token we can verify, or we can just protect it with a secret.
 export async function GET(req: Request) {
   try {
     const authHeader = req.headers.get('authorization');
@@ -18,7 +17,37 @@ export async function GET(req: Request) {
       return NextResponse.json({ message: 'No users with FCM tokens found.' });
     }
 
-    // 2. Prepare Notification Payloads
+    // 2. Generate a Spicy Notification using OpenRouter (The "Thinking Orbs" logic)
+    let dynamicTitle = "Your Thinking Orb Speaks 🔮";
+    let dynamicBody = "Time to realign your posture and crush your goals. Tap in!";
+    
+    try {
+      const aiResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "meta-llama/llama-3.1-8b-instruct:free",
+          messages: [
+            { 
+              role: "system", 
+              content: "You are the 'Thinking Orb', a mystical and slightly intense AI coach for a digital wellness and posture app. Generate a very short (max 12 words), spicy, intense, and motivational push notification body telling the user to get back to their routine. Do not use quotes." 
+            }
+          ]
+        })
+      });
+      
+      const aiData = await aiResponse.json();
+      if (aiData?.choices?.[0]?.message?.content) {
+        dynamicBody = aiData.choices[0].message.content.trim().replace(/^["']|["']$/g, '');
+      }
+    } catch (e) {
+      console.error("OpenRouter fetch failed, falling back to default message", e);
+    }
+
+    // 3. Prepare Notification Payloads
     const messages: any[] = [];
     
     usersSnapshot.forEach((doc) => {
@@ -29,8 +58,8 @@ export async function GET(req: Request) {
         messages.push({
           token: token,
           notification: {
-            title: "Time for your Daily Detox 🌿",
-            body: "Your AI Coach has updated your routine. Tap to continue your streak!",
+            title: dynamicTitle,
+            body: dynamicBody,
           },
           data: {
             route: "/dashboard",
@@ -39,27 +68,22 @@ export async function GET(req: Request) {
       }
     });
 
-    // 3. Send Notifications autonomously in batches of 500 (Firebase Multicast limit)
+    // 4. Send Notifications autonomously in batches of 500 (Firebase Multicast limit)
     let successCount = 0;
     let failureCount = 0;
 
-    // Split messages into chunks of 500
     const chunkSize = 500;
     for (let i = 0; i < messages.length; i += chunkSize) {
       const chunk = messages.slice(i, i + chunkSize);
       
-      // We use sendEach() to send multiple messages
       const response = await adminMessaging.sendEach(chunk);
       successCount += response.successCount;
       failureCount += response.failureCount;
 
-      // Handle failures (e.g., token expired/invalid)
       if (response.failureCount > 0) {
         response.responses.forEach((resp, idx) => {
           if (!resp.success) {
             console.error(`Failed to send to token: ${chunk[idx].token}`, resp.error);
-            // Optional: If error is 'messaging/invalid-registration-token' or 'messaging/registration-token-not-registered',
-            // you might want to delete the token from the user's document here to clean up.
           }
         });
       }
@@ -68,7 +92,8 @@ export async function GET(req: Request) {
     return NextResponse.json({ 
       success: true, 
       sent: successCount, 
-      failed: failureCount 
+      failed: failureCount,
+      generatedMessage: dynamicBody
     });
 
   } catch (error: any) {
