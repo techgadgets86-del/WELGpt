@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { generateWithFallbacks } from '@/lib/aiFallbackEngine';
 
 export const maxDuration = 20;
 
@@ -6,15 +6,6 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { age, weight, height, goal } = body;
-
-    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || '';
-    if (!apiKey) throw new Error("API Key is missing.");
-    
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ 
-      model: 'gemini-3.8-flash',
-      generationConfig: { responseMimeType: "application/json" }
-    });
 
     const prompt = `You are an elite AI personal trainer.
 Given the user's profile: Age ${age}, Weight ${weight}, Height ${height}, Goal: ${goal}.
@@ -45,14 +36,17 @@ Return ONLY a JSON object EXACTLY matching this structure, with no markdown form
   }
 }`;
 
-    const response = await model.generateContent(prompt);
-    let text = response.response.text();
-    text = text.replace(/```json/g, "").replace(/```/g, "").trim();
+    const text = await generateWithFallbacks(prompt);
     return new Response(text, { headers: { "Content-Type": "application/json" } });
     
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.error(error);
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+    console.error("AI Generation failed across all APIs:", error);
+    // Hard fallback so the UI doesn't completely break
+    return new Response(JSON.stringify({
+      core: { title: "Core Matrix", description: "Standard stabilization.", diagram: "[XXX--]", exercise: "Plank", duration: 60 },
+      arms: { title: "Upper Kinetix", description: "Standard pressing.", diagram: "[XXXX-]", exercise: "Pushups", duration: 60 },
+      legs: { title: "Lower Dynamics", description: "Standard squat.", diagram: "[XXXXX]", exercise: "Air Squats", duration: 60 }
+    }), { headers: { "Content-Type": "application/json" } });
   }
 }

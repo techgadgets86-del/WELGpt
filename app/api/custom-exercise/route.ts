@@ -1,18 +1,10 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { generateWithFallbacks } from '@/lib/aiFallbackEngine';
 
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
   try {
     const { prompt } = await req.json();
-    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || '';
-    if (!apiKey) throw new Error("API Key is missing.");
-
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-3.8-flash',
-      generationConfig: { responseMimeType: "application/json" }
-    });
 
     const sysPrompt = `
       You are a hyper-accurate elite biomechanics and kinesiologist AI. The user wants to train a specific physiological target or movement pattern: "${prompt}".
@@ -31,16 +23,23 @@ export async function POST(req: Request) {
       Provide the actual values for the keys, not the descriptions. Ensure duration is an integer (number of seconds). E.g. 20 minutes = 1200. Default is 180 if unspecified.
     `;
 
-    const result = await model.generateContent(sysPrompt);
-    let text = result.response.text();
-    text = text.replace(/```json/g, "").replace(/```/g, "").trim();
+    const text = await generateWithFallbacks(sysPrompt);
     const data = JSON.parse(text);
 
     return new Response(JSON.stringify({ data }), {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error: unknown) {
-    console.error(error);
-    return new Response(JSON.stringify({ error: (error as Error).message }), { status: 500 });
+    console.error("AI Generation failed across all APIs:", error);
+    // Hard fallback so the UI doesn't completely break
+    return new Response(JSON.stringify({ 
+      data: {
+        title: "Optimized Recovery",
+        color: "#14b8a6",
+        exercise: "Active Decompression",
+        desc: "A generalized sequence to reduce systemic stress when the network is overloaded.",
+        duration: 300
+      }
+    }), { headers: { 'Content-Type': 'application/json' } });
   }
 }

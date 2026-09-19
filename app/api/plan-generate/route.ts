@@ -1,21 +1,12 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { generateWithFallbacks } from '@/lib/aiFallbackEngine';
 
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
   try {
-    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || '';
-    if (!apiKey) throw new Error("API Key is missing.");
-    
     const body = await req.json();
     const { action, goals, feeling, dayType, previousPlan } = body;
     // action can be 'create_new' or 'adjust_daily'
-
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ 
-      model: 'gemini-3.8-flash',
-      generationConfig: { responseMimeType: "application/json" }
-    });
 
     let prompt = "";
 
@@ -69,15 +60,13 @@ Schema:
 CRITICAL: You must generate the JSON instantly. Limit to exactly 1 task per block. Keep descriptions extremely short (1 sentence max). Speed is prioritized.`;
     }
 
-    const response = await model.generateContent(prompt);
-    let text = response.response.text();
-    text = text.replace(/```json/g, "").replace(/```/g, "").trim();
+    const text = await generateWithFallbacks(prompt);
     
     return new Response(text, { headers: { "Content-Type": "application/json" } });
     
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.error(error);
+    console.error("AI Generation failed across all APIs:", error);
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 }

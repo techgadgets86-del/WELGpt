@@ -1,5 +1,5 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { getFallbackDiets } from '@/lib/nutritionFallbackDb';
+import { generateWithFallbacks } from '@/lib/aiFallbackEngine';
 
 export const maxDuration = 30;
 
@@ -8,15 +8,6 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     prompt = body.prompt || "";
-    
-    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || '';
-    if (!apiKey) throw new Error("API Key is missing.");
-
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-3.8-flash',
-      generationConfig: { responseMimeType: "application/json" }
-    });
 
     const sysPrompt = `
       You are an elite nutritionist AI. The user wants a list of exactly 4 hyper-specific food items or meals designed for: ${prompt}.
@@ -33,17 +24,15 @@ export async function POST(req: Request) {
       ]
     `;
 
-    const result = await model.generateContent(sysPrompt);
-    let text = result.response.text();
-    text = text.replace(/```json/g, "").replace(/```/g, "").trim();
+    const text = await generateWithFallbacks(sysPrompt);
     const items = JSON.parse(text);
 
     return new Response(JSON.stringify({ items }), {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error("AI Generation failed, falling back to static DB 1000+ Combinations", error);
-    // Fallback to our combinatorial database if API limit reached or fails!
+    console.error("AI Generation failed across all APIs, falling back to static DB 1000+ Combinations", error);
+    // Fallback to our combinatorial database if ALL API limits are reached
     const fallbackItems = getFallbackDiets(prompt);
     
     return new Response(JSON.stringify({ items: fallbackItems }), {

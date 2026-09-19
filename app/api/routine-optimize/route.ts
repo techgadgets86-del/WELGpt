@@ -1,18 +1,9 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { generateWithFallbacks } from '@/lib/aiFallbackEngine';
 
 export const maxDuration = 20;
 
 export async function POST(req: Request) {
   try {
-    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || '';
-    if (!apiKey) throw new Error("API Key is missing.");
-    
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ 
-      model: 'gemini-3.8-flash',
-      generationConfig: { responseMimeType: "application/json" }
-    });
-
     const prompt = `You are an elite AI habit coach. Generate a completely fresh, highly optimized daily routine for maximum human potential and mental clarity.
 
 You must respond ONLY with a valid JSON object. Do not include any markdown formatting like \`\`\`json or comments.
@@ -32,15 +23,16 @@ Use exactly this schema for the JSON object:
   ]
 }`;
 
-    const response = await model.generateContent(prompt);
-    let text = response.response.text();
-    text = text.replace(/```json/g, "").replace(/```/g, "").trim();
+    const text = await generateWithFallbacks(prompt);
     
     return new Response(text, { headers: { "Content-Type": "application/json" } });
     
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.error(error);
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+    console.error("AI Generation failed across all APIs:", error);
+    return new Response(JSON.stringify({ 
+      morning: [{id:"m1", time:"08:00 AM", title:"Hydrate", desc:"16oz of water"}], 
+      evening: [{id:"e1", time:"09:00 PM", title:"Digital Sunset", desc:"No screens"}] 
+    }), { status: 200, headers: { "Content-Type": "application/json" } });
   }
 }
