@@ -12,6 +12,8 @@ import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import DynamicIsland from "@/components/DynamicIsland";
 import GuestLoginModal from "./GuestLoginModal";
+import NotificationSystem from "./NotificationSystem";
+import NotificationBell from "./NotificationBell";
 
 // 🌊 Smooth UI: Physical Spring Transitions
 const springTransition = {
@@ -74,9 +76,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <motion.div animate={{ opacity: sidebarOpen ? 1 : 0, display: sidebarOpen ? "block" : "none" }}>
             <Image src="/logo-full.png" alt="WelGPT" width={120} height={28} className="h-[28px] w-auto object-contain" priority />
           </motion.div>
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 rounded-lg hover:bg-white/10 transition-colors shrink-0">
-            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          <div className="flex items-center gap-1">
+            <NotificationBell />
+            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 rounded-lg hover:bg-white/10 transition-colors shrink-0">
+              {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
 
         <nav className="flex-1 p-4 space-y-2 mt-4 overflow-y-auto no-scrollbar pb-24">
@@ -141,9 +146,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <Link href="/">
           <Image src="/logo-full.png" alt="WelGPT" width={100} height={24} className="h-[24px] w-auto object-contain" priority />
         </Link>
-        <button onClick={() => setMobileMenuOpen(true)} className="p-2 rounded-lg hover:bg-white/10 transition-colors">
-          <Menu size={24} />
-        </button>
+        <div className="flex items-center gap-2">
+          <NotificationBell />
+          <button onClick={() => setMobileMenuOpen(true)} className="p-2 rounded-lg hover:bg-white/10 transition-colors">
+            <Menu size={24} />
+          </button>
+        </div>
       </div>
 
       {/* MOBILE FULLSCREEN MENU */}
@@ -208,6 +216,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       
       {/* ============================================================== */}
       <DynamicIsland />
+      <NotificationSystem />
 
       {/* ============================================================== */}
       {/* MAIN CONTENT AREA */}
