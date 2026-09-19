@@ -177,7 +177,7 @@ export default function Home() {
     }
   };
 
-  const goals = ["Better Sleep", "Less Stress", "Better Fitness", "Nutrition", "Focus", "Better Habits"];
+  const goals = ["Better Sleep", "Less Stress", "Better Fitness", "Posture", "Nutrition", "Focus", "Better Habits"];
 
   
   // Dynamic Greeting Logic

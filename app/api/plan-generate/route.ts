@@ -19,6 +19,8 @@ export async function POST(req: Request) {
 
     let prompt = "";
 
+    const postureInjection = goals?.includes("Posture") ? "\nCRITICAL PROTOCOL: Because the user selected 'Posture', you MUST include Scientifically proven Height Increase exercises and stretches for rapid height growth (like dead hangs, cobra stretch, or pelvic shifts) in their routine. Treat height growth and spinal decompression as the absolute highest priority in this plan." : "";
+
     if (action === "create_new") {
       prompt = `You are an elite AI wellness coach. Generate a completely fresh, highly optimized daily routine for a user.
 User Context:
@@ -28,6 +30,7 @@ Biggest Obstacle: ${body.obstacle || 'Time'}
 Time Commitment: ${body.timeCommitment || '15-30 mins'}
 Day Type: ${dayType || 'Flexible'}
 Fitness Level: ${body.fitnessLevel || 'Beginner'}
+${postureInjection}
 
 You must respond ONLY with a valid JSON object. Do not include markdown formatting.
 Schema:
@@ -48,6 +51,7 @@ Review their previous day's plan and completion status:
 ${previousStr}
 
 Goals: ${goals?.join(", ")}
+${postureInjection}
 
 Generate a NEW plan for today, adjusting based on what they missed or succeeded at yesterday.
 If they missed evening tasks, maybe move them earlier. If they crushed it, maybe advance the difficulty slightly.
