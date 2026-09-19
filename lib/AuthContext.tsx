@@ -71,12 +71,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [showGuestModal, setShowGuestModal] = useState(false);
 
   useEffect(() => {
+    let unsubProfile: (() => void) | undefined;
+
     const unsubscribe = onAuthStateChanged(auth, async (currentUser: User | null) => {
       setUser(currentUser);
+      
+      // Cleanup previous profile listener if it exists
+      if (unsubProfile) {
+        unsubProfile();
+        unsubProfile = undefined;
+      }
+
       if (currentUser) {
         // Subscribe to user profile
         const userRef = doc(db, 'users', currentUser.uid);
-        const unsubProfile = onSnapshot(userRef, (docSnap) => {
+        unsubProfile = onSnapshot(userRef, (docSnap) => {
           if (docSnap.exists()) {
             const data = docSnap.data();
             const lastActive = data.lastActiveDate || "";
@@ -90,14 +99,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               const diffTime = Math.abs(currentDate.getTime() - lastDate.getTime());
               const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
               
-              if (diffDays > 1 && diffDays < 3) {
-                 // Missed a day? Wait, diffDays === 1 means yesterday.
-                 // Actually, if it's not today and not yesterday, reset.
-              }
               if (diffDays > 1) {
                 currentStreak = 0;
-              } else if (diffDays === 1) {
-                 // Will increment if they do an action today, handled in addXP
               }
             }
 
@@ -110,7 +113,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               currentChatTokens = 10;
               currentPlanTokens = 3;
               currentResetDate = today;
-              setDoc(userRef, { aiChatTokens: 10, aiPlanTokens: 3, tokenResetDate: today }, { merge: true });
+              setDoc(userRef, { 
+                aiChatTokens: 10, 
+                aiPlanTokens: 3, 
+                tokenResetDate: today 
+              }, { merge: true });
             }
 
             setProfile({
@@ -137,38 +144,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 if (fullBackupStr) {
                   const fullBackup = JSON.parse(fullBackupStr);
                   setProfile(prev => prev ? { ...prev, ...fullBackup } : null);
-                  
-                  // Attempt to aggressively re-sync the entire backup to Firestore to heal it
                   setDoc(doc(db, 'users', currentUser.uid), fullBackup, { merge: true });
-                } else {
-                  // Legacy fallback
-                  const backup = localStorage.getItem('welgpt_backup_plan');
-                  if (backup) {
-                    const parsed = JSON.parse(backup);
-                    setProfile(prev => prev ? { ...prev, dailyPlan: parsed, coachMessage: localStorage.getItem('welgpt_backup_msg') || prev.coachMessage } : null);
-                    setDoc(doc(db, 'users', currentUser.uid), { dailyPlan: parsed, coachMessage: localStorage.getItem('welgpt_backup_msg') }, { merge: true });
-                  }
                 }
               } catch(e) {}
             }
           } else {
             // Initialize profile
             const initData = { isPremium: false, aiChatTokens: 10, aiPlanTokens: 3, tokenResetDate: new Date().toISOString().split('T')[0], xp: 0, streak: 0, lastActiveDate: "", goals: [], preferences: { dietary: "none", fitnessLevel: "beginner", focusAreas: [] }, recentActivity: [], dailyPlan: null };
-            let restoredPlan = null;
-            let restoredMsg = undefined;
             let fullBackup = {};
             try {
               const fullBackupStr = localStorage.getItem('welgpt_full_backup');
-              if (fullBackupStr) {
-                 fullBackup = JSON.parse(fullBackupStr);
-              } else {
-                const backup = localStorage.getItem('welgpt_backup_plan');
-                if (backup) {
-                  restoredPlan = JSON.parse(backup);
-                  restoredMsg = localStorage.getItem('welgpt_backup_msg') || undefined;
-                  fullBackup = { dailyPlan: restoredPlan, coachMessage: restoredMsg };
-                }
-              }
+              if (fullBackupStr) fullBackup = JSON.parse(fullBackupStr);
             } catch(e) {}
             
             const mergedInit: any = { ...initData, ...fullBackup };
@@ -193,19 +179,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           }
         });
         setLoading(false);
-      
-
-
-  return () => unsubProfile();
       } else {
-        // User is fully signed out. We will NO LONGER automatically sign in anonymously.
-        // They must explicitly log in or choose 'Guest' on the login screen.
+        // User is fully signed out.
         setProfile(null);
         setLoading(false);
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      if (unsubProfile) unsubProfile();
+    };
   }, []);
 
   const addXP = async (amount: number) => {
