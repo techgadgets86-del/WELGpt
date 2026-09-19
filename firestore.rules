@@ -1,0 +1,39 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Core function to check ownership
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    match /users/{userId} {
+      // Allow read/write only if the authenticated user matches the userId
+      allow read, delete: if isOwner(userId);
+      
+      // Strict update/create enforcement to prevent horizontal escalation
+      allow create, update: if isOwner(userId)
+        // Prevent malicious privilege escalation
+        && (!('role' in request.resource.data) || request.resource.data.role == 'user')
+        && (!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == false);
+
+      match /customRoutines/{routineId} {
+        allow read, write: if isOwner(userId);
+      }
+      
+      match /detoxTracker/{trackerId} {
+        allow read, write: if isOwner(userId);
+      }
+      
+      match /customExercises/{exerciseId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+    
+    // Global default deny - blocks everything not explicitly allowed above
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

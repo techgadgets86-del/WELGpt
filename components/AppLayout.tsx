@@ -14,6 +14,7 @@ import DynamicIsland from "@/components/DynamicIsland";
 import GuestLoginModal from "./GuestLoginModal";
 import NotificationSystem from "./NotificationSystem";
 import NotificationBell from "./NotificationBell";
+import { usePushNotifications } from "@/lib/usePushNotifications";
 
 // 🌊 Smooth UI: Physical Spring Transitions
 const springTransition = {
@@ -23,6 +24,7 @@ const springTransition = {
 };
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
+  usePushNotifications();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);

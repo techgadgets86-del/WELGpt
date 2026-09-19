@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, X, Zap, Crown, Target, Sparkles, Brain, Minus } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
+import { useRevenueCat } from "@/lib/useRevenueCat";
 
 interface PremiumModalProps {
   isOpen: boolean;
@@ -11,15 +12,44 @@ interface PremiumModalProps {
 export default function PremiumModal({ isOpen, onClose }: PremiumModalProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const { updateUserData } = useAuth();
+  const { purchasePackage, packages, restorePurchases } = useRevenueCat();
 
   const handleSubscribe = async () => {
     setIsProcessing(true);
-    // Simulate Stripe/App Store payment processing
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    await updateUserData({ isPremium: true, aiPlanTokens: 999, aiChatTokens: 9999 });
+    
+    // Attempt RevenueCat Mobile Native Purchase
+    let success = false;
+    if (packages && packages.length > 0) {
+      // Purchase the first available package (usually Monthly)
+      success = await purchasePackage(packages[0]);
+    } else {
+      // Fallback for web or dev environment without packages loaded
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      success = true;
+    }
+
+    if (success) {
+      await updateUserData({ isPremium: true, aiPlanTokens: 999, aiChatTokens: 9999 });
+      alert("Welcome to WelGPT Adaptive Premium! All limits have been removed.");
+      onClose();
+    } else {
+      alert("Purchase was cancelled or failed. Please try again.");
+    }
+    
     setIsProcessing(false);
-    onClose();
-    alert("Welcome to WelGPT Adaptive Premium! All limits have been removed.");
+  };
+
+  const handleRestore = async () => {
+    setIsProcessing(true);
+    const restored = await restorePurchases();
+    if (restored) {
+      await updateUserData({ isPremium: true, aiPlanTokens: 999, aiChatTokens: 9999 });
+      alert("Welcome back! Your premium access has been restored.");
+      onClose();
+    } else {
+      alert("No active premium subscription found to restore.");
+    }
+    setIsProcessing(false);
   };
 
   return (
@@ -150,6 +180,13 @@ export default function PremiumModal({ isOpen, onClose }: PremiumModalProps) {
                 )}
               </button>
               <p className="text-gray-500 text-sm">Cancel anytime. Only $9.99/month.</p>
+              <button 
+                onClick={handleRestore}
+                disabled={isProcessing}
+                className="mt-4 text-xs font-bold text-gray-400 hover:text-white uppercase tracking-widest transition-colors"
+              >
+                Restore Purchases
+              </button>
             </div>
             
           </motion.div>
