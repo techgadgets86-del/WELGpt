@@ -33,7 +33,7 @@ export function useRevenueCat() {
           setPackages(offerings.current.availablePackages);
         }
 
-        const customerInfo = await Purchases.getCustomerInfo();
+        const { customerInfo } = await Purchases.getCustomerInfo();
         if (typeof customerInfo.entitlements.active['Premium'] !== "undefined") {
           setIsPremium(true);
         }
@@ -65,7 +65,7 @@ export function useRevenueCat() {
 
   const restorePurchases = async () => {
     try {
-      const customerInfo = await Purchases.restorePurchases();
+      const { customerInfo } = await Purchases.restorePurchases();
       if (typeof customerInfo.entitlements.active['Premium'] !== "undefined") {
         setIsPremium(true);
         return true;
