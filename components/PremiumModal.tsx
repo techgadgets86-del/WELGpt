@@ -1,5 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Crown, Star, Sparkles, Check, Minus } from "lucide-react";
+import { Check, X, Zap, Crown, Target, Sparkles, Brain, Minus } from "lucide-react";
+import { useState } from "react";
+import { useAuth } from "@/lib/AuthContext";
 
 interface PremiumModalProps {
   isOpen: boolean;
@@ -7,6 +9,19 @@ interface PremiumModalProps {
 }
 
 export default function PremiumModal({ isOpen, onClose }: PremiumModalProps) {
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { updateUserData } = useAuth();
+
+  const handleSubscribe = async () => {
+    setIsProcessing(true);
+    // Simulate Stripe/App Store payment processing
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    await updateUserData({ isPremium: true, aiPlanTokens: 999, aiChatTokens: 9999 });
+    setIsProcessing(false);
+    onClose();
+    alert("Welcome to WelGPT Adaptive Premium! All limits have been removed.");
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -118,8 +133,12 @@ export default function PremiumModal({ isOpen, onClose }: PremiumModalProps) {
             </div>
             
             <div className="relative z-10 max-w-md mx-auto text-center">
-              <button className="w-full py-5 rounded-2xl font-black tracking-wide text-white text-lg bg-gradient-to-r from-violet-600 to-teal-600 hover:scale-[1.02] transition-transform shadow-[0_0_30px_rgba(45,212,191,0.3)] mb-4 uppercase">
-                Unlock Adaptive Premium
+              <button 
+                onClick={handleSubscribe}
+                disabled={isProcessing}
+                className="w-full py-5 rounded-2xl font-black tracking-wide text-white text-lg bg-gradient-to-r from-violet-600 to-teal-600 hover:scale-[1.02] transition-transform shadow-[0_0_30px_rgba(45,212,191,0.3)] mb-4 uppercase disabled:opacity-50 disabled:scale-100"
+              >
+                {isProcessing ? "Processing..." : "Unlock Adaptive Premium"}
               </button>
               <p className="text-gray-500 text-sm">Cancel anytime. Only $9.99/month.</p>
             </div>

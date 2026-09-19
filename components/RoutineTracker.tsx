@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Sun, Moon, Sparkles, Target } from "lucide-react";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
+import confetti from "canvas-confetti";
 
 export interface Task {
   id: string;
@@ -32,7 +34,17 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
   const [activeTab, setActiveTab] = useState<"morning" | "afternoon" | "evening" | "custom">("morning");
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const router = useRouter();
-  const { addXP, profile, updateUserData, toggleTaskComplete } = useAuth();
+  const { addXP, profile, updateUserData, toggleTaskComplete, user, setShowGuestModal } = useAuth();
+
+  const handleGenerateCustom = () => {
+    if (user?.isAnonymous) {
+      setShowGuestModal(true);
+      return;
+    }
+    if (onGenerateCustom) {
+      onGenerateCustom();
+    }
+  };
 
   useEffect(() => {
     const initialCompleted = new Set<string>();
@@ -50,7 +62,9 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
   const currentTasks = activeTab === "morning" ? morningTasks : activeTab === "evening" ? eveningTasks : customTasks;
   const progress = Math.round((currentTasks.filter(t => completed.has(t.id)).length / currentTasks.length) * 100);
 
-    const toggleTask = (id: string) => {
+  const toggleTask = async (id: string) => {
+    try { await Haptics.impact({ style: ImpactStyle.Light }); } catch(e) {}
+    
     setCompleted(prev => {
       const newSet = new Set(prev);
       const isCompleting = !newSet.has(id);
@@ -58,6 +72,18 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
       if (isCompleting) {
         newSet.add(id);
         addXP(10); // Reward XP for task completion!
+        
+        // Check if this completes the routine
+        if (newSet.size === currentTasks.length) {
+          try { Haptics.notification({ type: 'SUCCESS' as any }); } catch(e) {}
+          // Trigger Confetti!
+          confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#2dd4bf', '#8b5cf6', '#a78bfa']
+          });
+        }
       } else {
         newSet.delete(id);
       }
@@ -112,7 +138,7 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
             <span className="relative z-10">Evening Protocol</span>
           </button>
           <button
-            onClick={() => { setActiveTab("custom"); if (customTasks.length === 0 && onGenerateCustom) onGenerateCustom(); }}
+            onClick={() => { setActiveTab("custom"); if (customTasks.length === 0) handleGenerateCustom(); }}
             className={`relative flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-colors ${
               activeTab === "custom" ? "text-white" : "text-gray-500 hover:text-white"
             }`}
@@ -159,7 +185,7 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
                 <Sparkles size={32} className="text-fuchsia-400 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-white mb-2">No {customTitle}</h3>
                 <p className="text-gray-400 mb-6">Prompt the AI to generate a highly specific protocol for you.</p>
-                <button onClick={onGenerateCustom} className="px-6 py-3 rounded-full bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-medium transition-colors">
+                <button onClick={handleGenerateCustom} className="px-6 py-3 rounded-full bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-medium transition-colors">
                   Generate Protocol
                 </button>
               </div>

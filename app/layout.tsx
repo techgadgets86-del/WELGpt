@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import AppLayout from "@/components/AppLayout";
 import { AuthProvider } from "@/lib/AuthContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,13 +25,28 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://app.welgpt.space'),
   title: "WelGPT - Your AI Wellness Coach",
   description: "One personalized plan for your mind, movement, nutrition and daily habits—adapted as you progress.",
+  keywords: ["AI Coach", "Wellness Tracker", "Digital Detox", "Routine Builder", "WelGPT", "Habit Tracker"],
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "WelGPT",
+  },
+  openGraph: {
+    title: "WelGPT - Your AI Wellness Coach",
+    description: "One personalized plan for your mind, movement, nutrition and daily habits.",
+    url: "https://app.welgpt.space",
+    siteName: "WelGPT App",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "WelGPT - AI Wellness Coach",
+    description: "Reclaim your attention and build unbreakable routines.",
   },
 };
 
@@ -46,7 +62,9 @@ export default function RootLayout({
     >
       <body className="h-full bg-[#0a0a1a]">
         <AuthProvider>
-          <AppLayout>{children}</AppLayout>
+          <ProtectedRoute>
+            <AppLayout>{children}</AppLayout>
+          </ProtectedRoute>
         </AuthProvider>
       </body>
     </html>

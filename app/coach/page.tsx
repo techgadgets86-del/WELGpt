@@ -2,6 +2,7 @@
 
 import { Suspense } from "react";
 import ChatInterface from "@/components/ChatInterface";
+import RequireFullAccount from "@/components/RequireFullAccount";
 import Image from "next/image";
 
 function ChatLoadingSkeleton() {
@@ -27,7 +28,7 @@ export default function CoachPage() {
     <div className="max-w-5xl mx-auto relative z-10 pt-4 h-full flex flex-col">
       <div className="flex-1 overflow-hidden relative">
         <Suspense fallback={<ChatLoadingSkeleton />}>
-          <ChatInterface />
+          <RequireFullAccount><RequireFullAccount><ChatInterface /></RequireFullAccount></RequireFullAccount>
         </Suspense>
       </div>
     </div>

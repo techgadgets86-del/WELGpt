@@ -8,7 +8,7 @@ import { Brain, Flame, Loader2, Activity, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
-  const { user, profile, updateUserData, toggleTaskComplete, loading } = useAuth();
+  const { user, profile, updateUserData, toggleTaskComplete, loading, setShowGuestModal } = useAuth();
   const router = useRouter();
   const [showPremium, setShowPremium] = useState(false);
   
@@ -509,7 +509,13 @@ export default function Home() {
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-6 bg-[#111127] border border-white/10 rounded-3xl">
               <p className="text-gray-300 font-medium">What are you working on today?</p>
               <button 
-                onClick={() => router.push('/coach')}
+                onClick={() => {
+                  if (user?.isAnonymous) {
+                    setShowGuestModal(true);
+                  } else {
+                    router.push('/coach');
+                  }
+                }}
                 className="w-full md:w-auto px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/10 text-white rounded-xl font-bold transition-all flex items-center justify-center gap-2"
               >
                 <Brain size={18} className="text-teal-400" />

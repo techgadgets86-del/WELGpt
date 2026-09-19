@@ -40,7 +40,7 @@ export interface UserProfile {
   };
 }
 
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null;
   profile: UserProfile | null;
   loading: boolean;
@@ -48,14 +48,27 @@ interface AuthContextType {
   updateUserData: (data: Partial<UserProfile>) => Promise<void>;
   logActivity: (activity: string) => Promise<void>;
   toggleTaskComplete: (taskId: string, completed: boolean) => Promise<void>;
+  showGuestModal: boolean;
+  setShowGuestModal: (show: boolean) => void;
 }
 
-const AuthContext = createContext<AuthContextType>({ user: null, profile: null, loading: true, addXP: async () => {}, updateUserData: async () => {}, logActivity: async () => {}, toggleTaskComplete: async () => {} });
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  profile: null,
+  loading: true,
+  addXP: async () => {},
+  updateUserData: async () => {},
+  logActivity: async () => {},
+  toggleTaskComplete: async () => {},
+  showGuestModal: false,
+  setShowGuestModal: () => {},
+});
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showGuestModal, setShowGuestModal] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser: User | null) => {
@@ -185,14 +198,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return () => unsubProfile();
       } else {
-        // Automatically sign in anonymous users so their session persists
-        try {
-          await signInAnonymously(auth);
-        } catch (err) {
-          console.error("Anonymous auth failed", err);
-          setProfile(null);
-          setLoading(false);
-        }
+        // User is fully signed out. We will NO LONGER automatically sign in anonymously.
+        // They must explicitly log in or choose 'Guest' on the login screen.
+        setProfile(null);
+        setLoading(false);
       }
     });
 
@@ -297,7 +306,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, addXP, updateUserData, logActivity, toggleTaskComplete }}>
+    <AuthContext.Provider value={{ user, profile, loading, addXP, updateUserData, logActivity, toggleTaskComplete, showGuestModal, setShowGuestModal }}>
       {children}
     </AuthContext.Provider>
   );

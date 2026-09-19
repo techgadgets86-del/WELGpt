@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
+import MindfulBreathing from "@/components/MindfulBreathing";
 
 export default function DashboardPage() {
   return (
@@ -16,7 +17,14 @@ export default function DashboardPage() {
         </motion.h1>
       </header>
 
-      <AnalyticsDashboard />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="lg:col-span-2">
+           <AnalyticsDashboard />
+        </div>
+        <div className="lg:col-span-1">
+           <MindfulBreathing />
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">WELGPT</string>
+    <string name="title_activity_main">WELGPT</string>
+    <string name="package_name">com.welgpt.app</string>
+    <string name="custom_url_scheme">com.welgpt.app</string>
+</resources>

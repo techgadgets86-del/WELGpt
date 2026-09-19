@@ -2,16 +2,16 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Brain, LayoutDashboard, Menu, X, CheckSquare, Leaf, Activity, BookOpen, Mail, BarChart3 , Utensils, Waves, Home, Compass, UserCircle } from "lucide-react";
+import { Sparkles, Brain, LayoutDashboard, Menu, X, CheckSquare, Leaf, Activity, BookOpen, Mail, BarChart3 , Utensils, Waves, Home, Compass, UserCircle, Apple, LogIn, LogOut } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { useAuth } from "@/lib/AuthContext";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
-import { LogIn, LogOut } from "lucide-react";
 import DynamicIsland from "@/components/DynamicIsland";
+import GuestLoginModal from "./GuestLoginModal";
 
 // 🌊 Smooth UI: Physical Spring Transitions
 const springTransition = {
@@ -24,26 +24,39 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-  const { user, profile, loading } = useAuth();
+  const router = useRouter();
+  const { user, profile, loading, setShowGuestModal } = useAuth();
 
   const navItems = [
-    { icon: Home, label: "Home", href: "/" },
-    { icon: CheckSquare, label: "Today", href: "/routine" },
-    { icon: Brain, label: "AI Coach", href: "/coach" },
-    { icon: Compass, label: "Explore", href: "/explore" },
-    { icon: BarChart3, label: "Progress", href: "/dashboard" },
-    { icon: UserCircle, label: "Profile", href: "/profile" },
+    { icon: Home, label: "Home", href: "/", restricted: false },
+    { icon: CheckSquare, label: "Today", href: "/routine", restricted: false },
+    { icon: Brain, label: "AI Coach", href: "/coach", restricted: true },
+    { icon: Apple, label: "Nutrition", href: "/nutrition", restricted: true },
+    { icon: Compass, label: "Explore", href: "/explore", restricted: false },
+    { icon: BarChart3, label: "Progress", href: "/dashboard", restricted: false },
+    { icon: UserCircle, label: "Profile", href: "/profile", restricted: false },
   ];
 
   // Core 4 items for the mobile bottom nav
   const bottomNavItems = [
-    { icon: Home, label: "Home", href: "/" },
-    { icon: CheckSquare, label: "Today", href: "/routine" },
-    { icon: Brain, label: "Coach", href: "/coach" },
-    { icon: Compass, label: "Explore", href: "/explore" },
-    { icon: BarChart3, label: "Progress", href: "/dashboard" },
-    { icon: UserCircle, label: "Profile", href: "/profile" },
+    { icon: Home, label: "Home", href: "/", restricted: false },
+    { icon: CheckSquare, label: "Today", href: "/routine", restricted: false },
+    { icon: Brain, label: "Coach", href: "/coach", restricted: true },
+    { icon: Apple, label: "Diet", href: "/nutrition", restricted: true }
   ];
+
+  const handleNavClick = (e: React.MouseEvent, href: string, restricted: boolean) => {
+    if (restricted && user?.isAnonymous) {
+      e.preventDefault();
+      setShowGuestModal(true);
+    } else {
+      setMobileMenuOpen(false);
+    }
+  };
+
+  if (pathname === "/login") {
+    return <main className="h-full bg-[#050510] text-white">{children}</main>;
+  }
 
   return (
     <div className="flex flex-col md:flex-row h-[100dvh] bg-[#0a0a1a] text-gray-100 overflow-hidden font-sans">
@@ -70,7 +83,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             {navItems.map((item, idx) => {
               const isActive = pathname === item.href;
               return (
-                <Link href={item.href} key={idx}>
+                <Link href={item.href} key={idx} onClick={(e) => handleNavClick(e, item.href, item.restricted)}>
                   <motion.button 
                     whileHover={{ scale: 1.02, x: 4 }}
                     whileTap={{ scale: 0.98 }}
@@ -151,7 +164,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
             <div className="flex-1 overflow-y-auto p-4 space-y-2">
               {navItems.map((item, idx) => (
-                <Link href={item.href} key={idx} onClick={() => setMobileMenuOpen(false)}>
+                <Link href={item.href} key={idx} onClick={(e) => handleNavClick(e, item.href, item.restricted)}>
                   <div className={`flex items-center gap-4 p-4 rounded-xl ${pathname === item.href ? 'bg-violet-500/20 text-white' : 'text-gray-400'}`}>
                     <item.icon size={24} className={pathname === item.href ? 'text-violet-400' : ''} />
                     <span className="font-medium text-lg">{item.label}</span>
@@ -211,7 +224,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           {bottomNavItems.map((item, idx) => {
             const isActive = pathname === item.href;
             return (
-              <Link href={item.href} key={idx} className="flex-1">
+              <Link href={item.href} key={idx} className="flex-1" onClick={(e) => handleNavClick(e, item.href, item.restricted)}>
                 <button className="w-full flex flex-col items-center justify-center py-2 gap-1 relative">
                   {isActive && (
                     <motion.div layoutId="mobileNavGlow" className="absolute inset-0 bg-violet-500/20 rounded-xl" transition={springTransition} />

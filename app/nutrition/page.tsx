@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Utensils, RefreshCw, Loader2, Sparkles, Activity, Check, Crown, X, Star } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import PremiumModal from "@/components/PremiumModal";
+import RequireFullAccount from "@/components/RequireFullAccount";
 
 interface FoodItem {
   name: string;
@@ -81,6 +82,7 @@ export default function NutritionPage() {
   }, [profile?.nutritionPlan, loading]);
 
   return (
+    <RequireFullAccount>
     <div className="max-w-5xl mx-auto relative z-10 pt-4  min-h-full flex pb-[160px] md:pb-12 flex-col">
       
       {profile?.dailyPlan && (
@@ -227,5 +229,6 @@ export default function NutritionPage() {
             {/* Global Adaptive Premium Modal */}
       <PremiumModal isOpen={showPricing} onClose={() => setShowPricing(false)} />
     </div>
+    </RequireFullAccount>
   );
 }
