@@ -4,9 +4,10 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Sun, Moon, Sparkles, Target } from "lucide-react";
+import { Check, Sun, Moon, Sparkles, Target, Clock } from "lucide-react";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
 import confetti from "canvas-confetti";
+import TimerModal from "./routine/TimerModal";
 
 export interface Task {
   id: string;
@@ -35,6 +36,7 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const router = useRouter();
   const { addXP, profile, updateUserData, toggleTaskComplete, user, setShowGuestModal } = useAuth();
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   const handleGenerateCustom = () => {
     if (user?.isAnonymous) {
@@ -247,18 +249,35 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
                     <p className={`text-sm transition-colors duration-300 ${isDone ? "text-gray-600" : "text-gray-400"}`}>
                       {task.desc}
                     </p>
-                    {activeTab === "custom" && !isDone && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(`/sensei?autoTarget=${encodeURIComponent(task.title)}`);
-                        }}
-                        className="mt-4 px-4 py-2 bg-fuchsia-600/20 hover:bg-fuchsia-600/40 border border-fuchsia-500/30 rounded-lg text-fuchsia-300 font-medium text-sm flex items-center gap-2 transition-colors w-fit"
-                      >
-                        <Target size={16} />
-                        Train in Sensei
-                      </button>
-                    )}
+                    <div className="flex flex-wrap items-center gap-3 mt-4">
+                      {/* Timer & Tutorial Button for all tasks (especially exercises) */}
+                      {!isDone && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedTask(task);
+                          }}
+                          className="px-4 py-2 bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/30 rounded-lg text-indigo-300 font-medium text-sm flex items-center gap-2 transition-colors w-fit"
+                        >
+                          <Clock size={16} />
+                          Timer & Tutorial
+                        </button>
+                      )}
+
+                      {/* Sensei Button */}
+                      {activeTab === "custom" && !isDone && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/sensei?autoTarget=${encodeURIComponent(task.title)}`);
+                          }}
+                          className="px-4 py-2 bg-fuchsia-600/20 hover:bg-fuchsia-600/40 border border-fuchsia-500/30 rounded-lg text-fuchsia-300 font-medium text-sm flex items-center gap-2 transition-colors w-fit"
+                        >
+                          <Target size={16} />
+                          Train in Sensei
+                        </button>
+                      )}
+                    </div>
                   </motion.div>
                 </div>
               );
@@ -285,6 +304,13 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
           )}
         </AnimatePresence>
       </div>
+
+      {/* Global Timer & Tutorial Modal */}
+      <TimerModal 
+        isOpen={!!selectedTask} 
+        onClose={() => setSelectedTask(null)} 
+        task={selectedTask} 
+      />
     </div>
   );
 }
