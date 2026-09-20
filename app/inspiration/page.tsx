@@ -31,34 +31,21 @@ export default function InspirationPage() {
 
   const fetchNewQuote = async () => {
     setIsLoading(true);
-    
-    // Check if offline before attempting network request
-    if (typeof navigator !== "undefined" && !navigator.onLine) {
-      applyOfflineFallback();
-      return;
-    }
+    setBgSeed(Date.now()); // Change realistic background instantly
 
-    try {
-      // eslint-disable-next-line react-hooks/purity
-      setBgSeed(Date.now()); // change realistic background instantly
-      const res = await fetch("/api/quote", { method: "POST" });
-      if (!res.ok) throw new Error("Failed to fetch quote");
-      const data = await res.json();
-      setQuote(data.quote);
-      setAuthor(data.author);
-    } catch (err) {
-      console.error("AI API failed or offline", err);
-      applyOfflineFallback();
-    } finally {
+    // Using the requested offline JSON Database for maximum stability and instant loading
+    setTimeout(() => {
+      const randomQuote = OFFLINE_QUOTES[Math.floor(Math.random() * OFFLINE_QUOTES.length)];
+      setQuote(randomQuote.quote);
+      setAuthor(randomQuote.author);
       setIsLoading(false);
-    }
+    }, 400); // slight delay for smooth UI loading transition
   };
 
   const applyOfflineFallback = () => {
     const randomQuote = OFFLINE_QUOTES[Math.floor(Math.random() * OFFLINE_QUOTES.length)];
     setQuote(randomQuote.quote);
     setAuthor(randomQuote.author);
-    // Kept realistic mode active since we now have a 500+ fallback image library
     setIsLoading(false);
   };
 
