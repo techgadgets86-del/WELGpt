@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Utensils, RefreshCw, Loader2, Sparkles, Activity, Check, Crown, X, Star } from "lucide-react";
+import { Utensils, RefreshCw, Loader2, Sparkles, Activity, Check, Crown, X, Star, Heart, Share2 } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import PremiumModal from "@/components/PremiumModal";
 import RequireFullAccount from "@/components/RequireFullAccount";
@@ -18,7 +18,29 @@ export default function NutritionPage() {
   const [items, setItems] = useState<FoodItem[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const { profile, updateUserData, loading } = useAuth();
+  const [favorites, setFavorites] = useState<string[]>([]);
   
+  const handleFavorite = (item: FoodItem) => {
+    if (favorites.includes(item.name)) {
+      setFavorites(favorites.filter(f => f !== item.name));
+    } else {
+      setFavorites([...favorites, item.name]);
+    }
+  };
+
+  const handleShare = (item: FoodItem) => {
+    if (navigator.share) {
+      navigator.share({
+        title: `AI Nutrition Coach: ${item.name}`,
+        text: `Check out this personalized meal protocol from WelGPT: ${item.name} - ${item.reason}`,
+        url: window.location.href,
+      }).catch(console.error);
+    } else {
+      navigator.clipboard.writeText(`AI Nutrition Coach: ${item.name}\n${item.reason}\n\nIngredients: ${item.ingredients.join(", ")}`);
+      alert("Meal protocol copied to clipboard!");
+    }
+  };
+
   // Auto-sync initial prompt from global profile!
   const [goal, setGoal] = useState(() => {
     let base = "maximizing height growth, boosting HGH naturally, and increasing bone mineral density";
@@ -210,7 +232,7 @@ export default function NutritionPage() {
                   
                   <div className="mt-auto">
                     <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Core Ingredients</h4>
-                    <ul className="space-y-2">
+                    <ul className="space-y-2 mb-6">
                       {item.ingredients.map((ing, i) => (
                         <li key={i} className="flex items-center gap-2 text-sm text-gray-400 bg-white/5 rounded-lg px-3 py-1.5 w-fit">
                           <Check size={14} className="text-green-400" />
@@ -218,6 +240,23 @@ export default function NutritionPage() {
                         </li>
                       ))}
                     </ul>
+                    
+                    {/* Action Bar */}
+                    <div className="flex items-center justify-between pt-4 border-t border-white/10 mt-auto">
+                      <button 
+                        onClick={() => handleFavorite(item)}
+                        className={`flex items-center gap-2 text-sm font-medium transition-colors ${favorites.includes(item.name) ? 'text-rose-500' : 'text-gray-400 hover:text-rose-400'}`}
+                      >
+                        <Heart size={16} className={favorites.includes(item.name) ? 'fill-current' : ''} /> 
+                        {favorites.includes(item.name) ? 'Favorited' : 'Add to Favorites'}
+                      </button>
+                      <button 
+                        onClick={() => handleShare(item)}
+                        className="flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-white transition-colors"
+                      >
+                        <Share2 size={16} /> Share
+                      </button>
+                    </div>
                   </div>
                 </div>
               </motion.div>
