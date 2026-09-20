@@ -249,7 +249,7 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
                     <p className={`text-sm transition-colors duration-300 ${isDone ? "text-gray-600" : "text-gray-400"}`}>
                       {task.desc}
                     </p>
-                    <div className="flex flex-wrap items-center gap-3 mt-4">
+                    <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 mt-4">
                       {/* Timer & Tutorial Button for all tasks (especially exercises) */}
                       {!isDone && (
                         <button
@@ -257,7 +257,7 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
                             e.stopPropagation();
                             setSelectedTask(task);
                           }}
-                          className="px-4 py-2 bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/30 rounded-lg text-indigo-300 font-medium text-sm flex items-center gap-2 transition-colors w-fit"
+                          className="w-full sm:w-fit justify-center px-4 py-3 sm:py-2 bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/30 rounded-xl sm:rounded-lg text-indigo-300 font-medium text-sm flex items-center gap-2 transition-colors"
                         >
                           <Clock size={16} />
                           Timer & Tutorial
@@ -271,7 +271,7 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
                             e.stopPropagation();
                             router.push(`/sensei?autoTarget=${encodeURIComponent(task.title)}`);
                           }}
-                          className="px-4 py-2 bg-fuchsia-600/20 hover:bg-fuchsia-600/40 border border-fuchsia-500/30 rounded-lg text-fuchsia-300 font-medium text-sm flex items-center gap-2 transition-colors w-fit"
+                          className="w-full sm:w-fit justify-center px-4 py-3 sm:py-2 bg-fuchsia-600/20 hover:bg-fuchsia-600/40 border border-fuchsia-500/30 rounded-xl sm:rounded-lg text-fuchsia-300 font-medium text-sm flex items-center gap-2 transition-colors"
                         >
                           <Target size={16} />
                           Train in Sensei

@@ -54,7 +54,7 @@ export default function TimerModal({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-8">
         <motion.div 
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           onClick={onClose}
@@ -65,29 +65,29 @@ export default function TimerModal({
           initial={{ scale: 0.95, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.95, opacity: 0, y: 20 }}
-          className="relative w-full max-w-2xl bg-[#0f0f23] border border-white/10 rounded-3xl overflow-hidden shadow-2xl z-10 max-h-[90vh] overflow-y-auto"
+          className="relative w-full max-w-2xl bg-[#0f0f23] border border-white/10 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl z-10 max-h-[95vh] sm:max-h-[90vh] overflow-y-auto"
         >
           {/* Header */}
-          <div className="p-6 border-b border-white/5 flex items-start justify-between bg-white/[0.02]">
-            <div>
-              <h2 className="text-2xl font-bold text-white mb-1">{task.title}</h2>
-              <p className="text-sm text-gray-400">{task.desc}</p>
+          <div className="p-4 sm:p-6 border-b border-white/5 flex items-start justify-between bg-white/[0.02]">
+            <div className="pr-4">
+              <h2 className="text-xl sm:text-2xl font-bold text-white mb-1 leading-tight">{task.title}</h2>
+              <p className="text-xs sm:text-sm text-gray-400 line-clamp-2 sm:line-clamp-none">{task.desc}</p>
             </div>
-            <button onClick={onClose} className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors text-white">
+            <button onClick={onClose} className="p-2 shrink-0 bg-white/5 hover:bg-white/10 rounded-full transition-colors text-white">
               <X size={20} />
             </button>
           </div>
 
-          <div className="p-6 md:p-8">
+          <div className="p-4 sm:p-6 md:p-8">
             {!showTutorial ? (
               <motion.div 
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                className="flex flex-col items-center justify-center py-4"
+                className="flex flex-col items-center justify-center py-2 sm:py-4"
               >
                 {/* Custom Timer UI */}
-                <div className="relative mb-10 w-64 h-64 rounded-full border-4 border-white/5 flex items-center justify-center shadow-[inset_0_0_50px_rgba(0,0,0,0.5)] bg-[#0a0a18]">
+                <div className="relative mb-8 sm:mb-10 w-48 h-48 sm:w-64 sm:h-64 rounded-full border-4 border-white/5 flex items-center justify-center shadow-[inset_0_0_50px_rgba(0,0,0,0.5)] bg-[#0a0a18]">
                   <div className="absolute inset-0 rounded-full border-4 border-fuchsia-500/20" />
-                  <svg className="absolute inset-0 w-full h-full -rotate-90">
+                  <svg viewBox="0 0 256 256" className="absolute inset-0 w-full h-full -rotate-90">
                     <circle 
                       cx="128" cy="128" r="124" 
                       fill="none" 
@@ -99,35 +99,35 @@ export default function TimerModal({
                     />
                   </svg>
                   <div className="text-center z-10">
-                    <div className="text-6xl font-mono font-black text-white tracking-tighter shadow-fuchsia-500/50 drop-shadow-[0_0_15px_rgba(217,70,239,0.5)]">
+                    <div className="text-5xl sm:text-6xl font-mono font-black text-white tracking-tighter shadow-fuchsia-500/50 drop-shadow-[0_0_15px_rgba(217,70,239,0.5)]">
                       {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
                     </div>
-                    <p className="text-fuchsia-400 font-medium uppercase tracking-widest text-xs mt-2 opacity-80">Remaining</p>
+                    <p className="text-fuchsia-400 font-medium uppercase tracking-widest text-[10px] sm:text-xs mt-1 sm:mt-2 opacity-80">Remaining</p>
                   </div>
                 </div>
 
                 {/* Controls */}
-                <div className="flex items-center gap-4 mb-8">
-                  <button onClick={() => addTime(-60)} className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium text-sm transition-colors border border-white/10">-1 Min</button>
+                <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
+                  <button onClick={() => addTime(-60)} className="px-3 sm:px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium text-xs sm:text-sm transition-colors border border-white/10">-1 Min</button>
                   <button 
                     onClick={toggleTimer}
-                    className={`w-16 h-16 rounded-full flex items-center justify-center text-white transition-all shadow-lg ${isActive ? "bg-rose-500 hover:bg-rose-400 shadow-rose-500/30" : "bg-fuchsia-600 hover:bg-fuchsia-500 shadow-fuchsia-600/30"} transform hover:scale-105`}
+                    className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-white transition-all shadow-lg ${isActive ? "bg-rose-500 hover:bg-rose-400 shadow-rose-500/30" : "bg-fuchsia-600 hover:bg-fuchsia-500 shadow-fuchsia-600/30"} transform hover:scale-105`}
                   >
                     {isActive ? <Pause size={24} className="fill-current" /> : <Play size={24} className="fill-current ml-1" />}
                   </button>
-                  <button onClick={resetTimer} className="w-12 h-12 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 text-white transition-colors border border-white/10">
-                    <RotateCcw size={18} />
+                  <button onClick={resetTimer} className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 text-white transition-colors border border-white/10">
+                    <RotateCcw size={16} className="sm:w-[18px] sm:h-[18px]" />
                   </button>
-                  <button onClick={() => addTime(60)} className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium text-sm transition-colors border border-white/10">+1 Min</button>
+                  <button onClick={() => addTime(60)} className="px-3 sm:px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium text-xs sm:text-sm transition-colors border border-white/10">+1 Min</button>
                 </div>
 
-                <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-6" />
+                <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-4 sm:my-6" />
 
                 <button 
                   onClick={() => setShowTutorial(true)}
-                  className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-indigo-500/20 to-fuchsia-500/20 hover:from-indigo-500/30 hover:to-fuchsia-500/30 border border-fuchsia-500/30 text-white font-bold flex items-center justify-center gap-3 transition-all group"
+                  className="w-full py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-gradient-to-r from-indigo-500/20 to-fuchsia-500/20 hover:from-indigo-500/30 hover:to-fuchsia-500/30 border border-fuchsia-500/30 text-white font-bold flex items-center justify-center gap-2 sm:gap-3 transition-all group text-sm sm:text-base"
                 >
-                  <BookOpen size={20} className="text-fuchsia-400 group-hover:scale-110 transition-transform" />
+                  <BookOpen size={18} className="text-fuchsia-400 group-hover:scale-110 transition-transform sm:w-5 sm:h-5" />
                   Deep Tutorial & AI Guide
                 </button>
               </motion.div>
