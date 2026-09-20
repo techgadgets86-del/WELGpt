@@ -4,6 +4,46 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Play, Pause, RotateCcw, BookOpen, Clock, Activity } from "lucide-react";
 
+
+const FALLBACK_IMAGES = [
+  "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&q=80",
+  "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=600&q=80",
+  "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80"
+];
+
+const getExerciseFallbacks = (title: string) => {
+  const t = title.toLowerCase();
+  if (t.includes('yoga') || t.includes('stretch') || t.includes('cobra')) {
+    return [
+      "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80",
+      "https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=600&q=80",
+      "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&q=80"
+    ];
+  }
+  if (t.includes('squat') || t.includes('strength') || t.includes('lift')) {
+    return [
+      "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=600&q=80",
+      "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=600&q=80",
+      "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=600&q=80"
+    ];
+  }
+  if (t.includes('run') || t.includes('cardio') || t.includes('walk')) {
+    return [
+      "https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=600&q=80",
+      "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600&q=80",
+      "https://images.unsplash.com/photo-1486218119243-13883505764c?w=600&q=80"
+    ];
+  }
+  if (t.includes('meditat') || t.includes('mindful') || t.includes('breath')) {
+    return [
+      "https://images.unsplash.com/photo-1508672019048-805c876b67e2?w=600&q=80",
+      "https://images.unsplash.com/photo-1528319725582-ddc096101511?w=600&q=80",
+      "https://images.unsplash.com/photo-1512438248247-f0f2a5a8b7f0?w=600&q=80"
+    ];
+  }
+  return FALLBACK_IMAGES;
+};
+
 export default function TimerModal({
   isOpen,
   onClose,
@@ -17,6 +57,7 @@ export default function TimerModal({
   const [isActive, setIsActive] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [tutorialImages, setTutorialImages] = useState<string[]>([]);
+  const [fallbackImages, setFallbackImages] = useState<string[]>(FALLBACK_IMAGES);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -35,10 +76,11 @@ export default function TimerModal({
     if (task) {
       // Pre-generate prompts for the tutorial
       const encodedTitle = encodeURIComponent(task.title.replace(/[^a-zA-Z0-9 ]/g, ""));
+      setFallbackImages(getExerciseFallbacks(task.title));
       setTutorialImages([
-        `https://image.pollinations.ai/prompt/Step%201%20starting%20position%20for%20${encodedTitle}%20exercise%20fitness%20instruction%20realistic%20hyperdetailed%20gym?width=400&height=300&nologo=true`,
-        `https://image.pollinations.ai/prompt/Step%202%20execution%20movement%20for%20${encodedTitle}%20exercise%20fitness%20instruction%20realistic%20hyperdetailed?width=400&height=300&nologo=true`,
-        `https://image.pollinations.ai/prompt/Step%203%20final%20stretch%20pose%20for%20${encodedTitle}%20exercise%20fitness%20instruction%20realistic%20hyperdetailed?width=400&height=300&nologo=true`,
+        `https://image.pollinations.ai/prompt/${encodedTitle}%20exercise%20step%201?width=400&height=300&nologo=true`,
+        `https://image.pollinations.ai/prompt/${encodedTitle}%20exercise%20step%202?width=400&height=300&nologo=true`,
+        `https://image.pollinations.ai/prompt/${encodedTitle}%20exercise%20step%203?width=400&height=300&nologo=true`,
       ]);
     }
   }, [task]);
@@ -148,10 +190,10 @@ export default function TimerModal({
                   <h3 className="text-xl font-bold text-white">AI Step-by-Step Guide</h3>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {tutorialImages.map((src, idx) => (
-                    <div key={idx} className="bg-black/30 rounded-2xl p-4 border border-white/5 relative overflow-hidden group">
-                      <div className="absolute top-4 left-4 z-10 w-8 h-8 rounded-full bg-fuchsia-600 flex items-center justify-center font-bold text-white shadow-lg">
+                    <div key={idx} className="bg-black/30 rounded-xl sm:rounded-2xl p-2 sm:p-4 border border-white/5 relative overflow-hidden group">
+                      <div className="absolute top-2 left-2 sm:top-4 sm:left-4 z-10 w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-fuchsia-600 text-xs sm:text-base flex items-center justify-center font-bold text-white shadow-lg">
                         {idx + 1}
                       </div>
                       <div className="aspect-video relative rounded-xl overflow-hidden bg-[#0a0a1a]">
@@ -160,10 +202,11 @@ export default function TimerModal({
                           src={src} 
                           alt={`Step ${idx + 1}`}
                           className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+                          onError={(e) => { e.currentTarget.src = fallbackImages[idx]; }}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a1a] to-transparent opacity-80" />
                         <div className="absolute bottom-4 left-4 right-4">
-                          <p className="text-white font-medium text-sm md:text-base drop-shadow-md">
+                          <p className="text-white font-medium text-xs sm:text-sm md:text-base drop-shadow-md">
                             {idx === 0 && "Assume the starting position and stabilize your core."}
                             {idx === 1 && "Execute the primary movement smoothly with controlled breathing."}
                             {idx === 2 && "Hold the peak contraction or stretch before resetting."}
