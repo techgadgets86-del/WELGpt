@@ -17,6 +17,7 @@
     "@capacitor/push-notifications": "^8.1.2",
     "@google/generative-ai": "^0.21.0",
     "@paddle/paddle-js": "^1.6.5",
+    "@paddle/paddle-node-sdk": "^3.10.0",
     "@revenuecat/purchases-capacitor": "^13.6.0",
     "@types/canvas-confetti": "^1.9.0",
     "ai": "^3.4.33",
