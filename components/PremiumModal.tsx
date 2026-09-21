@@ -1,8 +1,9 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, X, Zap, Crown, Target, Sparkles, Brain, Minus } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { useRevenueCat } from "@/lib/useRevenueCat";
+import { initializePaddle, Paddle } from "@paddle/paddle-js";
 
 interface PremiumModalProps {
   isOpen: boolean;
@@ -11,28 +12,59 @@ interface PremiumModalProps {
 
 export default function PremiumModal({ isOpen, onClose }: PremiumModalProps) {
   const [isProcessing, setIsProcessing] = useState(false);
-  const { updateUserData } = useAuth();
+  const { user, updateUserData } = useAuth();
   const { purchasePackage, packages, restorePurchases } = useRevenueCat();
+  const [paddle, setPaddle] = useState<Paddle>();
+
+  useEffect(() => {
+    // Only init Paddle on web
+    if (typeof window !== "undefined") {
+      initializePaddle({
+        environment: "production",
+        token: "live_9e5498227f938187ba10cb6586d",
+      }).then((paddleInstance) => {
+        if (paddleInstance) setPaddle(paddleInstance);
+      });
+    }
+  }, []);
 
   const handleSubscribe = async () => {
     setIsProcessing(true);
     
+    // Paddle Web Checkout
+    if (typeof window !== "undefined" && !window.matchMedia("(display-mode: standalone)").matches && !navigator.userAgent.includes("Capacitor")) {
+      setIsProcessing(false);
+      if (!paddle?.Initialized) {
+        alert("Payment system is still initializing. Please wait a second.");
+        return;
+      }
+      
+      paddle.Checkout.open({
+        settings: {
+          displayMode: "overlay",
+          theme: "dark",
+          successUrl: window.location.origin + "/dashboard?payment_success=true"
+        },
+        items: [{ 
+          priceId: "pri_01m30qhbzrs6gyp4nddqnszyat", 
+          quantity: 1 
+        }],
+        customer: user?.email ? { email: user.email } : undefined
+      });
+      return;
+    }
+
     // Attempt RevenueCat Mobile Native Purchase
     let success = false;
     if (packages && packages.length > 0) {
-      // Purchase the first available package (usually Monthly)
       success = await purchasePackage(packages[0]);
-    } else {
-      // Fallback for web or dev environment without packages loaded
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      success = true;
     }
 
     if (success) {
       await updateUserData({ isPremium: true, aiPlanTokens: 999, aiChatTokens: 9999 });
       alert("Welcome to WelGPT Adaptive Premium! All limits have been removed.");
       onClose();
-    } else {
+    } else if (packages && packages.length > 0) {
       alert("Purchase was cancelled or failed. Please try again.");
     }
     
