@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Sun, Moon, Sparkles, Target, Clock } from "lucide-react";
+import { Check, Sun, Moon, CloudSun, Sparkles, Target, Clock } from "lucide-react";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
 import confetti from "canvas-confetti";
 import TimerModal from "./routine/TimerModal";
@@ -24,6 +24,14 @@ export const INITIAL_MORNING_TASKS: Task[] = [
   { id: "m4", time: "08:30 AM", title: "Deep Work Block", desc: "90 minutes of hyper-focused flow state with zero distractions." }
 ];
 
+
+export const INITIAL_AFTERNOON_TASKS: Task[] = [
+  { id: "a1", time: "01:00 PM", title: "Circadian Lunch", desc: "High protein, low glycemic meal to avoid post-prandial somnolence (carb crash)." },
+  { id: "a2", time: "01:30 PM", title: "Non-Sleep Deep Rest", desc: "10-20 minutes of NSDR or meditation to reset dopamine baseline." },
+  { id: "a3", time: "03:00 PM", title: "Physiological Sighs", desc: "3 sets of double-inhale physiological sighs to offload carbon dioxide and reduce stress." },
+  { id: "a4", time: "05:00 PM", title: "Anaerobic Threshold", desc: "High-intensity resistance training or cardiovascular interval work." }
+];
+
 export const INITIAL_EVENING_TASKS: Task[] = [
   { id: "e1", time: "08:00 PM", title: "Lux Reduction", desc: "Dim all overhead artificial lighting to signal melatonin production." },
   { id: "e2", time: "08:30 PM", title: "Digital Sunset", desc: "Strict blue-light blocking. Put all screens in another room." },
@@ -31,7 +39,7 @@ export const INITIAL_EVENING_TASKS: Task[] = [
   { id: "e4", time: "09:30 PM", title: "Yoga Nidra", desc: "Non-sleep deep rest (NSDR) to transition into deep Delta sleep." }
 ];
 
-export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, afternoonTasks = [], eveningTasks = INITIAL_EVENING_TASKS, customTasks = [], customTitle = "Custom Routine", onGenerateCustom }: { morningTasks?: Task[], afternoonTasks?: Task[], eveningTasks?: Task[], customTasks?: Task[], customTitle?: string, onGenerateCustom?: () => void }) {
+export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, afternoonTasks = INITIAL_AFTERNOON_TASKS, eveningTasks = INITIAL_EVENING_TASKS, customTasks = [], customTitle = "Custom Routine", onGenerateCustom }: { morningTasks?: Task[], afternoonTasks?: Task[], eveningTasks?: Task[], customTasks?: Task[], customTitle?: string, onGenerateCustom?: () => void }) {
   const [activeTab, setActiveTab] = useState<"morning" | "afternoon" | "evening" | "custom">("morning");
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const router = useRouter();
@@ -61,7 +69,7 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
     setCompleted(initialCompleted);
   }, [profile?.dailyPlan]);
 
-  const currentTasks = activeTab === "morning" ? morningTasks : activeTab === "evening" ? eveningTasks : customTasks;
+  const currentTasks = activeTab === "morning" ? morningTasks : activeTab === "afternoon" ? afternoonTasks : activeTab === "evening" ? eveningTasks : customTasks;
   const progress = Math.round((currentTasks.filter(t => completed.has(t.id)).length / currentTasks.length) * 100);
 
   const toggleTask = async (id: string) => {
@@ -126,6 +134,18 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
             )}
             <Sun size={18} className="relative z-10" />
             <span className="relative z-10">Morning Protocol</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("afternoon")}
+            className={`relative flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-colors ${
+              activeTab === "afternoon" ? "text-white" : "text-gray-500 hover:text-white"
+            }`}
+          >
+            {activeTab === "afternoon" && (
+              <motion.div layoutId="routineTab" className="absolute inset-0 bg-amber-600 rounded-xl" />
+            )}
+            <CloudSun size={18} className="relative z-10" />
+            <span className="relative z-10">Afternoon Protocol</span>
           </button>
           <button
             onClick={() => setActiveTab("evening")}
