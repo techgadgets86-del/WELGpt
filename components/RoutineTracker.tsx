@@ -122,10 +122,10 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
       <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
         
         {/* Tab Switcher */}
-        <div className="flex bg-[#111127] border border-white/10 p-1.5 rounded-2xl w-full md:w-auto">
+        <div className="flex bg-[#111127] border border-white/10 p-1.5 rounded-2xl w-full md:w-auto overflow-x-auto no-scrollbar snap-x scroll-smooth">
           <button
             onClick={() => setActiveTab("morning")}
-            className={`relative flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-colors ${
+            className={`relative flex-shrink-0 whitespace-nowrap flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-colors ${
               activeTab === "morning" ? "text-white" : "text-gray-500 hover:text-white"
             }`}
           >
@@ -137,7 +137,7 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
           </button>
           <button
             onClick={() => setActiveTab("afternoon")}
-            className={`relative flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-colors ${
+            className={`relative flex-shrink-0 whitespace-nowrap flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-colors ${
               activeTab === "afternoon" ? "text-white" : "text-gray-500 hover:text-white"
             }`}
           >
@@ -149,7 +149,7 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
           </button>
           <button
             onClick={() => setActiveTab("evening")}
-            className={`relative flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-colors ${
+            className={`relative flex-shrink-0 whitespace-nowrap flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-colors ${
               activeTab === "evening" ? "text-white" : "text-gray-500 hover:text-white"
             }`}
           >
@@ -161,7 +161,7 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
           </button>
           <button
             onClick={() => { setActiveTab("custom"); if (customTasks.length === 0) handleGenerateCustom(); }}
-            className={`relative flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-colors ${
+            className={`relative flex-shrink-0 whitespace-nowrap flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-colors ${
               activeTab === "custom" ? "text-white" : "text-gray-500 hover:text-white"
             }`}
           >
