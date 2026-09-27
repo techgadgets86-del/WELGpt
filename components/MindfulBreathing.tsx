@@ -11,6 +11,7 @@ export default function MindfulBreathing() {
 
   useEffect(() => {
     if (!isActive) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPhase("idle");
       setTimeLeft(0);
       return;

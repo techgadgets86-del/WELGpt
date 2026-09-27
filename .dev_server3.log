@@ -1,0 +1,60 @@
+
+> welgpt-ui@0.1.0 dev
+> next dev
+
+▲ Next.js 16.3.5 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.18.150:3000
+- Environments: .env.local
+✓ Ready in 634ms
+✓ Running next.config.ts took 48ms
+
+⚠ Slow filesystem detected. The benchmark took 356ms. If /Volumes/Untitled 3/Apps/WELGPT/welgpt-ui/.next/dev is a network drive, consider moving it to a local folder.
+See more: https://nextjs.org/docs/app/guides/local-development
+○ Compiling / ...
+ GET / 200 in 5.2s (next.js: 4.7s, application-code: 528ms)
+Error in cron job: Error: 7 PERMISSION_DENIED: Cloud Firestore API has not been used in project welgpt-c7d90 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/firestore.googleapis.com/overview?project=welgpt-c7d90 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.
+    at GET (app/api/cron/send-reminders/route.ts:14:8)
+  12 |     const usersSnapshot = await adminDb.collection('users')
+  13 |       .where('fcmToken', '!=', null)
+> 14 |       .get();
+     |        ^
+  15 |
+  16 |     if (usersSnapshot.empty) {
+  17 |       return NextResponse.json({ message: 'No users with FCM tokens found.' }); {
+  code: 7,
+  details: 'Cloud Firestore API has not been used in project welgpt-c7d90 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/firestore.googleapis.com/overview?project=welgpt-c7d90 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.',
+  metadata: Metadata {
+    internalRepr: Map(5) {
+      'google.rpc.errorinfo-bin' => [Array],
+      'google.rpc.help-bin' => [Array],
+      'google.rpc.localizedmessage-bin' => [Array],
+      'grpc-status-details-bin' => [Array],
+      'x-debug-tracking-id' => [Array]
+    },
+    opaqueData: Map(0) {},
+    options: {}
+  },
+  statusDetails: [
+    ErrorInfo {
+      metadata: [Object],
+      reason: 'SERVICE_DISABLED',
+      domain: 'googleapis.com'
+    },
+    LocalizedMessage {
+      locale: 'en-US',
+      message: 'Cloud Firestore API has not been used in project welgpt-c7d90 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/firestore.googleapis.com/overview?project=welgpt-c7d90 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.'
+    },
+    Help { links: [Array] }
+  ],
+  reason: 'SERVICE_DISABLED',
+  domain: 'googleapis.com',
+  errorInfoMetadata: {
+    serviceTitle: 'Cloud Firestore API',
+    containerInfo: 'welgpt-c7d90',
+    service: 'firestore.googleapis.com',
+    activationUrl: 'https://console.developers.google.com/apis/api/firestore.googleapis.com/overview?project=welgpt-c7d90',
+    consumer: 'projects/welgpt-c7d90'
+  }
+}
+ GET /api/cron/send-reminders 500 in 2.1s (next.js: 380ms, application-code: 1705ms)

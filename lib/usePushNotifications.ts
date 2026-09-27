@@ -48,7 +48,7 @@ export function usePushNotifications() {
         }
       });
 
-      PushNotifications.addListener('registrationError', (error: any) => {
+      PushNotifications.addListener('registrationError', (error: unknown) => {
         console.error('Error on registration: ' + JSON.stringify(error));
       });
 

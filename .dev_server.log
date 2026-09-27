@@ -1,0 +1,26 @@
+
+> welgpt-ui@0.1.0 dev
+> next dev
+
+▲ Next.js 16.3.5 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.18.150:3000
+- Environments: .env.local
+✓ Ready in 782ms
+✓ Running next.config.ts took 49ms
+⚠ Slow filesystem detected. The benchmark took 278ms. If /Volumes/Untitled 3/Apps/WELGPT/welgpt-ui/.next/dev is a network drive, consider moving it to a local folder.
+See more: https://nextjs.org/docs/app/guides/local-development
+
+○ Compiling / ...
+ GET / 200 in 6.7s (next.js: 6.2s, application-code: 568ms)
+⨯ TypeError: Cannot read properties of undefined (reading 'length')
+    at module evaluation (lib/firebaseAdmin.ts:3:17)
+    at module evaluation (app/api/cron/send-reminders/route.ts:2:1)
+  1 | import * as admin from 'firebase-admin';
+  2 |
+> 3 | if (!admin.apps.length) {
+    |                 ^
+  4 |   try {
+  5 |     admin.initializeApp({
+  6 |       credential: admin.credential.cert({
+ GET /api/cron/send-reminders 500 in 957ms (next.js: 430ms, application-code: 527ms)

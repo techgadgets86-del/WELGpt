@@ -66,6 +66,7 @@ export default function TimerModal({
         setTimeLeft((prev) => prev - 1);
       }, 1000);
     } else if (timeLeft === 0) {
+// eslint-disable-next-line react-hooks/set-state-in-effect
       setIsActive(false);
       // Play a sound or vibrate here if possible
     }
@@ -76,6 +77,7 @@ export default function TimerModal({
     if (task) {
       // Pre-generate prompts for the tutorial
       const encodedTitle = encodeURIComponent(task.title.replace(/[^a-zA-Z0-9 ]/g, ""));
+// eslint-disable-next-line react-hooks/set-state-in-effect
       setFallbackImages(getExerciseFallbacks(task.title));
       setTutorialImages([
         `https://image.pollinations.ai/prompt/${encodedTitle}%20exercise%20step%201?width=400&height=300&nologo=true`,

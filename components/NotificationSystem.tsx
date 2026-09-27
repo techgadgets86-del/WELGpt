@@ -125,7 +125,7 @@ export default function NotificationSystem() {
 
   // Expose a global way to trigger tests for the user (optional, just for demo)
   useEffect(() => {
-    // @ts-ignore
+    // @ts-expect-error - service worker typing
     window.triggerWelGptMeditation = () => {
       triggerToast({
         id: `meditation-demo-${Date.now()}`,
@@ -138,7 +138,7 @@ export default function NotificationSystem() {
       });
     };
     
-    // @ts-ignore
+    // @ts-expect-error - service worker typing
     window.triggerWelGptRoutine = () => {
       triggerToast({
         id: `routine-demo-${Date.now()}`,

@@ -32,7 +32,7 @@ export async function POST(req: Request) {
       eventData.eventType === EventName.SubscriptionCreated ||
       eventData.eventType === EventName.SubscriptionActivated
     ) {
-      // @ts-ignore - The SDK types eventData.data based on eventType
+      // @ts-expect-error - paddle SDK type incomplete - The SDK types eventData.data based on eventType
       const customerId = eventData.data.customerId;
       
       if (customerId) {

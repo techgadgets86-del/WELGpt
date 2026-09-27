@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     }
 
     // 2. Generate a Spicy Notification using OpenRouter (The "Thinking Orbs" logic)
-    let dynamicTitle = "Your Thinking Orb Speaks 🔮";
+    const dynamicTitle = "Your Thinking Orb Speaks 🔮";
     let dynamicBody = "Time to realign your posture and crush your goals. Tap in!";
     
     try {
@@ -48,7 +48,7 @@ export async function GET(req: Request) {
     }
 
     // 3. Prepare Notification Payloads
-    const messages: any[] = [];
+    const messages: unknown[] = [];
     
     usersSnapshot.forEach((doc) => {
       const userData = doc.data();
@@ -96,7 +96,7 @@ export async function GET(req: Request) {
       generatedMessage: dynamicBody
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error in cron job:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

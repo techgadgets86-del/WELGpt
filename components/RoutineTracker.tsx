@@ -85,7 +85,7 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
         
         // Check if this completes the routine
         if (newSet.size === currentTasks.length) {
-          try { Haptics.notification({ type: 'SUCCESS' as any }); } catch(e) {}
+          try { Haptics.notification({ type: "SUCCESS" as unknown as NotificationType }); } catch(e) {}
           // Trigger Confetti!
           confetti({
             particleCount: 150,

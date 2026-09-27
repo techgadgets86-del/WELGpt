@@ -8,7 +8,7 @@ import { useAuth } from './AuthContext';
 export function useRevenueCat() {
   const { user } = useAuth();
   const [isPremium, setIsPremium] = useState(false);
-  const [packages, setPackages] = useState<any[]>([]);
+  const [packages, setPackages] = useState<unknown[]>([]);
 
   useEffect(() => {
     if (Capacitor.getPlatform() === 'web') return; // RevenueCat is native mobile only for this plugin
@@ -45,7 +45,7 @@ export function useRevenueCat() {
     initRevenueCat();
   }, [user]);
 
-  const purchasePackage = async (pack: any) => {
+  const purchasePackage = async (pack: unknown) => {
     if (Capacitor.getPlatform() === 'web') {
       alert("Please download the iOS/Android app to purchase Premium.");
       return false;

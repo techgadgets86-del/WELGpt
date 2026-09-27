@@ -31,8 +31,8 @@ export default function LoginPage() {
           if (oldDocSnap.exists() && oldUid !== newUid) {
             await setDoc(doc(db, 'users', newUid), oldDocSnap.data(), { merge: true });
           }
-        } catch (linkError: any) {
-          if (linkError.code === 'auth/credential-already-in-use') {
+        } catch (linkError: unknown) {
+          if ((linkError as {code?: string}).code === 'auth/credential-already-in-use') {
             await signInWithPopup(auth, googleProvider);
           } else {
             throw linkError;
@@ -41,11 +41,11 @@ export default function LoginPage() {
       } else {
         await signInWithPopup(auth, googleProvider);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Authentication Error", error);
-      setErrorMsg(error.message.includes("unauthorized-domain") 
+      setErrorMsg((error as Error).message.includes("unauthorized-domain") 
         ? "Google login blocked by Firebase. Use Email instead." 
-        : error.message.replace("Firebase: ", ""));
+        : (error as Error).message.replace("Firebase: ", ""));
       setLoading(false);
     }
   };
@@ -60,9 +60,9 @@ export default function LoginPage() {
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Email Auth Error", error);
-      let friendlyError = error.message.replace("Firebase: ", "");
+      let friendlyError = (error as Error).message.replace("Firebase: ", "");
       if (error.code === 'auth/invalid-credential') friendlyError = "Invalid email or password.";
       if (error.code === 'auth/email-already-in-use') friendlyError = "Email is already registered.";
       setErrorMsg(friendlyError);
@@ -74,7 +74,7 @@ export default function LoginPage() {
     try {
       setLoading(true);
       await signInAnonymously(auth);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Guest Sign In Error", error);
       setErrorMsg("Failed to continue as guest.");
       setLoading(false);

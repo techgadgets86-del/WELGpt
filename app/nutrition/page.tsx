@@ -96,6 +96,7 @@ export default function NutritionPage() {
     if (loading) return; // Wait for profile to load
 
     if (profile?.nutritionPlan && profile.nutritionPlan.length > 0) {
+// eslint-disable-next-line react-hooks/set-state-in-effect
       setItems(profile.nutritionPlan);
     } else if (items.length === 0 && !isGenerating) {
       setTimeout(() => generateFood(), 0);

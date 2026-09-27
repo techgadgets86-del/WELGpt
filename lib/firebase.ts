@@ -29,7 +29,7 @@ const googleProvider = new GoogleAuthProvider();
 
 
 // Initialize Analytics (Client-side only)
-let analytics: any = null;
+let analytics: unknown = null;
 if (typeof window !== "undefined") {
   isSupported().then((yes) => yes && (analytics = getAnalytics(app)));
 }

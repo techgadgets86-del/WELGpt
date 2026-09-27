@@ -30,7 +30,7 @@ export interface UserProfile {
     [key: string]: string | number | boolean | string[] | undefined;
   };
   recentActivity: string[];
-  nutritionPlan?: any[];
+  nutritionPlan?: unknown[];
   coachMessage?: string;
   dailyPlan?: {
     date: string;
@@ -157,7 +157,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               if (fullBackupStr) fullBackup = JSON.parse(fullBackupStr);
             } catch(e) {}
             
-            const mergedInit: any = { ...initData, ...fullBackup };
+            const mergedInit: Record<string, unknown> = { ...initData, ...fullBackup };
             setDoc(userRef, mergedInit);
             
             setProfile({ 

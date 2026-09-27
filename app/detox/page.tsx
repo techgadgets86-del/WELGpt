@@ -23,7 +23,7 @@ export default function DetoxHub() {
   const [selectedDuration, setSelectedDuration] = useState(600); // Default 10 mins (600s)
   
   const [showCertificate, setShowCertificate] = useState(false);
-  const [earnedCert, setEarnedCert] = useState<any>(null);
+  const [earnedCert, setEarnedCert] = useState<Record<string, unknown> | null>(null);
   
   const certRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -49,6 +49,20 @@ export default function DetoxHub() {
     }
   };
 
+  const handleAutoCompletion = async (type: string) => {
+    if (!user) return;
+    const cert = getCertificateFallback(type);
+    setEarnedCert(cert);
+    setShowCertificate(true);
+    
+    // End the detox in db
+    const docRef = doc(db, `users/${user.uid}/detoxTracker`, 'current');
+    await updateDoc(docRef, { active: false });
+    
+    const xpReward = Math.floor(100); 
+    addXP(xpReward);
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -72,7 +86,7 @@ export default function DetoxHub() {
   }, []);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: NodeJS.Timeout | undefined;
     if (activeDetox) {
       interval = setInterval(() => {
         const start = new Date(activeDetox.startTime).getTime();
@@ -82,30 +96,18 @@ export default function DetoxHub() {
 
         // Auto-complete if target reached
         if (elapsed >= activeDetox.targetDuration) {
-          clearInterval(interval);
+          if (interval) clearInterval(interval);
           handleAutoCompletion(activeDetox.type);
         }
       }, 1000);
-    } else {
+      } else {
       setTimeout(() => setElapsedTime(0), 0);
     }
-    return () => clearInterval(interval);
+    return () => { if (interval) clearInterval(interval); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeDetox]);
 
-  const handleAutoCompletion = async (type: string) => {
-    if (!user) return;
-    const cert = getCertificateFallback(type);
-    setEarnedCert(cert);
-    setShowCertificate(true);
-    
-    // End the detox in db
-    const docRef = doc(db, `users/${user.uid}/detoxTracker`, 'current');
-    await updateDoc(docRef, { active: false });
-    
-    const xpReward = Math.floor(100); 
-    addXP(xpReward);
-  };
+  
 
   const startDetox = async (type: string) => {
     if (!user) {
@@ -202,7 +204,7 @@ export default function DetoxHub() {
                 </h2>
                 <p className="text-teal-400 font-bold tracking-widest uppercase text-sm mb-6">Official Certification</p>
                 
-                <p className="text-gray-300 italic mb-6">"{earnedCert.quote}"</p>
+                <p className="text-gray-300 italic mb-6">&quot;{earnedCert.quote}&quot;</p>
                 <p className="text-gray-400 text-sm">{earnedCert.description}</p>
                 
                 <div className="mt-8 pt-4 border-t border-white/10 flex justify-between items-center opacity-50">

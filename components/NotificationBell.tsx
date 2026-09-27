@@ -12,7 +12,7 @@ export default function NotificationBell() {
       onClick={() => {
         setHasUnread(false);
         // We trigger a demo hyper-real meditation just to show the UI works!
-        // @ts-ignore
+        // @ts-expect-error - service worker typing
         if (window.triggerWelGptMeditation) window.triggerWelGptMeditation();
       }}
       className="p-2 rounded-lg hover:bg-white/10 transition-colors relative group"

@@ -62,7 +62,7 @@ export function getFallbackDiets(goal: string): DietItem[] {
   }
 
   // If we couldn't match specific tags, just use all combinations
-  let pool = matches.length >= 4 ? matches : (() => {
+  const pool = matches.length >= 4 ? matches : (() => {
     const all: DietItem[] = [];
     for (const p of PROTEINS) for (const c of CARBS) for (const f of FATS) {
       all.push({

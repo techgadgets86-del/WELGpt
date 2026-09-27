@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export async function generateWithFallbacks(prompt: string): Promise<string> {
-  const errors: any[] = [];
+  const errors: unknown[] = [];
 
   // 1. Primary: Google Gemini
   try {
@@ -13,7 +13,7 @@ export async function generateWithFallbacks(prompt: string): Promise<string> {
         generationConfig: { responseMimeType: "application/json" }
       });
       const result = await model.generateContent(prompt);
-      let text = result.response.text();
+      const text = result.response.text();
       return text.replace(/```json/g, "").replace(/```/g, "").trim();
     } else {
       errors.push(new Error("GOOGLE_GENERATIVE_AI_API_KEY not set"));

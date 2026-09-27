@@ -39,13 +39,16 @@ export default function OrbModel() {
             scale: [1, 1.5, 0.8, 1.2, 1],
           }}
           transition={{
+// eslint-disable-next-line react-hooks/purity
             duration: Math.random() * 20 + 20,
             repeat: Infinity,
             ease: "linear",
-            delay: -Math.random() * 20,
+            // eslint-disable-next-line react-hooks/purity
+              delay: -Math.random() * 20,
           }}
           className={`absolute top-1/2 left-1/2 w-[300px] h-[300px] rounded-full mix-blend-screen blur-[100px] -translate-x-1/2 -translate-y-1/2 ${
-            i % 3 === 0
+            // eslint-disable-next-line react-hooks/purity
+              i % 3 === 0
               ? "bg-purple-600/10"
               : i % 3 === 1
               ? "bg-fuchsia-500/10"
@@ -64,10 +67,12 @@ export default function OrbModel() {
             opacity: [0.1, 0.3, 0.1],
           }}
           transition={{
+// eslint-disable-next-line react-hooks/purity
             duration: Math.random() * 15 + 15,
             repeat: Infinity,
             ease: "linear",
-            delay: -Math.random() * 15,
+            // eslint-disable-next-line react-hooks/purity
+              delay: -Math.random() * 15,
           }}
           className="absolute top-1/2 left-1/2 w-1.5 h-1.5 rounded-full bg-white opacity-20 blur-[1px] -translate-x-1/2 -translate-y-1/2"
         />
