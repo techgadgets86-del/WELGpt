@@ -3,10 +3,11 @@
 import { motion } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { useAuth } from "@/lib/AuthContext";
-import { Settings, User as UserIcon, Target, LogOut } from "lucide-react";
+import { Settings, User as UserIcon, Target, LogOut, CreditCard, ShieldCheck } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function ProfilePage() {
   const { user, profile, updateUserData } = useAuth();
@@ -72,6 +73,12 @@ export default function ProfilePage() {
         {/* Quick Actions */}
         <div className="bg-[#111127] border border-white/10 rounded-3xl p-6 flex flex-col justify-center gap-3">
           
+          <Link href="/account" className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-white/5 text-gray-300 hover:text-white transition-colors text-left font-medium">
+            <CreditCard className="text-violet-400" size={20} /> Billing & Subscription
+          </Link>
+          <Link href="/analytics" className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-white/5 text-emerald-300 hover:text-emerald-200 transition-colors text-left font-medium">
+            <ShieldCheck className="text-emerald-400" size={20} /> System Analytics &amp; SOC
+          </Link>
           <button onClick={() => goalsRef.current?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-white/5 text-gray-300 hover:text-white transition-colors text-left font-medium">
             <Target className="text-teal-400" size={20} /> Edit Goals
           </button>

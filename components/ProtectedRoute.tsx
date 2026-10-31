@@ -12,7 +12,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 
   useEffect(() => {
     if (!loading) {
-      if (!user && pathname !== "/login") {
+      if (!user && pathname !== "/login" && pathname !== "/analytics") {
         router.push("/login");
       } else if (user && pathname === "/login") {
         router.push("/");
@@ -29,7 +29,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   }
 
   // If not loading, and no user, but not on login page, we'll return null while redirecting
-  if (!user && pathname !== "/login") {
+  if (!user && pathname !== "/login" && pathname !== "/analytics") {
     return null; 
   }
 

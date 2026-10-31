@@ -4,6 +4,7 @@ import "./globals.css";
 import AppLayout from "@/components/AppLayout";
 import { AuthProvider } from "@/lib/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import AnalyticsTracker from "@/lib/analyticsTracker";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -62,6 +63,7 @@ export default function RootLayout({
     >
       <body className="h-full bg-[#0a0a1a]">
         <AuthProvider>
+          <AnalyticsTracker />
           <ProtectedRoute>
             <AppLayout>{children}</AppLayout>
           </ProtectedRoute>

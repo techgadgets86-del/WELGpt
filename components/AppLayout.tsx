@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Brain, LayoutDashboard, Menu, X, CheckSquare, Leaf, Activity, BookOpen, Mail, BarChart3 , Utensils, Waves, Home, Compass, UserCircle, Apple, LogIn, LogOut } from "lucide-react";
+import { Sparkles, Brain, LayoutDashboard, Menu, X, CheckSquare, Leaf, Activity, BookOpen, Mail, BarChart3 , Utensils, Waves, Home, Compass, UserCircle, Apple, LogIn, LogOut, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -59,6 +59,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { icon: Apple, label: "Nutrition", href: "/nutrition", restricted: true },
     { icon: Compass, label: "Explore", href: "/explore", restricted: false },
     { icon: BarChart3, label: "Progress", href: "/dashboard", restricted: false },
+    { icon: ShieldCheck, label: "Live Analytics", href: "/analytics", restricted: false },
     { icon: UserCircle, label: "Profile", href: "/profile", restricted: false },
   ];
 
