@@ -59,7 +59,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { icon: Apple, label: "Nutrition", href: "/nutrition", restricted: true },
     { icon: Compass, label: "Explore", href: "/explore", restricted: false },
     { icon: BarChart3, label: "Progress", href: "/dashboard", restricted: false },
-    { icon: ShieldCheck, label: "Command Center", href: "/command-center", restricted: false },
     { icon: UserCircle, label: "Profile", href: "/profile", restricted: false },
   ];
 

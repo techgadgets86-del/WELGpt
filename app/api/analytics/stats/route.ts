@@ -8,16 +8,30 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const app = searchParams.get('app') || 'all';
     const report = await getAnalyticsReport(app);
-    return NextResponse.json({
+    const res = NextResponse.json({
       success: true,
       timestamp: new Date().toISOString(),
       ...report,
     });
+    res.headers.set('Access-Control-Allow-Origin', '*');
+    res.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+    return res;
   } catch (err: unknown) {
     console.error('[Analytics Stats API] Error:', err);
-    return NextResponse.json(
+    const errRes = NextResponse.json(
       { error: err instanceof Error ? err.message : 'Failed to generate analytics report' },
       { status: 500 }
     );
+    errRes.headers.set('Access-Control-Allow-Origin', '*');
+    return errRes;
   }
+}
+
+export async function OPTIONS() {
+  const res = new NextResponse(null, { status: 204 });
+  res.headers.set('Access-Control-Allow-Origin', '*');
+  res.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+  return res;
 }
