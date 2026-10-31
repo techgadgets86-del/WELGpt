@@ -3,9 +3,11 @@ import { getAnalyticsReport } from '@/lib/analyticsStore';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const report = await getAnalyticsReport();
+    const { searchParams } = new URL(req.url);
+    const app = searchParams.get('app') || 'all';
+    const report = await getAnalyticsReport(app);
     return NextResponse.json({
       success: true,
       timestamp: new Date().toISOString(),

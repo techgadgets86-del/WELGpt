@@ -21,6 +21,7 @@ export async function POST(req: Request) {
     let countryName = COUNTRY_NAMES[countryCode]?.name || body.country || 'United States';
 
     const event = logSecurityEvent({
+      appId: body.appId === 'dilsev' ? 'dilsev' : 'welgpt',
       type: body.type || 'AUTH_SUCCESS',
       severity: body.severity || 'INFO',
       description: body.description || 'Security audit log entry',

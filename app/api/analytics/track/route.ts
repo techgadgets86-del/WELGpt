@@ -92,6 +92,7 @@ export async function POST(req: Request) {
     const session = recordSession({
       sessionId: body.sessionId || `sess_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       visitorId: body.visitorId || `vis_${Date.now()}`,
+      appId: body.appId === 'dilsev' ? 'dilsev' : 'welgpt',
       userId: body.userId || null,
       userEmail: body.userEmail || null,
       durationSeconds: typeof body.durationSeconds === 'number' ? body.durationSeconds : undefined,
