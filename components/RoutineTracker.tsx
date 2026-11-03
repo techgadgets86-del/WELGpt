@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Sun, Moon, CloudSun, Sparkles, Target, Clock } from "lucide-react";
-import { Haptics, ImpactStyle } from "@capacitor/haptics";
+import { Haptics, ImpactStyle, NotificationType } from "@capacitor/haptics";
 import confetti from "canvas-confetti";
 import TimerModal from "./routine/TimerModal";
+import BiohackingStack from "./BiohackingStack";
 
 export interface Task {
   id: string;
@@ -85,7 +86,7 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
         
         // Check if this completes the routine
         if (newSet.size === currentTasks.length) {
-          try { Haptics.notification({ type: "SUCCESS" as unknown as NotificationType }); } catch(e) {}
+          try { Haptics.notification({ type: NotificationType.Success }); } catch(e) {}
           // Trigger Confetti!
           confetti({
             particleCount: 150,
@@ -323,6 +324,9 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Clinical Biohacking Compound & Hardware Recommendations */}
+        <BiohackingStack activePeriod={activeTab} />
       </div>
 
       {/* Global Timer & Tutorial Modal */}

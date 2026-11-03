@@ -14,6 +14,7 @@ import DynamicIsland from "@/components/DynamicIsland";
 import GuestLoginModal from "./GuestLoginModal";
 import NotificationSystem from "./NotificationSystem";
 import NotificationBell from "./NotificationBell";
+import ReferralRewardModal from "./ReferralRewardModal";
 import { usePushNotifications } from "@/lib/usePushNotifications";
 
 // 🌊 Smooth UI: Physical Spring Transitions
@@ -28,6 +29,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [showReferralModal, setShowReferralModal] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const { user, profile, loading, setShowGuestModal } = useAuth();
@@ -129,6 +131,29 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             })}
         </nav>
 
+        {/* Viral Referral Pass Callout */}
+        {sidebarOpen && (
+          <div className="px-4 pb-3">
+            <button
+              onClick={() => setShowReferralModal(true)}
+              className="w-full text-left p-3 rounded-2xl bg-gradient-to-r from-violet-900/30 via-purple-900/20 to-teal-900/20 border border-violet-500/30 hover:border-violet-500/60 transition-all group"
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-teal-400 bg-teal-400/10 px-2 py-0.5 rounded-full border border-teal-400/20">
+                  🎁 Free Pro Month
+                </span>
+                <span className="text-[10px] font-mono text-gray-400">Invite 3</span>
+              </div>
+              <p className="font-bold text-white text-xs group-hover:text-violet-300 transition-colors">
+                Unlock 1 Month Pro Free
+              </p>
+              <p className="text-[11px] text-gray-400 mt-0.5">
+                Share the Focus Audit with 3 friends &rarr;
+              </p>
+            </button>
+          </div>
+        )}
+
         {/* Desktop Profile Footer */}
         <div className="p-4 border-t border-white/10 shrink-0">
           {!loading && user ? (
@@ -202,6 +227,30 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   </div>
                 </Link>
               ))}
+
+              {/* Mobile Referral Button */}
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setShowReferralModal(true);
+                }}
+                className="w-full text-left p-4 rounded-xl bg-gradient-to-r from-violet-900/40 to-teal-900/30 border border-violet-500/30 flex items-center justify-between mt-4"
+              >
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-teal-400">
+                    🎁 Free Pro Month
+                  </span>
+                  <p className="font-bold text-white text-sm">
+                    Unlock 1 Month Pro Free
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Invite 3 friends to the Focus Audit
+                  </p>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-violet-600/30 flex items-center justify-center text-violet-300">
+                  &rarr;
+                </div>
+              </button>
             </div>
             
             {/* Mobile Footer Login */}
@@ -241,6 +290,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <DynamicIsland />
       <NotificationSystem />
       <GuestLoginModal />
+      <ReferralRewardModal isOpen={showReferralModal} onClose={() => setShowReferralModal(false)} />
 
       {/* ============================================================== */}
       {/* MAIN CONTENT AREA */}

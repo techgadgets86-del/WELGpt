@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Sparkles, Zap, Shield, ArrowRight, Loader2 } from "lucide-react";
+import { Check, Sparkles, Zap, Shield, ArrowRight, Loader2, Building2, Printer, FileCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { getPaddle } from "@/lib/paddle/client";
 import { TIERS, Tier } from "@/lib/paddle/tiers";
@@ -21,10 +21,99 @@ export default function PricingClient({ initialCountry }: PricingClientProps) {
   const [priceError, setPriceError] = useState<string | null>(null);
   const [subscribingTier, setSubscribingTier] = useState<string | null>(null);
   const [referralCode, setReferralCode] = useState<string>("");
+  const [pricingMode, setPricingMode] = useState<"individual" | "corporate">("individual");
   const [, startTransition] = useTransition();
 
   const { user } = useAuth();
   const router = useRouter();
+
+  const handlePrintExpenseLetter = () => {
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>WelGPT Corporate Reimbursement & Pre-Approval Receipt</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #fff; color: #111; line-height: 1.6; margin: 0; padding: 40px; }
+          .header { border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
+          .badge { background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 9999px; font-weight: bold; font-size: 12px; }
+          .meta-table { width: 100%; border-collapse: collapse; margin: 25px 0; }
+          .meta-table td { padding: 10px; border: 1px solid #e2e8f0; font-size: 13px; }
+          .meta-label { font-weight: 700; width: 220px; background: #f8fafc; color: #475569; }
+          .letter { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; margin: 25px 0; font-size: 13px; line-height: 1.7; }
+          h2 { color: #0f172a; margin-top: 30px; font-size: 18px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
+          .footer { margin-top: 50px; padding-top: 20px; border-top: 1px solid #cbd5e1; font-size: 12px; color: #64748b; text-align: center; }
+          @media print { body { padding: 20px; } }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <h1 style="margin:0; font-size: 26px;">WELGPT CORPORATE EXPENSE RECEIPT & PRE-APPROVAL</h1>
+            <p style="margin:4px 0 0; color: #64748b; font-size: 13px;">Cognitive Ergonomics & Enterprise Focus Software</p>
+          </div>
+          <div style="text-align:right;">
+            <span class="badge">STIPEND REIMBURSABLE</span>
+            <p style="margin:4px 0 0; font-size: 12px; font-family: monospace;">EXPENSE REF: WGC-CORP-${Math.random().toString(36).substring(2, 8).toUpperCase()}</p>
+          </div>
+        </div>
+
+        <table class="meta-table">
+          <tr>
+            <td class="meta-label">Software Vendor</td>
+            <td>WelGPT Cognitive Systems (Paddle Merchant of Record)</td>
+          </tr>
+          <tr>
+            <td class="meta-label">Software Classification</td>
+            <td>Applied Cognitive Ergonomics, Deep-Work Time Blocking &amp; Stress Management Software</td>
+          </tr>
+          <tr>
+            <td class="meta-label">Eligible Expense Categories</td>
+            <td>Employee Wellness Stipend / L&amp;D Stipend / Productivity Software / Mental Health &amp; Ergonomics</td>
+          </tr>
+          <tr>
+            <td class="meta-label">Standard Annual Fee</td>
+            <td><strong>$99.00 USD / Year</strong> (Annual Single-Seat Professional License)</td>
+          </tr>
+          <tr>
+            <td class="meta-label">Employee / Licensee</td>
+            <td>${user?.displayName || user?.email || "Corporate Team Member"}</td>
+          </tr>
+          <tr>
+            <td class="meta-label">Date Generated</td>
+            <td>${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</td>
+          </tr>
+        </table>
+
+        <h2>Corporate Justification & Business ROI</h2>
+        <div class="letter">
+          <p><strong>To:</strong> Accounts Payable / People &amp; Culture / Finance Department</p>
+          <p><strong>Subject:</strong> Software Stipend Reimbursement Pre-Approval for WelGPT</p>
+          <p>I am requesting reimbursement for an annual professional license to <strong>WelGPT</strong> under our organization's Employee Wellness, Productivity, or Learning &amp; Development software allowance.</p>
+          <p><strong>Business Impact &amp; ROI:</strong></p>
+          <ul>
+            <li><strong>Reclaims 2.8+ Focus Hours/Day:</strong> Enforces structured 90-minute ultradian deep-work blocks, eliminating distraction triggers during critical development/strategic tasks.</li>
+            <li><strong>Reduces Task-Switching Cognitive Fatigue:</strong> Implements science-backed non-sleep deep rest (NSDR) intervals and digital sunsets to mitigate employee burnout.</li>
+            <li><strong>Habit Execution &amp; Mental Energy:</strong> Tracks bio-synchronous routines (sleep architecture, hydration, circadian sunlight) to sustain baseline cognitive endurance across high-intensity sprints.</li>
+          </ul>
+          <p>Payment is processed securely via corporate credit card with itemized VAT/Tax receipts issued upon purchase.</p>
+        </div>
+
+        <div class="footer">
+          <p>© 2026 WelGPT Applied Cognitive Systems · Accepted by Expensify, Brex, Ramp, and Corporate Amex · Questions: support@welgpt.space</p>
+        </div>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+    }, 500);
+  };
 
   // Capture affiliate / creator referral code
   useEffect(() => {
@@ -200,6 +289,66 @@ export default function PricingClient({ initialCountry }: PricingClientProps) {
             Rewire your habits, eliminate digital fatigue, and execute at your peak.
             Switch plans or cancel at any time.
           </motion.p>
+
+          {/* Individual vs. Corporate Stipend Mode */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <button
+              onClick={() => setPricingMode("individual")}
+              className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 ${
+                pricingMode === "individual"
+                  ? "bg-white/15 text-white border border-white/30 shadow-lg"
+                  : "bg-white/5 text-white/50 hover:text-white border border-transparent"
+              }`}
+            >
+              <span>👤 Individual Protocol</span>
+            </button>
+            <button
+              onClick={() => {
+                setPricingMode("corporate");
+                setBillingCycle("year");
+              }}
+              className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 ${
+                pricingMode === "corporate"
+                  ? "bg-gradient-to-r from-teal-500/30 to-violet-500/30 text-teal-300 border border-teal-400/50 shadow-lg shadow-teal-500/10"
+                  : "bg-white/5 text-white/50 hover:text-white border border-transparent"
+              }`}
+            >
+              <Building2 className="w-3.5 h-3.5 text-teal-400" />
+              <span>🏢 Company Stipend &amp; Teams</span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-teal-400/20 text-teal-300 font-bold">
+                Expensable
+              </span>
+            </button>
+          </div>
+
+          {/* Corporate Stipend Banner */}
+          {pricingMode === "corporate" && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-6 p-6 rounded-2xl bg-gradient-to-r from-teal-950/40 via-[#111127] to-violet-950/30 border border-teal-500/30 text-left max-w-2xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl"
+            >
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <FileCheck className="w-4 h-4 text-teal-400" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-teal-300">
+                    100% Corporate Reimbursable
+                  </span>
+                </div>
+                <p className="text-xs text-white/70 font-light leading-relaxed">
+                  Most employers provide a $500–$1,500 annual Wellness &amp; L&amp;D stipend. WelGPT is pre-formatted for 1-click reimbursement on Expensify, Ramp, and Brex.
+                </p>
+              </div>
+
+              <button
+                onClick={handlePrintExpenseLetter}
+                className="px-4 py-2.5 rounded-xl bg-teal-400 hover:bg-teal-300 text-black font-bold text-xs uppercase tracking-wider whitespace-nowrap flex items-center gap-1.5 transition-all shadow-md shrink-0 active:scale-95"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>Pre-Approval PDF</span>
+              </button>
+            </motion.div>
+          )}
 
           {/* Monthly / Yearly Toggle */}
           <motion.div
