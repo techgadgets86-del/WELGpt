@@ -3,7 +3,8 @@ import { Check, X, Zap, Crown, Target, Sparkles, Brain, Minus } from "lucide-rea
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { useRevenueCat } from "@/lib/useRevenueCat";
-import { initializePaddle, Paddle } from "@paddle/paddle-js";
+import { getPaddle } from "@/lib/paddle/client";
+import { Paddle } from "@paddle/paddle-js";
 
 interface PremiumModalProps {
   isOpen: boolean;
@@ -19,11 +20,10 @@ export default function PremiumModal({ isOpen, onClose }: PremiumModalProps) {
   useEffect(() => {
     // Only init Paddle on web
     if (typeof window !== "undefined") {
-      initializePaddle({
-        environment: "production",
-        token: "live_9e5498227f938187ba10cb6586d",
-      }).then((paddleInstance) => {
+      getPaddle().then((paddleInstance) => {
         if (paddleInstance) setPaddle(paddleInstance);
+      }).catch((e) => {
+        console.error("Paddle init error:", e);
       });
     }
   }, []);
@@ -42,11 +42,12 @@ export default function PremiumModal({ isOpen, onClose }: PremiumModalProps) {
       paddle.Checkout.open({
         settings: {
           displayMode: "overlay",
+          variant: "one-page",
           theme: "dark",
-          successUrl: window.location.origin + "/dashboard?payment_success=true"
+          successUrl: `${window.location.origin}/welcome`
         },
         items: [{ 
-          priceId: "pri_01m30qhbzrs6gyp4nddqnszyat", 
+          priceId: process.env.NEXT_PUBLIC_PADDLE_PRICE_PRO_MONTH || "pri_01m30qhbzrs6gyp4nddqnszyat", 
           quantity: 1 
         }],
         customer: user?.email ? { email: user.email } : undefined
@@ -172,7 +173,7 @@ export default function PremiumModal({ isOpen, onClose }: PremiumModalProps) {
                 <div className="space-y-4 flex-1">
                   {[
                     "Adaptive Daily Plans",
-                    "Unlimited Personalized AI Coach",
+                    "Unlimited WelBuddy AI Co-Pilot",
                     "Unlimited AI Plan Generations",
                     "Personalized Nutrition Logic",
                     "Adaptive Training Routines",

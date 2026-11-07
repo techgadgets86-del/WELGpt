@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     const postureInjection = goals?.includes("Posture") ? "\nCRITICAL PROTOCOL: Because the user selected 'Posture', you MUST include Scientifically proven Height Increase exercises and stretches for rapid height growth (like dead hangs, cobra stretch, or pelvic shifts) in their routine. Treat height growth and spinal decompression as the absolute highest priority in this plan." : "";
 
     if (action === "create_new") {
-      prompt = `You are an elite AI wellness coach. Generate a completely fresh, highly optimized daily routine for a user.
+      prompt = `You are WelBuddy, the premier AI assistant for the wellness of your user's mental and business life. Generate a completely fresh, highly optimized daily routine for a user.
 User Context:
 Goals: ${goals?.join(", ")}
 Current Feeling: ${feeling || 'Okay'}
@@ -26,7 +26,7 @@ ${postureInjection}
 You must respond ONLY with a valid JSON object. Do not include markdown formatting.
 Schema:
 {
-  "coachMessage": "A short, extremely compelling sentence welcoming them and explaining how this plan addresses their specific feeling and goals.",
+  "coachMessage": "A short, extremely compelling sentence welcoming them from WelBuddy and explaining how this plan addresses their specific feeling and business/mental goals.",
   "plan": {
     "morning": [ { "id": "m1", "time": "Morning", "title": "Name of Habit", "desc": "Scientific description", "completed": false } ],
     "afternoon": [ { "id": "a1", "time": "Afternoon", "title": "Name of Habit", "desc": "Scientific description", "completed": false } ],
@@ -37,7 +37,7 @@ CRITICAL: You must generate the JSON instantly. Limit to exactly 1 task per time
     } else {
       // adjust_daily
       const previousStr = JSON.stringify(previousPlan);
-      prompt = `You are an elite AI wellness coach managing a user's daily workflow. The user is starting a new day. 
+      prompt = `You are WelBuddy, the premier AI assistant for the wellness of your user's mental and business life. The user is starting a new day. 
 Review their previous day's plan and completion status:
 ${previousStr}
 
@@ -50,7 +50,7 @@ If they missed evening tasks, maybe move them earlier. If they crushed it, maybe
 You must respond ONLY with a valid JSON object. Do not include markdown formatting.
 Schema:
 {
-  "coachMessage": "A powerful, personalized 1-2 sentence message. Example: 'You completed 3 of 4 goals yesterday. I noticed movement has been harder for you to complete in the evening, so I've moved tomorrow's session to 6 PM.'",
+  "coachMessage": "A powerful, personalized 1-2 sentence WelBuddy message. Example: 'WelBuddy calibrated: You completed 3 of 4 goals yesterday. I noticed movement was harder in the evening, so I moved your session to 6 PM.'",
   "plan": {
     "morning": [ { "id": "m1", "time": "Morning", "title": "Name of Habit", "desc": "Scientific description", "completed": false } ],
     "afternoon": [ { "id": "a1", "time": "Afternoon", "title": "Name of Habit", "desc": "Scientific description", "completed": false } ],

@@ -1302,7 +1302,7 @@ export default function AnalyticsDashboard() {
                   <tbody className="divide-y divide-slate-800/60 text-xs">
                     <tr>
                       <td className="py-3.5 px-4 font-semibold text-slate-400">Core Mission</td>
-                      <td className="py-3.5 px-4 font-medium text-white">Focus recovery, digital detox, habit streaks & AI health coach</td>
+                      <td className="py-3.5 px-4 font-medium text-white">Focus recovery, digital detox, habit streaks & WelBuddy AI Co-Pilot</td>
                       <td className="py-3.5 px-4 font-medium text-white">AI English conversational fluency, accent feedback & spaced repetition</td>
                     </tr>
                     <tr>

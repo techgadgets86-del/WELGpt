@@ -115,13 +115,29 @@ export default function ProfilePage() {
       </div>
 
       <div ref={prefsRef} className="bg-[#111127] border border-white/10 rounded-3xl p-8 mb-8">
-        <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2"><Settings size={20} className="text-gray-400" /> AI Coach Preferences</h3>
+        <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2"><Settings size={20} className="text-gray-400" /> WelBuddy Preferences</h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Default WelBuddy Persona</label>
+            <select 
+              value={String(profile?.preferences?.persona || "operator")}
+              onChange={(e) => {
+                const val = e.target.value;
+                updateUserData({ preferences: { ...profile?.preferences, persona: val } });
+                localStorage.setItem("welbuddy_persona", val);
+              }}
+              className="w-full bg-[#0a0a1a] border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-violet-500"
+            >
+              <option value="operator">⚡ High-Stakes Operator</option>
+              <option value="stoic">🏛️ Stoic Partner</option>
+              <option value="compassionate">🌊 Compassionate Anchor</option>
+            </select>
+          </div>
           <div>
             <label className="block text-sm font-medium text-gray-400 mb-2">Dietary Preference</label>
             <select 
-              value={profile?.preferences?.dietary || "none"}
+              value={String(profile?.preferences?.dietary || "none")}
               onChange={(e) => updateUserData({ preferences: { ...profile?.preferences, dietary: e.target.value } })}
               className="w-full bg-[#0a0a1a] border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-violet-500"
             >
@@ -135,7 +151,7 @@ export default function ProfilePage() {
           <div>
             <label className="block text-sm font-medium text-gray-400 mb-2">Fitness Level</label>
             <select 
-              value={profile?.preferences?.fitnessLevel || "beginner"}
+              value={String(profile?.preferences?.fitnessLevel || "beginner")}
               onChange={(e) => updateUserData({ preferences: { ...profile?.preferences, fitnessLevel: e.target.value } })}
               className="w-full bg-[#0a0a1a] border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-violet-500"
             >

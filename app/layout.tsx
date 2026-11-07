@@ -27,9 +27,9 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://app.welgpt.space'),
-  title: "WelGPT - Your AI Wellness Coach",
-  description: "One personalized plan for your mind, movement, nutrition and daily habits—adapted as you progress.",
-  keywords: ["AI Coach", "Wellness Tracker", "Digital Detox", "Routine Builder", "WelGPT", "Habit Tracker"],
+  title: "WelGPT - WelBuddy AI Mental & Business Co-Pilot",
+  description: "The best AI assistant for the wellness of your mental & business life. One personalized plan adapted as you progress.",
+  keywords: ["WelBuddy", "AI Wellness Assistant", "Business Wellness", "Mental Sanctuary", "Digital Detox", "Routine Builder", "WelGPT", "Habit Tracker"],
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -37,8 +37,8 @@ export const metadata: Metadata = {
     title: "WelGPT",
   },
   openGraph: {
-    title: "WelGPT - Your AI Wellness Coach",
-    description: "One personalized plan for your mind, movement, nutrition and daily habits.",
+    title: "WelGPT - WelBuddy AI Mental & Business Co-Pilot",
+    description: "The best AI assistant for the wellness of your mental & business life.",
     url: "https://app.welgpt.space",
     siteName: "WelGPT App",
     locale: "en_US",
@@ -46,8 +46,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "WelGPT - AI Wellness Coach",
-    description: "Reclaim your attention and build unbreakable routines.",
+    title: "WelGPT - WelBuddy AI Co-Pilot",
+    description: "The best AI assistant for the wellness of your mental & business life.",
   },
 };
 

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { adminDb, adminMessaging } from '@/lib/firebaseAdmin';
+import type { Message } from 'firebase-admin/messaging';
 
 export async function GET(req: Request) {
   try {
@@ -33,7 +34,7 @@ export async function GET(req: Request) {
           messages: [
             { 
               role: "system", 
-              content: "You are the 'Thinking Orb', a mystical and slightly intense AI coach for a digital wellness and posture app. Generate a very short (max 12 words), spicy, intense, and motivational push notification body telling the user to get back to their routine. Do not use quotes." 
+              content: "You are WelBuddy, the sharp AI assistant for the wellness of your user's mental and business life. Generate a very short (max 12 words), spicy, high-leverage push notification body urging the user to lock in their focus and protect their routine. Do not use quotes." 
             }
           ]
         })
@@ -48,13 +49,13 @@ export async function GET(req: Request) {
     }
 
     // 3. Prepare Notification Payloads
-    const messages: unknown[] = [];
+    const messages: Message[] = [];
     
     usersSnapshot.forEach((doc) => {
       const userData = doc.data();
       const token = userData.fcmToken;
 
-      if (token) {
+      if (token && typeof token === 'string') {
         messages.push({
           token: token,
           notification: {
@@ -83,7 +84,8 @@ export async function GET(req: Request) {
       if (response.failureCount > 0) {
         response.responses.forEach((resp, idx) => {
           if (!resp.success) {
-            console.error(`Failed to send to token: ${chunk[idx].token}`, resp.error);
+            const failedToken = (chunk[idx] as { token?: string })?.token || 'unknown';
+            console.error(`Failed to send to token: ${failedToken}`, resp.error);
           }
         });
       }
@@ -98,6 +100,7 @@ export async function GET(req: Request) {
 
   } catch (error: unknown) {
     console.error('Error in cron job:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

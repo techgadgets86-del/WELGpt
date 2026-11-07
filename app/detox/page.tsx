@@ -10,7 +10,7 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import { doc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import { useAuth } from "@/lib/AuthContext";
 import { ShieldAlert, Play, XOctagon, Trophy, Flame, Award, Download } from "lucide-react";
-import { getCertificateFallback } from "@/lib/certificateDb";
+import { getCertificateFallback, CertificateData } from "@/lib/certificateDb";
 import { toPng } from 'html-to-image';
 
 export default function DetoxHub() {
@@ -23,7 +23,7 @@ export default function DetoxHub() {
   const [selectedDuration, setSelectedDuration] = useState(600); // Default 10 mins (600s)
   
   const [showCertificate, setShowCertificate] = useState(false);
-  const [earnedCert, setEarnedCert] = useState<Record<string, unknown> | null>(null);
+  const [earnedCert, setEarnedCert] = useState<CertificateData | null>(null);
   
   const certRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);

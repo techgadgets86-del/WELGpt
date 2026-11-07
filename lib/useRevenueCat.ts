@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { Purchases, LOG_LEVEL } from '@revenuecat/purchases-capacitor';
+import { Purchases, LOG_LEVEL, PurchasesPackage } from '@revenuecat/purchases-capacitor';
 import { Capacitor } from '@capacitor/core';
 import { useAuth } from './AuthContext';
 
 export function useRevenueCat() {
   const { user } = useAuth();
   const [isPremium, setIsPremium] = useState(false);
-  const [packages, setPackages] = useState<unknown[]>([]);
+  const [packages, setPackages] = useState<PurchasesPackage[]>([]);
 
   useEffect(() => {
     if (Capacitor.getPlatform() === 'web') return; // RevenueCat is native mobile only for this plugin
@@ -45,7 +45,7 @@ export function useRevenueCat() {
     initRevenueCat();
   }, [user]);
 
-  const purchasePackage = async (pack: unknown) => {
+  const purchasePackage = async (pack: PurchasesPackage) => {
     if (Capacitor.getPlatform() === 'web') {
       alert("Please download the iOS/Android app to purchase Premium.");
       return false;

@@ -116,7 +116,7 @@ export const HEALTH_ENCYCLOPEDIA = [
   {
     topic: "Greetings",
     tags: ["hello", "hi", "hey", "who are you", "help", "what can you do"],
-    content: "Hello! I am WelGPT, your elite AI neuroscience and wellness coach. I'm currently running in offline backup mode using the local Health Encyclopedia. Ask me about sleep, neuroplasticity, dopamine, fitness, nutrition, or stress!"
+    content: "Hello! I am WelBuddy, the premier AI assistant for the wellness of your mental and business life. I'm currently running in offline backup mode using the local Health Encyclopedia. Ask me about sleep, deep focus sprints, NSDR dopamine resets, nutrition, or stress regulation!"
   }
 ];
 

@@ -57,7 +57,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const navItems = [
     { icon: Home, label: "Home", href: "/", restricted: false },
     { icon: CheckSquare, label: "Today", href: "/routine", restricted: false },
-    { icon: Brain, label: "AI Coach", href: "/coach", restricted: true },
+    { icon: Brain, label: "WelBuddy", href: "/coach", restricted: true },
     { icon: Apple, label: "Nutrition", href: "/nutrition", restricted: true },
     { icon: Compass, label: "Explore", href: "/explore", restricted: false },
     { icon: BarChart3, label: "Progress", href: "/dashboard", restricted: false },
@@ -68,7 +68,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const bottomNavItems = [
     { icon: Home, label: "Home", href: "/", restricted: false },
     { icon: CheckSquare, label: "Today", href: "/routine", restricted: false },
-    { icon: Brain, label: "Coach", href: "/coach", restricted: true },
+    { icon: Brain, label: "WelBuddy", href: "/coach", restricted: true },
     { icon: Apple, label: "Diet", href: "/nutrition", restricted: true }
   ];
 

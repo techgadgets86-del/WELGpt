@@ -129,9 +129,9 @@ export default function Home() {
 
         setOnboardingStep(6); // Go to step 6 to preview the plan
       } else if (data.error) {
-        alert("AI Coach Error: " + data.error);
+        alert("WelBuddy Error: " + data.error);
       } else {
-        alert("AI Coach returned an invalid plan. Please try again.");
+        alert("WelBuddy returned an invalid plan. Please try again.");
       }
     } catch (err) {
       console.error("Error generating plan:", err);
@@ -486,7 +486,7 @@ export default function Home() {
             <p className="text-gray-300 font-medium">{subtitle}</p>
           </div>
 
-          {/* 4. AI COACH (MOVED TO TOP TO EMPHASIZE THE MOAT) */}
+          {/* 4. WELBUDDY CO-PILOT (TOP PRIORITY DUAL-ENGINE MOAT) */}
           <div className="w-full max-w-md mx-auto mb-12">
             <div 
               onClick={() => setShowPremium(true)}
@@ -495,19 +495,18 @@ export default function Home() {
               <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/20 blur-3xl rounded-full" />
               
               <div className="flex justify-center mb-4 relative z-10">
-                <div className="p-3 bg-violet-500/20 rounded-full">
-                  <Brain size={28} className="text-violet-400" />
+                <div className="flex items-center gap-2 px-3 py-1 bg-violet-500/20 border border-violet-500/30 rounded-full">
+                  <Brain size={18} className="text-teal-300" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-violet-200">WelBuddy™ Co-Pilot</span>
                 </div>
               </div>
               <p className="text-2xl text-white font-medium leading-relaxed relative z-10 tracking-tight">
-                {profile?.coachMessage || "Based on your week, I've adjusted tomorrow's plan."}
+                {profile?.coachMessage || "Dual engine active: Business execution locked, nervous system protected."}
               </p>
             </div>
             
-
-            
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-6 bg-[#111127] border border-white/10 rounded-3xl">
-              <p className="text-gray-300 font-medium">What are you working on today?</p>
+              <p className="text-gray-300 font-medium">Need focus sprint or vagus reset?</p>
               <button 
                 onClick={() => {
                   if (user?.isAnonymous) {
@@ -516,10 +515,10 @@ export default function Home() {
                     router.push('/coach');
                   }
                 }}
-                className="w-full md:w-auto px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/10 text-white rounded-xl font-bold transition-all flex items-center justify-center gap-2"
+                className="w-full md:w-auto px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-sm"
               >
-                <Brain size={18} className="text-teal-400" />
-                Ask Your Coach
+                <Brain size={18} className="text-teal-300" />
+                Talk with WelBuddy
               </button>
             </div>
           </div>

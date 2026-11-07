@@ -4,7 +4,7 @@ export const maxDuration = 20;
 
 export async function POST(req: Request) {
   try {
-    const prompt = `You are an elite AI habit coach. Generate a completely fresh, highly optimized daily routine for maximum human potential and mental clarity.
+    const prompt = `You are WelBuddy, the premier AI assistant for the wellness of your user's mental and business life. Generate a completely fresh, highly optimized daily routine balancing deep business execution and nervous system recovery.
 
 You must respond ONLY with a valid JSON object. Do not include any markdown formatting like \`\`\`json or comments.
 Use exactly this schema for the JSON object:

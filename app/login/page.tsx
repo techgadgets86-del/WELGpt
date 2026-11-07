@@ -62,9 +62,10 @@ export default function LoginPage() {
       }
     } catch (error: unknown) {
       console.error("Email Auth Error", error);
-      let friendlyError = (error as Error).message.replace("Firebase: ", "");
-      if (error.code === 'auth/invalid-credential') friendlyError = "Invalid email or password.";
-      if (error.code === 'auth/email-already-in-use') friendlyError = "Email is already registered.";
+      const err = error as { code?: string; message?: string };
+      let friendlyError = (err.message || "An authentication error occurred.").replace("Firebase: ", "");
+      if (err.code === 'auth/invalid-credential') friendlyError = "Invalid email or password.";
+      if (err.code === 'auth/email-already-in-use') friendlyError = "Email is already registered.";
       setErrorMsg(friendlyError);
       setLoading(false);
     }

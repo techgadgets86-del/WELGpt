@@ -15,6 +15,12 @@ export interface RoutineTask {
 
 export interface UserProfile {
   isPremium?: boolean;
+  paddleCustomerId?: string;
+  paddleSubscriptionId?: string;
+  subscriptionStatus?: string;
+  subscriptionPriceId?: string;
+  subscriptionProductId?: string;
+  subscriptionScheduledChange?: string | null;
   aiChatTokens?: number;
   aiPlanTokens?: number;
   tokenResetDate?: string;
@@ -37,7 +43,7 @@ export interface UserProfile {
     morning: RoutineTask[];
     afternoon: RoutineTask[];
     evening: RoutineTask[];
-  };
+  } | null;
 }
 
 export interface AuthContextType {
@@ -157,8 +163,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               if (fullBackupStr) fullBackup = JSON.parse(fullBackupStr);
             } catch(e) {}
             
-            const mergedInit: Record<string, unknown> = { ...initData, ...fullBackup };
-            setDoc(userRef, mergedInit);
+            const mergedInit = { ...initData, ...fullBackup } as unknown as UserProfile;
+            setDoc(userRef, mergedInit as unknown as Record<string, unknown>);
             
             setProfile({ 
               isPremium: mergedInit.isPremium || false,

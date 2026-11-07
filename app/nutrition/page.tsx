@@ -31,12 +31,12 @@ export default function NutritionPage() {
   const handleShare = (item: FoodItem) => {
     if (navigator.share) {
       navigator.share({
-        title: `AI Nutrition Coach: ${item.name}`,
-        text: `Check out this personalized meal protocol from WelGPT: ${item.name} - ${item.reason}`,
+        title: `WelBuddy Nutrition: ${item.name}`,
+        text: `Check out this personalized meal protocol from WelBuddy: ${item.name} - ${item.reason}`,
         url: window.location.href,
       }).catch(console.error);
     } else {
-      navigator.clipboard.writeText(`AI Nutrition Coach: ${item.name}\n${item.reason}\n\nIngredients: ${item.ingredients.join(", ")}`);
+      navigator.clipboard.writeText(`WelBuddy Nutrition: ${item.name}\n${item.reason}\n\nIngredients: ${item.ingredients.join(", ")}`);
       alert("Meal protocol copied to clipboard!");
     }
   };
@@ -97,7 +97,7 @@ export default function NutritionPage() {
 
     if (profile?.nutritionPlan && profile.nutritionPlan.length > 0) {
 // eslint-disable-next-line react-hooks/set-state-in-effect
-      setItems(profile.nutritionPlan);
+      setItems(profile.nutritionPlan as FoodItem[]);
     } else if (items.length === 0 && !isGenerating) {
       setTimeout(() => generateFood(), 0);
     }
@@ -127,7 +127,7 @@ export default function NutritionPage() {
               animate={{ opacity: 1, y: 0 }}
               className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white"
           >
-            AI Nutrition <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-rose-400">Coach.</span>
+            WelBuddy <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-rose-400">Nutrition.</span>
           </motion.h1>
           <motion.p 
               initial={{ opacity: 0 }} 

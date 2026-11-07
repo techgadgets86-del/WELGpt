@@ -107,5 +107,5 @@ export async function generateWithFallbacks(prompt: string): Promise<string> {
   }
 
   // If all failed
-  throw new Error("All AI providers (Google, OpenRouter, Nvidia NIM, Bytez) failed. Errors: " + errors.map(e => e.message).join(" | "));
+  throw new Error("All AI providers (Google, OpenRouter, Nvidia NIM, Bytez) failed. Errors: " + errors.map(e => e instanceof Error ? e.message : String(e)).join(" | "));
 }
