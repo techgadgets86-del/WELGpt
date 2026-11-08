@@ -454,10 +454,16 @@ function generateInitialData(): StoredAnalyticsData {
   };
 }
 
+let inMemoryData: StoredAnalyticsData | null = null;
+
 export function loadAnalyticsData(): StoredAnalyticsData {
+  if (inMemoryData) {
+    return inMemoryData;
+  }
   ensureDataDir();
   if (!fs.existsSync(DATA_FILE)) {
     const initial = generateInitialData();
+    inMemoryData = initial;
     try {
       fs.writeFileSync(DATA_FILE, JSON.stringify(initial, null, 2), 'utf8');
     } catch (e) {}
@@ -468,12 +474,10 @@ export function loadAnalyticsData(): StoredAnalyticsData {
     const parsed: StoredAnalyticsData = JSON.parse(raw);
     
     // Ensure backwards compatibility by checking if any session lacks appId
-    let needsMigration = false;
     if (parsed.sessions && parsed.sessions.length > 0 && !parsed.sessions[0].appId) {
       parsed.sessions.forEach((s) => {
         if (!s.appId) s.appId = 'welgpt';
       });
-      needsMigration = true;
     }
     // Check if DilSEV sessions are present; if not, merge initial DilSEV baseline
     const hasDilsev = parsed.sessions?.some((s) => s.appId === 'dilsev');
@@ -486,21 +490,20 @@ export function loadAnalyticsData(): StoredAnalyticsData {
         (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
       );
       parsed.featureTotals = { ...parsed.featureTotals, ...fresh.featureTotals };
-      needsMigration = true;
     }
 
-    if (needsMigration) {
-      saveAnalyticsData(parsed);
-    }
+    inMemoryData = parsed;
     return parsed;
   } catch (err) {
     console.warn('[AnalyticsStore] Failed to read/parse analytics data, using baseline:', err);
-    return generateInitialData();
+    const initial = generateInitialData();
+    inMemoryData = initial;
+    return initial;
   }
 }
 
 export function saveAnalyticsData(data: StoredAnalyticsData): void {
-  ensureDataDir();
+  inMemoryData = data;
   data.lastUpdated = new Date().toISOString();
   if (data.sessions.length > 3000) {
     data.sessions = data.sessions.slice(-3000);
@@ -509,6 +512,7 @@ export function saveAnalyticsData(data: StoredAnalyticsData): void {
     data.securityEvents = data.securityEvents.slice(0, 400);
   }
   try {
+    ensureDataDir();
     fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
   } catch (e) {
     // Read-only filesystem in serverless environments (Vercel)

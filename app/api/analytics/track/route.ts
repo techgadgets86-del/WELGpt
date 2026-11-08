@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { recordSession, COUNTRY_NAMES } from '@/lib/analyticsStore';
 
+export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 // Helper to deduce country code from Timezone if geolocation headers are absent (e.g. localhost or plain proxy)
@@ -39,7 +40,7 @@ function deduceCountryFromTimezone(tz?: string): { code: string; name: string } 
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const headers = req.headers;
 
     // 1. Extract IP
@@ -119,12 +120,14 @@ export async function POST(req: Request) {
     return res;
   } catch (err: unknown) {
     console.error('[Analytics Track API] Error:', err);
-    const errRes = NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Failed to record analytics' },
-      { status: 500 }
+    const fallbackRes = NextResponse.json(
+      { success: true, offline: true },
+      { status: 200 }
     );
-    errRes.headers.set('Access-Control-Allow-Origin', '*');
-    return errRes;
+    fallbackRes.headers.set('Access-Control-Allow-Origin', '*');
+    fallbackRes.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    fallbackRes.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+    return fallbackRes;
   }
 }
 
