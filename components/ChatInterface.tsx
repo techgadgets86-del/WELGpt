@@ -20,7 +20,11 @@ import {
   CheckSquare, 
   Compass, 
   HeartHandshake,
-  Activity
+  Activity,
+  Mic,
+  MicOff,
+  Plus,
+  Clock
 } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -51,14 +55,28 @@ function playHapticTone(freq = 440, duration = 0.06) {
 
 type WelBuddyPersona = "operator" | "stoic" | "compassionate";
 
-export default function ChatInterface() {
+export interface ChatInterfaceProps {
+  injectedPrompt?: string | null;
+  onClearInjectedPrompt?: () => void;
+  onSwitchTab?: (tab: "chat" | "tasks" | "routine" | "audio") => void;
+}
+
+export default function ChatInterface({
+  injectedPrompt,
+  onClearInjectedPrompt,
+  onSwitchTab,
+}: ChatInterfaceProps = {}) {
   const { user, profile, updateUserData } = useAuth();
   const [isFocused, setIsFocused] = useState(false);
   const [loadedSessionCount, setLoadedSessionCount] = useState(0);
   const [persona, setPersona] = useState<WelBuddyPersona>("operator");
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [savedTasksIndex, setSavedTasksIndex] = useState<number | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const recognitionRef = useRef<any>(null);
   
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -145,6 +163,101 @@ export default function ChatInterface() {
       router.replace("/coach");
     }
   }, [searchParams, router, append, hasAutoPrompted]);
+
+  // Handle injected prompt from workspace tabs
+  useEffect(() => {
+    if (injectedPrompt) {
+      setTimeout(() => {
+        append({
+          role: "user",
+          content: injectedPrompt,
+        });
+        if (onClearInjectedPrompt) onClearInjectedPrompt();
+      }, 200);
+    }
+  }, [injectedPrompt, append, onClearInjectedPrompt]);
+
+  // Setup Web Speech API for voice dictation in chat
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const rec = new SpeechRecognition();
+        rec.continuous = false;
+        rec.interimResults = false;
+        rec.lang = "en-US";
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        rec.onresult = (evt: any) => {
+          const text = evt.results[0][0].transcript;
+          if (text) {
+            handleInputChange({ target: { value: text } } as any);
+          }
+          setIsRecording(false);
+          if (soundEnabled) playHapticTone(520, 0.08);
+        };
+        rec.onerror = () => setIsRecording(false);
+        rec.onend = () => setIsRecording(false);
+        recognitionRef.current = rec;
+      }
+    }
+  }, [handleInputChange, soundEnabled]);
+
+  const toggleMic = () => {
+    if (!recognitionRef.current) {
+      alert("Voice input is supported in Google Chrome, Safari, and Edge.");
+      return;
+    }
+    if (isRecording) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+      if (soundEnabled) playHapticTone(340, 0.06);
+    } else {
+      try {
+        recognitionRef.current.start();
+        setIsRecording(true);
+        if (soundEnabled) playHapticTone(620, 0.08);
+      } catch (err) {
+        console.warn("Mic error:", err);
+      }
+    }
+  };
+
+  const handleSaveToTasks = (text: string, idx: number) => {
+    const lines = text.split(/\n/).map((l) => l.trim()).filter((l) => l.length > 4);
+    const taskCandidates = lines.filter((l) => /^(\[ \]|[-*•]|\d+\.)/.test(l));
+    const toSave = taskCandidates.length > 0 ? taskCandidates.slice(0, 4) : lines.slice(0, 3);
+
+    const saved = localStorage.getItem("welbuddy_tasks");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let existing: any[] = [];
+    if (saved) {
+      try {
+        existing = JSON.parse(saved);
+      } catch (e) {}
+    }
+
+    const newTasks = toSave.map((line, i) => {
+      const clean = line.replace(/^(\[ \]|[-*•]|\d+\.)\s*/, "").trim();
+      const lower = clean.toLowerCase();
+      const isWellness = /sleep|stress|sigh|rest|water|hydrate|nsdr|walk|meditat/i.test(lower);
+      const isSprint = /90m|flow|deep work|code|sprint/i.test(lower);
+      return {
+        id: `task_${Date.now()}_${i}`,
+        title: clean.length > 80 ? clean.slice(0, 77) + "..." : clean,
+        category: isSprint ? "sprint" : isWellness ? "wellness" : "business",
+        priority: i === 0 ? "high" : "medium",
+        estimatedMinutes: isSprint ? 90 : isWellness ? 15 : 45,
+        completed: false,
+        createdAt: Date.now() + i * 10,
+      };
+    });
+
+    localStorage.setItem("welbuddy_tasks", JSON.stringify([...newTasks, ...existing]));
+    setSavedTasksIndex(idx);
+    if (soundEnabled) playHapticTone(720, 0.12);
+    setTimeout(() => setSavedTasksIndex(null), 2500);
+  };
 
   const handleSuggestion = (title: string) => {
     if (soundEnabled) playHapticTone(520, 0.08);
@@ -398,18 +511,35 @@ export default function ChatInterface() {
                             <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-teal-400 flex items-center gap-1.5">
                               <Brain size={12} /> WelBuddy
                             </span>
-                            <button
-                              type="button"
-                              onClick={() => handleCopyMessage(msg.content, index)}
-                              className="text-gray-400 hover:text-white transition-colors p-1"
-                              title="Copy response"
-                            >
-                              {copiedIndex === index ? (
-                                <Check size={13} className="text-emerald-400" />
-                              ) : (
-                                <Copy size={13} />
-                              )}
-                            </button>
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => handleSaveToTasks(msg.content, index)}
+                                className="text-gray-400 hover:text-teal-300 transition-colors p-1 flex items-center gap-1 text-[11px]"
+                                title="Extract & save action items to WelBuddy Tasks"
+                              >
+                                {savedTasksIndex === index ? (
+                                  <Check size={13} className="text-emerald-400" />
+                                ) : (
+                                  <Plus size={13} />
+                                )}
+                                <span className="text-[10px] hidden sm:inline">
+                                  {savedTasksIndex === index ? "Saved to Tasks!" : "Save to Tasks"}
+                                </span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleCopyMessage(msg.content, index)}
+                                className="text-gray-400 hover:text-white transition-colors p-1"
+                                title="Copy response"
+                              >
+                                {copiedIndex === index ? (
+                                  <Check size={13} className="text-emerald-400" />
+                                ) : (
+                                  <Copy size={13} />
+                                )}
+                              </button>
+                            </div>
                           </div>
                         )}
                         {msg.content}
@@ -495,6 +625,19 @@ export default function ChatInterface() {
               placeholder={isPersonalized ? "Message WelBuddy (e.g. 'Prioritize my day' or 'I feel overwhelmed')..." : "Message WelBuddy..."}
               className="flex-1 bg-transparent border-none outline-none text-white placeholder:text-gray-500 py-3.5 px-5 font-medium text-sm md:text-base"
             />
+            <button
+              type="button"
+              onClick={toggleMic}
+              className={`p-3 text-sm transition-colors rounded-xl mr-1 ${
+                isRecording
+                  ? "bg-rose-500/20 text-rose-400 animate-pulse border border-rose-500/30"
+                  : "text-gray-400 hover:text-white hover:bg-white/5"
+              }`}
+              title={isRecording ? "Listening... click to stop" : "Voice dictation"}
+              aria-label="Voice input"
+            >
+              {isRecording ? <MicOff size={18} /> : <Mic size={18} />}
+            </button>
             <button 
               type="submit"
               disabled={!input.trim() || isLoading}

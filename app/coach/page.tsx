@@ -1,11 +1,10 @@
 "use client";
 
 import { Suspense } from "react";
-import ChatInterface from "@/components/ChatInterface";
-import RequireFullAccount from "@/components/RequireFullAccount";
+import WelBuddyWorkspace from "@/components/WelBuddyWorkspace";
 import Image from "next/image";
 
-function ChatLoadingSkeleton() {
+function WorkspaceLoadingSkeleton() {
   return (
     <div className="flex flex-col h-full w-full max-w-4xl mx-auto relative z-10 pt-4">
       <div className="flex-1 flex flex-col items-center justify-center opacity-50 animate-pulse">
@@ -16,7 +15,7 @@ function ChatLoadingSkeleton() {
           Hey 👋 I&apos;m WelBuddy.
         </h1>
         <p className="text-gray-400 text-lg mb-12">
-          The best AI assistant for the wellness of your mental & business life.
+          The best AI assistant for the wellness of your mental &amp; business life.
         </p>
       </div>
     </div>
@@ -25,12 +24,10 @@ function ChatLoadingSkeleton() {
 
 export default function CoachPage() {
   return (
-    <div className="max-w-5xl mx-auto relative z-10 pt-4 h-full flex flex-col">
+    <div className="max-w-5xl mx-auto relative z-10 pt-2 h-full flex flex-col">
       <div className="flex-1 overflow-hidden relative">
-        <Suspense fallback={<ChatLoadingSkeleton />}>
-          <RequireFullAccount>
-            <ChatInterface />
-          </RequireFullAccount>
+        <Suspense fallback={<WorkspaceLoadingSkeleton />}>
+          <WelBuddyWorkspace />
         </Suspense>
       </div>
     </div>
