@@ -1,6 +1,5 @@
 import { generateWithFallbacks } from '@/lib/aiFallbackEngine';
 
-export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
