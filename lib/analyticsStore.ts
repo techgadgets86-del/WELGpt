@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import { adminAuth } from './firebaseAdmin';
 import { getDilsevLiveStats } from './dilsevClient';
 
 export type SupportedAppId = 'welgpt' | 'dilsev';
@@ -626,9 +625,10 @@ export async function getAnalyticsReport(selectedApp: string = 'all') {
   let welgptAnonymousUsers = 52;
 
   try {
+    const { adminAuth } = await import('./firebaseAdmin');
     const listRes = await adminAuth.listUsers(1000);
     welgptAuthUsers = listRes.users.length;
-    welgptRegisteredUsers = listRes.users.filter((u) => !!u.email).length;
+    welgptRegisteredUsers = listRes.users.filter((u: any) => !!u.email).length;
     welgptAnonymousUsers = welgptAuthUsers - welgptRegisteredUsers;
   } catch (err) {
     console.warn('[AnalyticsStore] Using cached WelGPT Auth counts:', err);
