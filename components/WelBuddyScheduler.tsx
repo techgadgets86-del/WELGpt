@@ -16,9 +16,15 @@ import {
   Coffee,
   RotateCcw,
   ShieldCheck,
-  Activity
+  Activity,
+  Dumbbell
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { 
+  syncAllRoutineExercises, 
+  syncExerciseToWelBuddyTasks, 
+  isExerciseTask 
+} from "@/lib/welbuddyTaskSync";
 
 export interface RoutineBlock {
   id: string;
@@ -152,18 +158,36 @@ export default function WelBuddyScheduler({
   const [isOptimizing, setIsOptimizing] = useState(false);
 
   useEffect(() => {
+    let currentBlocks = DEFAULT_ROUTINE;
     const saved = localStorage.getItem("welbuddy_routine_schedule");
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
+          currentBlocks = parsed;
           setBlocks(parsed);
-          return;
+        } else {
+          setBlocks(DEFAULT_ROUTINE);
+          localStorage.setItem("welbuddy_routine_schedule", JSON.stringify(DEFAULT_ROUTINE));
         }
-      } catch (e) {}
+      } catch (e) {
+        setBlocks(DEFAULT_ROUTINE);
+      }
+    } else {
+      setBlocks(DEFAULT_ROUTINE);
+      localStorage.setItem("welbuddy_routine_schedule", JSON.stringify(DEFAULT_ROUTINE));
     }
-    setBlocks(DEFAULT_ROUTINE);
-    localStorage.setItem("welbuddy_routine_schedule", JSON.stringify(DEFAULT_ROUTINE));
+
+    // Auto-sync physical routine exercises to WelBuddy Tasks
+    syncAllRoutineExercises({
+      routineTasks: currentBlocks.map((b: RoutineBlock) => ({
+        id: b.id,
+        time: b.time,
+        title: b.title,
+        desc: b.description,
+        durationMinutes: b.durationMinutes,
+      }))
+    });
   }, []);
 
   const saveBlocks = (updated: RoutineBlock[]) => {
@@ -356,6 +380,12 @@ export default function WelBuddyScheduler({
                       {b.category === "nutrition" && "🥗 Metabolic Nutrition"}
                       {b.category === "sleep" && "🌙 Sleep Chamber"}
                     </span>
+
+                    {isExerciseTask(b.title, b.description) && (
+                      <span className="px-2 py-0.5 rounded-md text-[10px] font-bold font-mono bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                        🏋️ In WelBuddy Tasks
+                      </span>
+                    )}
 
                     <span className="text-[10px] font-mono text-gray-400 ml-auto">
                       {b.durationMinutes} mins

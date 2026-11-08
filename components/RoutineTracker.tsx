@@ -4,11 +4,17 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Sun, Moon, CloudSun, Sparkles, Target, Clock } from "lucide-react";
+import { Check, Sun, Moon, CloudSun, Sparkles, Target, Clock, Brain, Dumbbell } from "lucide-react";
 import { Haptics, ImpactStyle, NotificationType } from "@capacitor/haptics";
 import confetti from "canvas-confetti";
 import TimerModal from "./routine/TimerModal";
 import BiohackingStack from "./BiohackingStack";
+import { 
+  syncAllRoutineExercises, 
+  syncExerciseToWelBuddyTasks, 
+  syncRoutineCompletionToWelBuddy, 
+  isExerciseTask 
+} from "@/lib/welbuddyTaskSync";
 
 export interface Task {
   id: string;
@@ -68,7 +74,14 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
     }
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCompleted(initialCompleted);
-  }, [profile?.dailyPlan]);
+
+    // Auto-sync all routine exercises into WelBuddy Tasks
+    syncAllRoutineExercises({
+      routineTasks: [...morningTasks, ...afternoonTasks, ...eveningTasks],
+      customTasks,
+      dailyPlan: profile?.dailyPlan,
+    });
+  }, [profile?.dailyPlan, morningTasks, afternoonTasks, eveningTasks, customTasks]);
 
   const currentTasks = activeTab === "morning" ? morningTasks : activeTab === "afternoon" ? afternoonTasks : activeTab === "evening" ? eveningTasks : customTasks;
   const progress = Math.round((currentTasks.filter(t => completed.has(t.id)).length / currentTasks.length) * 100);
@@ -98,6 +111,9 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
       } else {
         newSet.delete(id);
       }
+
+      // Sync completion status to WelBuddy Tasks immediately
+      syncRoutineCompletionToWelBuddy(id, isCompleting);
       
       // Sync immediately with Firebase so it persists across tabs
       if (profile?.dailyPlan) {
@@ -260,9 +276,16 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
                     }`}
                   >
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2">
-                      <h3 className={`text-xl font-semibold transition-colors duration-300 ${isDone ? "text-gray-300 line-through decoration-gray-500" : "text-white"}`}>
-                        {task.title}
-                      </h3>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className={`text-xl font-semibold transition-colors duration-300 ${isDone ? "text-gray-300 line-through decoration-gray-500" : "text-white"}`}>
+                          {task.title}
+                        </h3>
+                        {isExerciseTask(task.title, task.desc) && (
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-teal-500/15 text-teal-300 border border-teal-500/30 flex items-center gap-1 font-semibold">
+                            ⚡ In WelBuddy Tasks
+                          </span>
+                        )}
+                      </div>
                       <span className={`font-mono text-sm px-3 py-1 rounded-full ${isDone ? "bg-white/5 text-gray-500" : "bg-white/10 text-gray-300"}`}>
                         {task.time}
                       </span>
@@ -282,6 +305,22 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
                         >
                           <Clock size={16} />
                           Timer & Tutorial
+                        </button>
+                      )}
+
+                      {/* WelBuddy Task View Button for Exercises */}
+                      {isExerciseTask(task.title, task.desc) && !isDone && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            syncExerciseToWelBuddyTasks(task);
+                            router.push("/coach");
+                          }}
+                          className="w-full sm:w-fit justify-center px-4 py-3 sm:py-2 bg-teal-600/20 hover:bg-teal-600/40 border border-teal-500/30 rounded-xl sm:rounded-lg text-teal-300 font-medium text-sm flex items-center gap-2 transition-colors"
+                          title="Open this exercise in WelBuddy Tasks"
+                        >
+                          <Brain size={16} />
+                          WelBuddy Task
                         </button>
                       )}
 

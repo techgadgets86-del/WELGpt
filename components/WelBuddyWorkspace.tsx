@@ -62,9 +62,11 @@ export default function WelBuddyWorkspace() {
 
     updateTaskCount();
     window.addEventListener("storage", updateTaskCount);
+    window.addEventListener("welbuddy_tasks_updated", updateTaskCount);
     const interval = setInterval(updateTaskCount, 2000);
     return () => {
       window.removeEventListener("storage", updateTaskCount);
+      window.removeEventListener("welbuddy_tasks_updated", updateTaskCount);
       clearInterval(interval);
     };
   }, []);

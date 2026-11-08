@@ -9,6 +9,7 @@ import { MagicCard } from "@/components/ui/magic-card";
 import { auth, db } from "@/lib/firebase";
 import { collection, addDoc, onSnapshot, query, orderBy } from "firebase/firestore";
 import AnimatedGuide from "@/components/AnimatedGuide";
+import { syncExerciseToWelBuddyTasks } from "@/lib/welbuddyTaskSync";
 
 type BodyPart = string | null;
 interface SavedRoutine { id: string; title: string; color: string; description: string; exercise: string; duration?: number; }
@@ -165,6 +166,15 @@ export default function SenseiPage() {
     setBodyData(newData);
     setActiveExercise(routine.id as BodyPart);
     setShowRoutinesMenu(false);
+
+    // Auto-sync this exercise to WelBuddy Tasks
+    syncExerciseToWelBuddyTasks({
+      id: routine.id,
+      title: routine.exercise || routine.title,
+      desc: routine.description,
+      durationMinutes: Math.max(5, Math.round((routine.duration || 180) / 60)),
+      category: "Sensei Calisthenics",
+    });
   };
 
 
@@ -226,6 +236,15 @@ export default function SenseiPage() {
         setShowCustomTargetModal(false);
         setCustomTargetPrompt("");
         setActiveExercise(routineId as BodyPart);
+
+        // Automatically sync new Sensei exercise to WelBuddy Tasks!
+        syncExerciseToWelBuddyTasks({
+          id: routineId,
+          title: json.data.exercise || json.data.title,
+          desc: json.data.desc,
+          durationMinutes: Math.max(5, Math.round((parseInt(json.data.duration) || 180) / 60)),
+          category: "Sensei Calisthenics",
+        });
       }
     } catch (err) {
       console.error(err);

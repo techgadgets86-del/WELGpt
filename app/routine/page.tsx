@@ -11,6 +11,7 @@ import { collection, addDoc, onSnapshot, query, orderBy } from "firebase/firesto
 import { useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import RoutineTracker, { INITIAL_MORNING_TASKS, INITIAL_EVENING_TASKS, Task } from "@/components/RoutineTracker";
+import { syncAllRoutineExercises } from "@/lib/welbuddyTaskSync";
 interface SavedRoutine { id: string; title: string; tasks: Task[]; createdAt?: string; }
 
 
@@ -77,7 +78,10 @@ export default function RoutinePage() {
     setCustom(routine.tasks);
     setCurrentCustomTitle(routine.title);
     setShowRoutinesMenu(false);
-    // User will see them by clicking the Custom Routine tab, or if they are already on it.
+    // Auto-sync routine exercises to WelBuddy Tasks
+    if (routine.tasks) {
+      syncAllRoutineExercises({ customTasks: routine.tasks });
+    }
   };
 
   
@@ -106,6 +110,9 @@ export default function RoutinePage() {
         setCurrentCustomTitle(customPrompt);
         setShowCustomModal(false);
         setCustomPrompt("");
+
+        // Automatically add generated exercises to WelBuddy Tasks!
+        syncAllRoutineExercises({ customTasks: data.tasks });
       }
     } catch (err) {
       console.error(err);
@@ -121,6 +128,8 @@ export default function RoutinePage() {
       if (data && data.morning && data.evening) {
         setMorning(data.morning);
         setEvening(data.evening);
+        // Automatically sync fresh optimized routine exercises to WelBuddy Tasks!
+        syncAllRoutineExercises({ routineTasks: [...data.morning, ...data.evening] });
       }
     } catch (err) {
       console.error(err);

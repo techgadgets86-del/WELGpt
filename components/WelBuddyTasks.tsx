@@ -16,22 +16,21 @@ import {
   AlertCircle,
   TrendingUp,
   Filter,
-  Layers
+  Layers,
+  Activity,
+  Dumbbell
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
+import { 
+  WelBuddyTask, 
+  syncAllRoutineExercises, 
+  getSavedWelBuddyTasks, 
+  saveWelBuddyTasks 
+} from "@/lib/welbuddyTaskSync";
 
-export interface WelBuddyTask {
-  id: string;
-  title: string;
-  category: "business" | "wellness" | "sprint";
-  priority: "high" | "medium" | "quick";
-  estimatedMinutes: number;
-  completed: boolean;
-  createdAt: number;
-  subTasks?: Array<{ id: string; title: string; completed: boolean }>;
-}
+export type { WelBuddyTask };
 
 function playHapticTone(freq = 520, duration = 0.08) {
   if (typeof window === "undefined") return;
@@ -107,26 +106,41 @@ export default function WelBuddyTasks({
   const [newMinutes, setNewMinutes] = useState(45);
   const [breakingDownId, setBreakingDownId] = useState<string | null>(null);
 
-  // Load tasks on mount
+  // Load and auto-sync routine exercises on mount
   useEffect(() => {
-    const saved = localStorage.getItem("welbuddy_tasks");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setTasks(parsed);
-          return;
-        }
-      } catch (e) {}
-    }
-    setTasks(DEFAULT_TASKS);
-    localStorage.setItem("welbuddy_tasks", JSON.stringify(DEFAULT_TASKS));
-  }, []);
+    // 1. Sync any exercises from daily plan / default routines into WelBuddy Tasks
+    syncAllRoutineExercises({ dailyPlan: profile?.dailyPlan });
+
+    const loadTasks = () => {
+      const saved = getSavedWelBuddyTasks();
+      if (saved.length > 0) {
+        setTasks(saved);
+      } else {
+        setTasks(DEFAULT_TASKS);
+        saveWelBuddyTasks(DEFAULT_TASKS);
+      }
+    };
+
+    loadTasks();
+
+    // Listen for real-time task updates from Routine Tracker or Chat
+    const handleUpdate = () => {
+      const current = getSavedWelBuddyTasks();
+      if (current.length > 0) setTasks(current);
+    };
+
+    window.addEventListener("welbuddy_tasks_updated", handleUpdate);
+    window.addEventListener("storage", handleUpdate);
+    return () => {
+      window.removeEventListener("welbuddy_tasks_updated", handleUpdate);
+      window.removeEventListener("storage", handleUpdate);
+    };
+  }, [profile?.dailyPlan]);
 
   // Sync tasks on change
   const saveTasks = (updated: WelBuddyTask[]) => {
     setTasks(updated);
-    localStorage.setItem("welbuddy_tasks", JSON.stringify(updated));
+    saveWelBuddyTasks(updated);
   };
 
   const handleToggleTask = (id: string) => {
@@ -331,19 +345,25 @@ export default function WelBuddyTasks({
           </button>
         </div>
 
-        {tasks.some((t) => t.completed) && (
-          <button
-            type="button"
-            onClick={() => {
-              if (window.confirm("Clear completed tasks?")) {
-                saveTasks(tasks.filter((t) => !t.completed));
-              }
-            }}
-            className="text-[11px] font-mono text-gray-500 hover:text-rose-400 transition-colors whitespace-nowrap"
-          >
-            Clear Completed
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            Routine Exercises Auto-Synced
+          </span>
+          {tasks.some((t) => t.completed) && (
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm("Clear completed tasks?")) {
+                  saveTasks(tasks.filter((t) => !t.completed));
+                }
+              }}
+              className="text-[11px] font-mono text-gray-500 hover:text-rose-400 transition-colors whitespace-nowrap"
+            >
+              Clear Completed
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Task List */}
@@ -411,6 +431,13 @@ export default function WelBuddyTasks({
                           {task.category === "wellness" && "🧘 Mental Wellness"}
                           {task.category === "sprint" && "🎯 Deep Flow Sprint"}
                         </span>
+
+                        {/* Routine Exercise Origin Badge */}
+                        {task.fromRoutine && (
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold flex items-center gap-1 font-mono">
+                            🏋️ Routine Exercise {task.routineTime && `(${task.routineTime})`}
+                          </span>
+                        )}
 
                         {/* Time estimate */}
                         <span className="text-[10px] font-mono text-gray-500 flex items-center gap-0.5 ml-auto">
@@ -484,6 +511,17 @@ export default function WelBuddyTasks({
                           >
                             <Zap size={12} /> Launch Flow Sprint
                           </button>
+
+                          {/* Routine Link if from routine */}
+                          {task.fromRoutine && (
+                            <button
+                              type="button"
+                              onClick={() => router.push(`/routine`)}
+                              className="px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-300 text-xs font-medium flex items-center gap-1.5 transition-all"
+                            >
+                              <Activity size={12} /> Open in Routine
+                            </button>
+                          )}
 
                           {/* Ask in Chat */}
                           {onSelectTaskForChat && (
