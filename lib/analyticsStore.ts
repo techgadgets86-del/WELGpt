@@ -59,8 +59,12 @@ const DATA_DIR = path.resolve(process.cwd(), 'data');
 const DATA_FILE = path.join(DATA_DIR, 'analytics_data.json');
 
 function ensureDataDir() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+  } catch (e) {
+    // Read-only filesystem in serverless environments (Vercel)
   }
 }
 
@@ -454,7 +458,9 @@ export function loadAnalyticsData(): StoredAnalyticsData {
   ensureDataDir();
   if (!fs.existsSync(DATA_FILE)) {
     const initial = generateInitialData();
-    fs.writeFileSync(DATA_FILE, JSON.stringify(initial, null, 2), 'utf8');
+    try {
+      fs.writeFileSync(DATA_FILE, JSON.stringify(initial, null, 2), 'utf8');
+    } catch (e) {}
     return initial;
   }
   try {
@@ -488,10 +494,8 @@ export function loadAnalyticsData(): StoredAnalyticsData {
     }
     return parsed;
   } catch (err) {
-    console.error('[AnalyticsStore] Failed to parse analytics data, regenerating:', err);
-    const initial = generateInitialData();
-    fs.writeFileSync(DATA_FILE, JSON.stringify(initial, null, 2), 'utf8');
-    return initial;
+    console.warn('[AnalyticsStore] Failed to read/parse analytics data, using baseline:', err);
+    return generateInitialData();
   }
 }
 
@@ -504,7 +508,11 @@ export function saveAnalyticsData(data: StoredAnalyticsData): void {
   if (data.securityEvents.length > 400) {
     data.securityEvents = data.securityEvents.slice(0, 400);
   }
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
+  try {
+    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
+  } catch (e) {
+    // Read-only filesystem in serverless environments (Vercel)
+  }
 }
 
 /**

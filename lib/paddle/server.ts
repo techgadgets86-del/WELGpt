@@ -12,21 +12,8 @@ export function getPaddleServer(): Paddle {
     return paddleServerInstance;
   }
 
-  const apiKey = process.env.PADDLE_API_KEY;
-  const env = process.env.NEXT_PUBLIC_PADDLE_ENV;
-
-  if (!apiKey) {
-    throw new Error(
-      'PADDLE_API_KEY is not defined in environment variables. ' +
-      'Please obtain your server API key from Paddle Dashboard > Developer Tools > Authentication.'
-    );
-  }
-
-  if (!env || (env !== 'production' && env !== 'sandbox')) {
-    throw new Error(
-      `NEXT_PUBLIC_PADDLE_ENV is invalid or not defined: "${env}". Must be "production" or "sandbox".`
-    );
-  }
+  const apiKey = process.env.PADDLE_API_KEY || '';
+  const env = process.env.NEXT_PUBLIC_PADDLE_ENV || 'production';
 
   paddleServerInstance = new Paddle(apiKey, {
     environment: env === 'production' ? Environment.production : Environment.sandbox,

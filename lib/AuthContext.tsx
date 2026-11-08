@@ -192,7 +192,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     });
 
+    // Failsafe: never block UI on infinite spinner if Firebase Auth is delayed or blocked
+    const failsafeTimer = setTimeout(() => {
+      setLoading(false);
+    }, 2500);
+
     return () => {
+      clearTimeout(failsafeTimer);
       unsubscribe();
       if (unsubProfile) unsubProfile();
     };

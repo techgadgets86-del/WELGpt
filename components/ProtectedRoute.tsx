@@ -20,6 +20,11 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     }
   }, [user, loading, router, pathname]);
 
+  // Login and analytics pages should render immediately without blocking on loading spinner
+  if (pathname === "/login" || pathname === "/analytics") {
+    return <>{children}</>;
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0a0a1a]">
@@ -29,7 +34,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   }
 
   // If not loading, and no user, but not on login page, we'll return null while redirecting
-  if (!user && pathname !== "/login" && pathname !== "/analytics") {
+  if (!user) {
     return null; 
   }
 
