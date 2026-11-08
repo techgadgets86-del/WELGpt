@@ -284,24 +284,25 @@ export default function WelBuddyScheduler({
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
             <button
               type="button"
               onClick={handleExportICS}
-              className="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm"
+              className="flex-1 sm:flex-initial justify-center px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm touch-manipulation min-h-[40px]"
               title="Download standard .ics file for Apple Calendar, Google Calendar, or Outlook"
             >
               {copiedCalendar ? <Check size={14} className="text-teal-400" /> : <Download size={14} />}
-              {copiedCalendar ? "Downloaded (.ics)!" : "Export Calendar (.ics)"}
+              <span>{copiedCalendar ? "Exported!" : "Export Calendar (.ics)"}</span>
             </button>
 
             {onOptimizeInChat && (
               <button
                 type="button"
                 onClick={handleTriggerOptimize}
-                className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
+                className="flex-1 sm:flex-initial justify-center px-3 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-md shadow-violet-600/30 touch-manipulation min-h-[40px]"
               >
-                <Sparkles size={14} /> Optimize with AI
+                <Sparkles size={14} className="text-teal-300" />
+                <span>Optimize with AI</span>
               </button>
             )}
           </div>

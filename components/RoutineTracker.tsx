@@ -138,55 +138,64 @@ export default function RoutineTracker({ morningTasks = INITIAL_MORNING_TASKS, a
       {/* Header & Tabs */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
         
-        {/* Tab Switcher */}
-        <div className="flex bg-[#111127] border border-white/10 p-1.5 rounded-2xl w-full md:w-auto overflow-x-auto no-scrollbar snap-x scroll-smooth">
+        {/* Tab Switcher - Responsive for mobile */}
+        <div className="flex bg-[#111127] border border-white/10 p-1 sm:p-1.5 rounded-2xl w-full md:w-auto overflow-x-auto no-scrollbar snap-x scroll-smooth">
           <button
             onClick={() => setActiveTab("morning")}
-            className={`relative flex-shrink-0 whitespace-nowrap flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-colors ${
-              activeTab === "morning" ? "text-white" : "text-gray-500 hover:text-white"
+            className={`relative flex-1 md:flex-initial flex-shrink-0 whitespace-nowrap flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-medium transition-colors touch-manipulation ${
+              activeTab === "morning" ? "text-white" : "text-gray-400 hover:text-white"
             }`}
           >
             {activeTab === "morning" && (
               <motion.div layoutId="routineTab" className="absolute inset-0 bg-violet-600 rounded-xl" />
             )}
-            <Sun size={18} className="relative z-10" />
-            <span className="relative z-10">Morning Protocol</span>
+            <Sun size={16} className="relative z-10 shrink-0" />
+            <span className="relative z-10">
+              <span className="inline sm:hidden">Morning</span>
+              <span className="hidden sm:inline">Morning Protocol</span>
+            </span>
           </button>
           <button
             onClick={() => setActiveTab("afternoon")}
-            className={`relative flex-shrink-0 whitespace-nowrap flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-colors ${
-              activeTab === "afternoon" ? "text-white" : "text-gray-500 hover:text-white"
+            className={`relative flex-1 md:flex-initial flex-shrink-0 whitespace-nowrap flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-medium transition-colors touch-manipulation ${
+              activeTab === "afternoon" ? "text-white" : "text-gray-400 hover:text-white"
             }`}
           >
             {activeTab === "afternoon" && (
               <motion.div layoutId="routineTab" className="absolute inset-0 bg-amber-600 rounded-xl" />
             )}
-            <CloudSun size={18} className="relative z-10" />
-            <span className="relative z-10">Afternoon Protocol</span>
+            <CloudSun size={16} className="relative z-10 shrink-0" />
+            <span className="relative z-10">
+              <span className="inline sm:hidden">Afternoon</span>
+              <span className="hidden sm:inline">Afternoon Protocol</span>
+            </span>
           </button>
           <button
             onClick={() => setActiveTab("evening")}
-            className={`relative flex-shrink-0 whitespace-nowrap flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-colors ${
-              activeTab === "evening" ? "text-white" : "text-gray-500 hover:text-white"
+            className={`relative flex-1 md:flex-initial flex-shrink-0 whitespace-nowrap flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-medium transition-colors touch-manipulation ${
+              activeTab === "evening" ? "text-white" : "text-gray-400 hover:text-white"
             }`}
           >
             {activeTab === "evening" && (
               <motion.div layoutId="routineTab" className="absolute inset-0 bg-indigo-600 rounded-xl" />
             )}
-            <Moon size={18} className="relative z-10" />
-            <span className="relative z-10">Evening Protocol</span>
+            <Moon size={16} className="relative z-10 shrink-0" />
+            <span className="relative z-10">
+              <span className="inline sm:hidden">Evening</span>
+              <span className="hidden sm:inline">Evening Protocol</span>
+            </span>
           </button>
           <button
             onClick={() => { setActiveTab("custom"); if (customTasks.length === 0) handleGenerateCustom(); }}
-            className={`relative flex-shrink-0 whitespace-nowrap flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-colors ${
-              activeTab === "custom" ? "text-white" : "text-gray-500 hover:text-white"
+            className={`relative flex-1 md:flex-initial flex-shrink-0 whitespace-nowrap flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-medium transition-colors touch-manipulation ${
+              activeTab === "custom" ? "text-white" : "text-gray-400 hover:text-white"
             }`}
           >
             {activeTab === "custom" && (
               <motion.div layoutId="routineTab" className="absolute inset-0 bg-fuchsia-600 rounded-xl" />
             )}
-            <Sparkles size={18} className="relative z-10" />
-            <span className="relative z-10">{customTitle}</span>
+            <Sparkles size={16} className="relative z-10 shrink-0" />
+            <span className="relative z-10 truncate max-w-[120px] sm:max-w-none">{customTitle}</span>
           </button>
         </div>
 

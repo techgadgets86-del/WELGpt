@@ -82,36 +82,42 @@ export default function WelBuddyWorkspace() {
   };
 
   return (
-    <div className="flex flex-col h-full w-full max-w-5xl mx-auto relative z-10 pt-1 pb-4">
-      {/* Top Workspace Segmented Control (Tabs) */}
-      <div className="px-2 pb-2">
-        <div className="flex items-center justify-between gap-2 bg-[#111127] p-1.5 rounded-2xl border border-white/10 shadow-lg overflow-x-auto no-scrollbar">
+    <div className="flex flex-col h-full w-full max-w-5xl mx-auto relative z-10 pt-0 sm:pt-1 pb-1 sm:pb-4">
+      {/* Top Workspace Segmented Control (Tabs) - Responsive Grid for all mobile screens */}
+      <div className="px-1 sm:px-2 pb-2">
+        <div className="grid grid-cols-4 gap-1 sm:gap-2 bg-[#111127] p-1 sm:p-1.5 rounded-2xl border border-white/10 shadow-lg">
           <button
             type="button"
             onClick={() => handleTabSwitch("chat")}
-            className={`flex-1 min-w-[110px] py-2 px-3 rounded-xl font-bold text-xs md:text-sm flex items-center justify-center gap-2 transition-all ${
+            className={`py-2 px-1 sm:px-3 rounded-xl font-bold text-[11px] sm:text-xs md:text-sm flex items-center justify-center gap-1 sm:gap-2 transition-all min-w-0 touch-manipulation ${
               activeTab === "chat"
                 ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md shadow-violet-600/30"
                 : "text-gray-400 hover:text-white hover:bg-white/5"
             }`}
           >
-            <Brain size={16} className={activeTab === "chat" ? "text-teal-300" : "text-gray-400"} />
-            <span>Co-Pilot Chat</span>
+            <Brain size={14} className={`shrink-0 ${activeTab === "chat" ? "text-teal-300" : "text-gray-400"}`} />
+            <span className="truncate">
+              <span className="inline sm:hidden">Chat</span>
+              <span className="hidden sm:inline">Co-Pilot Chat</span>
+            </span>
           </button>
 
           <button
             type="button"
             onClick={() => handleTabSwitch("tasks")}
-            className={`flex-1 min-w-[125px] py-2 px-3 rounded-xl font-bold text-xs md:text-sm flex items-center justify-center gap-2 transition-all ${
+            className={`py-2 px-1 sm:px-3 rounded-xl font-bold text-[11px] sm:text-xs md:text-sm flex items-center justify-center gap-1 sm:gap-2 transition-all min-w-0 touch-manipulation ${
               activeTab === "tasks"
                 ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md shadow-violet-600/30"
                 : "text-gray-400 hover:text-white hover:bg-white/5"
             }`}
           >
-            <CheckSquare size={16} className={activeTab === "tasks" ? "text-teal-300" : "text-gray-400"} />
-            <span>WelBuddy Tasks</span>
+            <CheckSquare size={14} className={`shrink-0 ${activeTab === "tasks" ? "text-teal-300" : "text-gray-400"}`} />
+            <span className="truncate">
+              <span className="inline sm:hidden">Tasks</span>
+              <span className="hidden sm:inline">WelBuddy Tasks</span>
+            </span>
             {pendingTasksCount > 0 && (
-              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
+              <span className={`px-1.5 py-0.2 rounded-full text-[9px] sm:text-[10px] font-mono font-bold shrink-0 ${
                 activeTab === "tasks" ? "bg-white/20 text-white" : "bg-violet-500/30 text-violet-300"
               }`}>
                 {pendingTasksCount}
@@ -122,27 +128,33 @@ export default function WelBuddyWorkspace() {
           <button
             type="button"
             onClick={() => handleTabSwitch("routine")}
-            className={`flex-1 min-w-[125px] py-2 px-3 rounded-xl font-bold text-xs md:text-sm flex items-center justify-center gap-2 transition-all ${
+            className={`py-2 px-1 sm:px-3 rounded-xl font-bold text-[11px] sm:text-xs md:text-sm flex items-center justify-center gap-1 sm:gap-2 transition-all min-w-0 touch-manipulation ${
               activeTab === "routine"
                 ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md shadow-violet-600/30"
                 : "text-gray-400 hover:text-white hover:bg-white/5"
             }`}
           >
-            <Calendar size={16} className={activeTab === "routine" ? "text-teal-300" : "text-gray-400"} />
-            <span>Routine Scheduler</span>
+            <Calendar size={14} className={`shrink-0 ${activeTab === "routine" ? "text-teal-300" : "text-gray-400"}`} />
+            <span className="truncate">
+              <span className="inline sm:hidden">Routine</span>
+              <span className="hidden sm:inline">Routine</span>
+            </span>
           </button>
 
           <button
             type="button"
             onClick={() => handleTabSwitch("audio")}
-            className={`flex-1 min-w-[125px] py-2 px-3 rounded-xl font-bold text-xs md:text-sm flex items-center justify-center gap-2 transition-all ${
+            className={`py-2 px-1 sm:px-3 rounded-xl font-bold text-[11px] sm:text-xs md:text-sm flex items-center justify-center gap-1 sm:gap-2 transition-all min-w-0 touch-manipulation ${
               activeTab === "audio"
                 ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md shadow-violet-600/30"
                 : "text-gray-400 hover:text-white hover:bg-white/5"
             }`}
           >
-            <Mic size={16} className={activeTab === "audio" ? "text-teal-300" : "text-gray-400"} />
-            <span>Muse Audio Notes</span>
+            <Mic size={14} className={`shrink-0 ${activeTab === "audio" ? "text-teal-300" : "text-gray-400"}`} />
+            <span className="truncate">
+              <span className="inline sm:hidden">Audio</span>
+              <span className="hidden sm:inline">Audio Notes</span>
+            </span>
           </button>
         </div>
       </div>

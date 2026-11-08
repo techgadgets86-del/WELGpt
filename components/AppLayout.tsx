@@ -10,7 +10,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
-import DynamicIsland from "@/components/DynamicIsland";
 import GuestLoginModal from "./GuestLoginModal";
 import NotificationSystem from "./NotificationSystem";
 import NotificationBell from "./NotificationBell";
@@ -190,14 +189,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* ============================================================== */}
       {/* MOBILE TOP BAR */}
       {/* ============================================================== */}
-      <div className="md:hidden flex items-center justify-between p-4 border-b border-white/10 bg-[#111127]/90 backdrop-blur-md sticky top-0 z-30 pt-[env(safe-area-inset-top)] pl-[calc(1rem+env(safe-area-inset-left))] pr-[calc(1rem+env(safe-area-inset-right))]">
-        <Link href="/">
-          <Image src="/logo-full.png" alt="WelGPT" width={100} height={24} className="h-[24px] w-auto object-contain" priority />
+      <div className="md:hidden flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#111127]/95 backdrop-blur-md sticky top-0 z-30 pt-[calc(0.6rem+env(safe-area-inset-top))] pl-[calc(1rem+env(safe-area-inset-left))] pr-[calc(1rem+env(safe-area-inset-right))]">
+        <Link href="/" className="flex items-center">
+          <Image src="/logo-full.png" alt="WelGPT" width={96} height={22} className="h-[22px] w-auto object-contain" priority />
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <NotificationBell />
-          <button onClick={() => setMobileMenuOpen(true)} className="p-2 rounded-lg hover:bg-white/10 transition-colors">
-            <Menu size={24} />
+          <button onClick={() => setMobileMenuOpen(true)} className="p-2 rounded-lg hover:bg-white/10 transition-colors" aria-label="Open navigation menu">
+            <Menu size={22} />
           </button>
         </div>
       </div>
@@ -287,7 +286,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="fixed bottom-1/4 right-[-10%] w-[250px] md:w-[400px] h-[250px] md:h-[400px] bg-teal-500/10 blur-[100px] rounded-full pointer-events-none z-0" />
       
       {/* ============================================================== */}
-      <DynamicIsland />
       <NotificationSystem />
       <GuestLoginModal />
       <ReferralRewardModal isOpen={showReferralModal} onClose={() => setShowReferralModal(false)} />
@@ -295,25 +293,29 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* ============================================================== */}
       {/* MAIN CONTENT AREA */}
       {/* ============================================================== */}
-      <main className="flex-1 overflow-y-auto overflow-x-hidden relative p-4 md:p-8 lg:p-12 pb-[140px] md:pb-8 pl-[calc(1rem+env(safe-area-inset-left))] pr-[calc(1rem+env(safe-area-inset-right))] no-scrollbar bg-[#0a0a1a]">        
+      <main className={`flex-1 overflow-y-auto overflow-x-hidden relative no-scrollbar bg-[#0a0a1a] ${
+        pathname === "/coach"
+          ? "px-2.5 sm:px-6 md:px-8 lg:px-12 pt-1 sm:pt-4 pb-[calc(4.8rem+env(safe-area-inset-bottom))] md:pb-6"
+          : "px-3.5 sm:px-6 md:px-8 lg:px-12 pt-3 sm:pt-6 pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-8"
+      } pl-[calc(0.75rem+env(safe-area-inset-left))] pr-[calc(0.75rem+env(safe-area-inset-right))]`}>        
         {children}
       </main>
 
       {/* ============================================================== */}
       {/* MOBILE BOTTOM NAVIGATION BAR */}
       {/* ============================================================== */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[#111127]/90 backdrop-blur-md border-t border-white/10 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] z-50">
-        <div className="flex items-center justify-around p-2">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[#111127]/95 backdrop-blur-xl border-t border-white/10 pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] z-50 shadow-[0_-10px_25px_rgba(0,0,0,0.6)]">
+        <div className="flex items-center justify-around px-2 py-1">
           {bottomNavItems.map((item, idx) => {
             const isActive = pathname === item.href;
             return (
               <Link href={item.href} key={idx} className="flex-1" onClick={(e) => handleNavClick(e, item.href, item.restricted)}>
-                <button className="w-full flex flex-col items-center justify-center py-2 gap-1 relative">
+                <button className="w-full flex flex-col items-center justify-center py-1.5 gap-0.5 relative touch-manipulation min-h-[48px]">
                   {isActive && (
                     <motion.div layoutId="mobileNavGlow" className="absolute inset-0 bg-violet-500/20 rounded-xl" transition={springTransition} />
                   )}
-                  <item.icon size={22} className={`relative z-10 ${isActive ? 'text-violet-400' : 'text-gray-500'}`} />
-                  <span className={`text-[10px] relative z-10 font-medium ${isActive ? 'text-violet-200' : 'text-gray-500'}`}>
+                  <item.icon size={20} className={`relative z-10 transition-colors ${isActive ? 'text-violet-400' : 'text-gray-400'}`} />
+                  <span className={`text-[10px] relative z-10 font-medium ${isActive ? 'text-violet-200 font-bold' : 'text-gray-400'}`}>
                     {item.label}
                   </span>
                 </button>

@@ -24,7 +24,7 @@ function WorkspaceLoadingSkeleton() {
 
 export default function CoachPage() {
   return (
-    <div className="max-w-5xl mx-auto relative z-10 pt-2 h-full flex flex-col">
+    <div className="max-w-5xl mx-auto relative z-10 pt-0 sm:pt-2 h-full flex flex-col">
       <div className="flex-1 overflow-hidden relative">
         <Suspense fallback={<WorkspaceLoadingSkeleton />}>
           <WelBuddyWorkspace />

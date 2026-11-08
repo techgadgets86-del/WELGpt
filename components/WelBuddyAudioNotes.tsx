@@ -237,7 +237,7 @@ export default function WelBuddyAudioNotes({
           <button
             type="button"
             onClick={toggleRecording}
-            className={`px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm flex items-center gap-2 transition-all ${
+            className={`w-full sm:w-auto justify-center px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 transition-all touch-manipulation min-h-[44px] ${
               isRecording
                 ? "bg-rose-600 text-white animate-pulse shadow-[0_0_20px_rgba(244,63,94,0.4)]"
                 : "bg-white/5 hover:bg-white/10 text-white border border-white/10 shadow-sm"
@@ -249,26 +249,26 @@ export default function WelBuddyAudioNotes({
         </div>
 
         {/* Preset Prompt Templates */}
-        <div className="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-white/5">
-          <span className="text-[10px] font-mono uppercase text-gray-500 font-bold">Quick Templates:</span>
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-3 sm:mt-4 pt-2.5 sm:pt-3 border-t border-white/5">
+          <span className="text-[10px] font-mono uppercase text-gray-500 font-bold w-full sm:w-auto">Quick Templates:</span>
           <button
             type="button"
             onClick={() => handlePreset("Here is my morning brain dump: I have to finish the client proposal deck before 11 AM, reply to 4 urgent investor emails, and my neck feels stiff. I also need to make time for lunch and a short walk.")}
-            className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white text-[11px] font-medium transition-colors"
+            className="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white text-[11px] font-medium transition-colors touch-manipulation"
           >
             ☀️ Morning Brain Dump
           </button>
           <button
             type="button"
             onClick={() => handlePreset("Meeting Recap: We agreed to launch the new pricing tier next Tuesday. Sarah is handling the customer support macros, and I am responsible for configuring the Paddle webhook and stress-testing the authentication flow. We need a 30m sync on Monday.")}
-            className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white text-[11px] font-medium transition-colors"
+            className="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white text-[11px] font-medium transition-colors touch-manipulation"
           >
             💼 Meeting Debrief
           </button>
           <button
             type="button"
             onClick={() => handlePreset("Evening Reflection: Brain feels fried from 8 hours of screen time. Need to shut off all blue light devices by 9:30 PM, do 10 minutes of NSDR or yoga nidra, and prepare tomorrow's top 20% priority list.")}
-            className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white text-[11px] font-medium transition-colors"
+            className="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white text-[11px] font-medium transition-colors touch-manipulation"
           >
             🌙 Nightly Mental Unload
           </button>

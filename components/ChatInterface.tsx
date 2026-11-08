@@ -345,73 +345,73 @@ export default function ChatInterface({
   ];
 
   return (
-    <div className="flex flex-col h-full w-full max-w-4xl mx-auto relative z-10 pt-2">
+    <div className="flex flex-col h-full w-full max-w-4xl mx-auto relative z-10 pt-1 sm:pt-2">
       
       {/* Top WelBuddy Control Strip */}
-      <div className="flex flex-wrap items-center justify-between gap-3 px-2 pb-3 border-b border-white/5 mb-3">
+      <div className="flex items-center justify-between gap-1.5 sm:gap-3 px-1 sm:px-2 pb-2 sm:pb-3 border-b border-white/5 mb-2 sm:mb-3">
         {/* Status indicator */}
-        <div className="flex items-center gap-2">
-          <div className="relative flex h-2.5 w-2.5">
+        <div className="flex items-center gap-1.5 shrink-0">
+          <div className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 bg-emerald-500"></span>
           </div>
-          <span className="text-xs font-bold uppercase tracking-wider text-white">
-            WelBuddy™ Co-Pilot
+          <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white">
+            WelBuddy™
           </span>
-          <span className="text-[10px] font-mono text-gray-400 hidden sm:inline">
+          <span className="text-[10px] font-mono text-gray-400 hidden lg:inline">
             • Mental & Business Engine
           </span>
         </div>
 
         {/* Persona Selector */}
-        <div className="flex items-center gap-1 bg-[#111127] p-1 rounded-xl border border-white/10 text-xs">
+        <div className="flex items-center gap-1 bg-[#111127] p-1 rounded-xl border border-white/10 text-[11px] sm:text-xs shrink-0">
           <button
             type="button"
             onClick={() => handlePersonaChange("operator")}
-            className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
+            className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-bold transition-all ${
               persona === "operator"
                 ? "bg-violet-600 text-white shadow-sm"
                 : "text-gray-400 hover:text-white"
             }`}
             title="High-Stakes Operator: Executive decision speed & high-leverage 90m flow blocks"
           >
-            ⚡ Operator
+            ⚡ <span className="hidden sm:inline">Operator</span>
           </button>
           <button
             type="button"
             onClick={() => handlePersonaChange("stoic")}
-            className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
+            className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-bold transition-all ${
               persona === "stoic"
                 ? "bg-violet-600 text-white shadow-sm"
                 : "text-gray-400 hover:text-white"
             }`}
             title="Stoic Partner: Direct, zero-fluff accountability and calm emotional composure"
           >
-            🏛️ Stoic
+            🏛️ <span className="hidden sm:inline">Stoic</span>
           </button>
           <button
             type="button"
             onClick={() => handlePersonaChange("compassionate")}
-            className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
+            className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-bold transition-all ${
               persona === "compassionate"
                 ? "bg-violet-600 text-white shadow-sm"
                 : "text-gray-400 hover:text-white"
             }`}
             title="Compassionate Anchor: Vagus soothing, nervous system sanctuary, anti-burnout"
           >
-            🌊 Anchor
+            🌊 <span className="hidden sm:inline">Anchor</span>
           </button>
         </div>
 
         {/* Controls: Audio & Clear */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           <button
             type="button"
             onClick={() => setSoundEnabled(!soundEnabled)}
             className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
             title={soundEnabled ? "Mute audio cues" : "Enable tactile audio cues"}
           >
-            {soundEnabled ? <Volume2 size={15} /> : <VolumeX size={15} />}
+            {soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
           </button>
           {messages.length > 0 && (
             <button
@@ -576,8 +576,8 @@ export default function ChatInterface({
       </div>
 
       {/* WelBuddy Input Bar */}
-      <div className="pt-2 pb-4 relative flex flex-col gap-2">
-        <div className="flex items-center justify-between px-2">
+      <div className="pt-1.5 sm:pt-2 pb-2 sm:pb-3 relative flex flex-col gap-1.5 sm:gap-2">
+        <div className="flex items-center justify-between px-1 sm:px-2">
           <button
             type="button"
             onClick={() => {
@@ -588,22 +588,22 @@ export default function ChatInterface({
                setIsPersonalized(!isPersonalized);
                if (soundEnabled) playHapticTone(520, 0.05);
             }}
-            className={`flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold tracking-wide transition-all border ${
+            className={`flex items-center gap-1.5 px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-bold tracking-wide transition-all border ${
               isPersonalized 
                 ? "bg-violet-500/20 text-violet-300 border-violet-500/30 shadow-[0_0_15px_rgba(124,58,237,0.15)]" 
                 : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10"
             }`}
           >
-            <Sparkles size={13} className={isPersonalized ? "text-violet-400" : "text-gray-500"} />
-            {isPersonalized ? "HEALTH & BUSINESS CONTEXT SYNCED" : "ENABLE MEMORY SYNC"}
+            <Sparkles size={12} className={isPersonalized ? "text-violet-400" : "text-gray-500"} />
+            <span className="truncate">{isPersonalized ? "CONTEXT SYNCED" : "MEMORY SYNC"}</span>
             {profile && !profile.isPremium && (
-              <span className={`ml-1.5 px-1.5 py-0.2 rounded text-[10px] ${isPersonalized ? "bg-violet-500/30" : "bg-gray-800"}`}>
-                {profile.aiChatTokens || 0} left
+              <span className={`ml-1 px-1.5 py-0.2 rounded text-[9px] ${isPersonalized ? "bg-violet-500/30" : "bg-gray-800"}`}>
+                {profile.aiChatTokens || 0}
               </span>
             )}
           </button>
 
-          <span className="text-[11px] text-gray-500 font-mono hidden sm:inline">
+          <span className="text-[10px] sm:text-[11px] text-gray-500 font-mono hidden sm:inline">
             Active: <strong className="text-gray-300 capitalize">{persona}</strong> mode
           </span>
         </div>
@@ -622,13 +622,13 @@ export default function ChatInterface({
               onChange={handleInputChange}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
-              placeholder={isPersonalized ? "Message WelBuddy (e.g. 'Prioritize my day' or 'I feel overwhelmed')..." : "Message WelBuddy..."}
-              className="flex-1 bg-transparent border-none outline-none text-white placeholder:text-gray-500 py-3.5 px-5 font-medium text-sm md:text-base"
+              placeholder={isPersonalized ? "Ask WelBuddy (e.g. 'Prioritize my day')..." : "Message WelBuddy..."}
+              className="flex-1 bg-transparent border-none outline-none text-white placeholder:text-gray-500 py-3 sm:py-3.5 px-3.5 sm:px-5 font-medium text-sm md:text-base min-w-0"
             />
             <button
               type="button"
               onClick={toggleMic}
-              className={`p-3 text-sm transition-colors rounded-xl mr-1 ${
+              className={`p-2.5 sm:p-3 text-sm transition-colors rounded-xl mr-1 shrink-0 ${
                 isRecording
                   ? "bg-rose-500/20 text-rose-400 animate-pulse border border-rose-500/30"
                   : "text-gray-400 hover:text-white hover:bg-white/5"
@@ -636,19 +636,19 @@ export default function ChatInterface({
               title={isRecording ? "Listening... click to stop" : "Voice dictation"}
               aria-label="Voice input"
             >
-              {isRecording ? <MicOff size={18} /> : <Mic size={18} />}
+              {isRecording ? <MicOff size={17} /> : <Mic size={17} />}
             </button>
             <button 
               type="submit"
               disabled={!input.trim() || isLoading}
-              className="p-3.5 text-violet-400 hover:text-violet-300 disabled:text-gray-600 transition-colors mr-1"
+              className="p-2.5 sm:p-3.5 text-violet-400 hover:text-violet-300 disabled:text-gray-600 transition-colors mr-1 shrink-0"
               aria-label="Send message to WelBuddy"
             >
-              {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+              {isLoading ? <Loader2 size={17} className="animate-spin" /> : <Send size={17} />}
             </button>
           </motion.div>
         </form>
-        <p className="text-center text-[11px] text-gray-500">
+        <p className="text-center text-[10px] sm:text-[11px] text-gray-500 line-clamp-1 sm:line-clamp-none px-2">
           WelBuddy is your AI assistant for business execution and mental wellness. Verify medical decisions with a physician.
         </p>
       </div>

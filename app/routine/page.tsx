@@ -138,13 +138,13 @@ export default function RoutinePage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto relative z-10 pt-4  min-h-full flex pb-[160px] md:pb-12 flex-col">
-      <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+    <div className="max-w-5xl mx-auto relative z-10 pt-2 sm:pt-4 min-h-full flex pb-12 sm:pb-16 flex-col">
+      <header className="mb-6 md:mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6">
         <div>
           <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white"
+              className="text-3xl md:text-5xl font-bold mb-2 md:mb-4 tracking-tight text-white"
           >
             Daily <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-teal-400">Routine.</span>
           </motion.h1>
@@ -152,44 +152,44 @@ export default function RoutinePage() {
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
               transition={{ delay: 0.2 }}
-              className="text-gray-400 text-lg max-w-2xl"
+              className="text-gray-400 text-sm md:text-lg max-w-2xl"
           >
             Your personalized daily schedule based on your behavioral profile.
           </motion.p>
         </div>
-        <div className="flex flex-wrap gap-4 self-start md:self-end">
+        <div className="flex flex-wrap gap-2 sm:gap-4 self-stretch sm:self-start md:self-end">
           <motion.button 
             onClick={() => toggleSound("routine_focus", "noise", "brown")}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-full border transition-colors ${
+            className={`flex-1 sm:flex-initial justify-center flex items-center gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full border text-xs sm:text-sm transition-colors touch-manipulation ${
               playingId === "routine_focus"
                 ? "bg-fuchsia-500/20 border-fuchsia-500/50 text-fuchsia-400"
                 : "bg-white/5 hover:bg-white/10 border-white/10 text-gray-300"
             }`}
           >
-            {playingId === "routine_focus" ? <Activity size={16} className="animate-pulse" /> : <Headphones size={16} />}
-            {playingId === "routine_focus" ? "Deep Focus Active" : "Focus Audio"}
+            {playingId === "routine_focus" ? <Activity size={15} className="animate-pulse" /> : <Headphones size={15} />}
+            <span>{playingId === "routine_focus" ? "Focus Active" : "Focus Audio"}</span>
           </motion.button>
           <motion.button 
             onClick={() => setShowRoutinesMenu(true)}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/20 text-teal-400 font-medium transition-colors"
+            className="flex-1 sm:flex-initial justify-center flex items-center gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/20 text-teal-400 font-medium text-xs sm:text-sm transition-colors touch-manipulation"
           >
-            <List size={16} />
-            My Routines
+            <List size={15} />
+            <span>My Routines</span>
           </motion.button>
           <motion.button 
             onClick={handleOptimize}
-          disabled={isOptimizing}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-colors disabled:opacity-50"
-        >
-          {isOptimizing ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
-          {isOptimizing ? "Optimizing..." : "AI Optimize"}
-        </motion.button>
+            disabled={isOptimizing}
+            className="flex-1 sm:flex-initial justify-center flex items-center gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs sm:text-sm transition-colors disabled:opacity-50 touch-manipulation"
+          >
+            {isOptimizing ? <Loader2 size={15} className="animate-spin" /> : <RefreshCw size={15} />}
+            <span>{isOptimizing ? "Optimizing..." : "AI Optimize"}</span>
+          </motion.button>
         </div>
       </header>
 

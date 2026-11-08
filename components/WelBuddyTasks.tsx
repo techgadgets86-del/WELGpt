@@ -305,22 +305,22 @@ export default function WelBuddyTasks({
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center justify-between gap-2 mb-4 overflow-x-auto no-scrollbar pb-1">
-        <div className="flex items-center gap-1.5 bg-[#111127] p-1 rounded-xl border border-white/10 text-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3 sm:mb-4">
+        <div className="flex items-center gap-1 bg-[#111127] p-1 rounded-xl border border-white/10 text-xs overflow-x-auto no-scrollbar w-full sm:w-auto">
           <button
             type="button"
             onClick={() => setFilter("all")}
-            className={`px-3 py-1.5 rounded-lg font-bold transition-all ${
-              filter === "all" ? "bg-violet-600 text-white" : "text-gray-400 hover:text-white"
+            className={`px-2.5 py-1.5 rounded-lg font-bold transition-all whitespace-nowrap text-[11px] sm:text-xs touch-manipulation ${
+              filter === "all" ? "bg-violet-600 text-white shadow-sm" : "text-gray-400 hover:text-white"
             }`}
           >
-            All Tasks ({tasks.length})
+            All ({tasks.length})
           </button>
           <button
             type="button"
             onClick={() => setFilter("business")}
-            className={`px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 ${
-              filter === "business" ? "bg-violet-600 text-white" : "text-gray-400 hover:text-white"
+            className={`px-2.5 py-1.5 rounded-lg font-bold transition-all whitespace-nowrap text-[11px] sm:text-xs flex items-center gap-1 touch-manipulation ${
+              filter === "business" ? "bg-violet-600 text-white shadow-sm" : "text-gray-400 hover:text-white"
             }`}
           >
             ⚡ Business
@@ -328,8 +328,8 @@ export default function WelBuddyTasks({
           <button
             type="button"
             onClick={() => setFilter("wellness")}
-            className={`px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 ${
-              filter === "wellness" ? "bg-violet-600 text-white" : "text-gray-400 hover:text-white"
+            className={`px-2.5 py-1.5 rounded-lg font-bold transition-all whitespace-nowrap text-[11px] sm:text-xs flex items-center gap-1 touch-manipulation ${
+              filter === "wellness" ? "bg-violet-600 text-white shadow-sm" : "text-gray-400 hover:text-white"
             }`}
           >
             🧘 Wellness
@@ -337,18 +337,18 @@ export default function WelBuddyTasks({
           <button
             type="button"
             onClick={() => setFilter("sprint")}
-            className={`px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 ${
-              filter === "sprint" ? "bg-violet-600 text-white" : "text-gray-400 hover:text-white"
+            className={`px-2.5 py-1.5 rounded-lg font-bold transition-all whitespace-nowrap text-[11px] sm:text-xs flex items-center gap-1 touch-manipulation ${
+              filter === "sprint" ? "bg-violet-600 text-white shadow-sm" : "text-gray-400 hover:text-white"
             }`}
           >
-            🎯 90m Sprints
+            🎯 Sprints
           </button>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-300">
+        <div className="flex items-center justify-between sm:justify-end gap-2 px-1">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-300">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            Routine Exercises Auto-Synced
+            Routines Synced
           </span>
           {tasks.some((t) => t.completed) && (
             <button
@@ -360,7 +360,7 @@ export default function WelBuddyTasks({
               }}
               className="text-[11px] font-mono text-gray-500 hover:text-rose-400 transition-colors whitespace-nowrap"
             >
-              Clear Completed
+              Clear Done
             </button>
           )}
         </div>
@@ -554,13 +554,14 @@ export default function WelBuddyTasks({
         </AnimatePresence>
       </div>
 
-      {/* Add Task Modal */}
+      {/* Add Task Modal - Mobile bottom sheet / Desktop centered */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="w-full max-w-md bg-[#111127] border border-white/10 rounded-2xl p-5 shadow-2xl"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            className="w-full max-w-md bg-[#111127] border border-white/10 rounded-t-3xl sm:rounded-2xl p-5 pb-[calc(2rem+env(safe-area-inset-bottom))] sm:pb-5 shadow-2xl"
           >
             <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
