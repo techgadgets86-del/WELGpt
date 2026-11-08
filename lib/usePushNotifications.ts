@@ -5,69 +5,89 @@ import { Capacitor } from '@capacitor/core';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import { useAuth } from './AuthContext';
+import { registerServiceWorker, subscribeToWebPush, getPermissionStatus } from './advancedNotifications';
 
 export function usePushNotifications() {
   const { user } = useAuth();
 
   useEffect(() => {
-    // Only run on native iOS/Android devices
-    if (Capacitor.getPlatform() === 'web') return;
-    if (!user || user.isAnonymous) return;
-
     let isMounted = true;
 
-    const initPush = async () => {
-      // Dynamically import to prevent SSR issues in Next.js
-      const { PushNotifications } = await import('@capacitor/push-notifications');
+    // 1. Web Platform (Browser & PWA)
+    if (Capacitor.getPlatform() === 'web') {
+      if (typeof window === 'undefined') return;
 
-      const permStatus = await PushNotifications.checkPermissions();
-      
-      if (permStatus.receive === 'prompt') {
-        const requested = await PushNotifications.requestPermissions();
-        if (requested.receive !== 'granted') return;
-      } else if (permStatus.receive !== 'granted') {
-        return;
-      }
+      // Always register the service worker for background and lock-screen support
+      registerServiceWorker().then((reg) => {
+        if (!reg || !isMounted) return;
 
-      await PushNotifications.register();
-
-      PushNotifications.addListener('registration', async (token) => {
-        if (isMounted && user) {
-          const userRef = doc(db, 'users', user.uid);
-          try {
-            // Save token securely to Firestore using setDoc with merge to avoid overwriting
-            await setDoc(userRef, { 
-                fcmToken: token.value,
-                platform: Capacitor.getPlatform(),
-                tokenUpdatedAt: new Date().toISOString()
-            }, { merge: true });
-            console.log("FCM Token saved to database successfully.");
-          } catch (e) {
-            console.error("Failed to save FCM token", e);
-          }
+        // If permission was already granted, ensure Web Push is synced
+        if (getPermissionStatus() === 'granted' && user && !user.isAnonymous) {
+          subscribeToWebPush(user.uid).catch((err) => {
+            console.warn('[WebPush Auto-Sync] Skipped:', err);
+          });
         }
       });
 
-      PushNotifications.addListener('registrationError', (error: unknown) => {
-        console.error('Error on registration: ' + JSON.stringify(error));
-      });
+      return () => {
+        isMounted = false;
+      };
+    }
 
-      PushNotifications.addListener('pushNotificationReceived', (notification) => {
-        // Here we could trigger our in-app NotificationSystem
-        console.log('Push received: ', notification);
-      });
+    // 2. Native iOS/Android via Capacitor
+    if (!user || user.isAnonymous) return;
 
-      PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
-        console.log('Push action performed: ', notification);
-      });
+    const initNativePush = async () => {
+      try {
+        const { PushNotifications } = await import('@capacitor/push-notifications');
+
+        const permStatus = await PushNotifications.checkPermissions();
+        
+        if (permStatus.receive === 'prompt') {
+          const requested = await PushNotifications.requestPermissions();
+          if (requested.receive !== 'granted') return;
+        } else if (permStatus.receive !== 'granted') {
+          return;
+        }
+
+        await PushNotifications.register();
+
+        PushNotifications.addListener('registration', async (token) => {
+          if (isMounted && user) {
+            const userRef = doc(db, 'users', user.uid);
+            try {
+              await setDoc(userRef, { 
+                fcmToken: token.value,
+                platform: Capacitor.getPlatform(),
+                tokenUpdatedAt: new Date().toISOString()
+              }, { merge: true });
+              console.log("[Native Push] FCM Token saved to Firestore successfully.");
+            } catch (e) {
+              console.error("[Native Push] Failed to save FCM token:", e);
+            }
+          }
+        });
+
+        PushNotifications.addListener('registrationError', (error: unknown) => {
+          console.error('[Native Push] Registration error:', error);
+        });
+
+        PushNotifications.addListener('pushNotificationReceived', (notification) => {
+          console.log('[Native Push] Notification received in foreground:', notification);
+        });
+
+        PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
+          console.log('[Native Push] User tapped notification:', notification);
+        });
+      } catch (err) {
+        console.warn('[Native Push] Initialization failed:', err);
+      }
     };
 
-    initPush();
+    initNativePush();
 
     return () => {
       isMounted = false;
-      // We don't strictly remove all listeners on unmount in dev because HMR can break registration,
-      // but typically we'd clean them up.
     };
   }, [user]);
 }

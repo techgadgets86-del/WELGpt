@@ -34,6 +34,23 @@ export default function NotificationSystem() {
 
     setActiveToasts(prev => [...prev, toast]);
     
+    // If the browser tab is backgrounded or screen is locked, deliver system lock-screen notification
+    if (typeof document !== "undefined" && document.hidden && typeof Notification !== "undefined" && Notification.permission === "granted") {
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.ready.then((reg) => {
+          reg.showNotification(toast.title, {
+            body: toast.message,
+            icon: "/logo-icon.png",
+            badge: "/logo-icon.png",
+            tag: toast.id,
+            requireInteraction: true,
+            vibrate: [250, 100, 250],
+            data: { url: toast.actionUrl || "/coach" }
+          } as any);
+        }).catch(() => {});
+      }
+    }
+
     // Auto remove after 6 seconds
     setTimeout(() => {
       setActiveToasts(prev => prev.filter(t => t.id !== toast.id));

@@ -18,7 +18,8 @@ import {
   Filter,
   Layers,
   Activity,
-  Dumbbell
+  Dumbbell,
+  Bell
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -279,13 +280,29 @@ export default function WelBuddyTasks({
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setShowAddModal(true)}
-            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-bold text-xs md:text-sm flex items-center gap-2 shadow-[0_0_20px_rgba(124,58,237,0.3)] transition-all"
-          >
-            <Plus size={16} /> New Task
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== "undefined") {
+                  window.dispatchEvent(new CustomEvent("welbuddy_open_notifications_modal"));
+                }
+              }}
+              className="px-3 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm touch-manipulation min-h-[40px]"
+              title="Configure Lock-Screen & Background Notifications"
+            >
+              <Bell size={14} className="text-teal-400" />
+              <span>Lock-Screen Alerts</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowAddModal(true)}
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-bold text-xs md:text-sm flex items-center gap-2 shadow-[0_0_20px_rgba(124,58,237,0.3)] transition-all touch-manipulation min-h-[40px]"
+            >
+              <Plus size={16} /> New Task
+            </button>
+          </div>
         </div>
 
         {/* Progress Bar */}

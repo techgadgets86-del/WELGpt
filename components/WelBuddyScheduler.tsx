@@ -17,7 +17,8 @@ import {
   RotateCcw,
   ShieldCheck,
   Activity,
-  Dumbbell
+  Dumbbell,
+  Bell
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -285,6 +286,20 @@ export default function WelBuddyScheduler({
           </div>
 
           <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== "undefined") {
+                  window.dispatchEvent(new CustomEvent("welbuddy_open_notifications_modal"));
+                }
+              }}
+              className="flex-1 sm:flex-initial justify-center px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm touch-manipulation min-h-[40px]"
+              title="Configure Lock-Screen & Routine Reminders"
+            >
+              <Bell size={14} className="text-teal-400" />
+              <span>Lock-Screen Alarms</span>
+            </button>
+
             <button
               type="button"
               onClick={handleExportICS}

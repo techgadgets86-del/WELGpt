@@ -11,7 +11,8 @@ import {
   Layers,
   ArrowRight,
   TrendingUp,
-  Clock
+  Clock,
+  Bell
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ChatInterface from "./ChatInterface";
@@ -83,6 +84,26 @@ export default function WelBuddyWorkspace() {
 
   return (
     <div className="flex flex-col h-full w-full max-w-5xl mx-auto relative z-10 pt-0 sm:pt-1 pb-1 sm:pb-4">
+      {/* Top Workspace Bar: Status & Lock-Screen Alerts Access */}
+      <div className="px-2 pb-1.5 flex items-center justify-between text-xs">
+        <div className="flex items-center gap-1.5 text-gray-400">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-[11px] font-semibold text-gray-300">WelBuddy Co-Pilot</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(new CustomEvent("welbuddy_open_notifications_modal"));
+            }
+          }}
+          className="flex items-center gap-1.5 text-[11px] font-medium text-teal-300 hover:text-white py-1 px-2.5 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/25 transition-all touch-manipulation active:scale-[0.98]"
+        >
+          <Bell size={12} className="text-teal-400" />
+          <span>Lock-Screen Alerts</span>
+        </button>
+      </div>
+
       {/* Top Workspace Segmented Control (Tabs) - Responsive Grid for all mobile screens */}
       <div className="px-1 sm:px-2 pb-2">
         <div className="grid grid-cols-4 gap-1 sm:gap-2 bg-[#111127] p-1 sm:p-1.5 rounded-2xl border border-white/10 shadow-lg">
