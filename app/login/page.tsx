@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { LogIn, Mail, Lock, UserPlus, AlertCircle } from "lucide-react";
 import Image from "next/image";
@@ -9,11 +11,20 @@ import { signInWithPopup, linkWithPopup, signInAnonymously, createUserWithEmailA
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { user } = useAuth();
   const [isRegistering, setIsRegistering] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Automatically redirect if already signed in
+  useEffect(() => {
+    if (user) {
+      router.push("/");
+    }
+  }, [user, router]);
 
   const handleGoogleSignIn = async () => {
     try {
@@ -41,6 +52,7 @@ export default function LoginPage() {
       } else {
         await signInWithPopup(auth, googleProvider);
       }
+      router.push("/");
     } catch (error: unknown) {
       console.error("Authentication Error", error);
       setErrorMsg((error as Error).message.includes("unauthorized-domain") 
@@ -60,6 +72,7 @@ export default function LoginPage() {
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
+      router.push("/");
     } catch (error: unknown) {
       console.error("Email Auth Error", error);
       const err = error as { code?: string; message?: string };
@@ -75,6 +88,7 @@ export default function LoginPage() {
     try {
       setLoading(true);
       await signInAnonymously(auth);
+      router.push("/");
     } catch (error: unknown) {
       console.error("Guest Sign In Error", error);
       setErrorMsg("Failed to continue as guest.");
