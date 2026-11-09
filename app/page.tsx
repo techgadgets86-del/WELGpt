@@ -437,12 +437,14 @@ export default function Home() {
       {!showDashboard ? (
         /* 1. HERO & ONBOARDING (Tell us what you want to improve) - ONLY SHOW FOR NEW USERS */
         <div className="w-full text-center mb-12 mt-12">
-          <h2 className="text-xl font-bold tracking-widest text-white uppercase mb-4">Welcome to</h2>
-          <h1 className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-teal-400 tracking-tight mb-8 drop-shadow-sm">
-            WELGPT
+          <h2 className="text-xs sm:text-sm font-bold tracking-widest text-teal-300 uppercase mb-2">Welcome to WelBuddy AI</h2>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-teal-300 to-fuchsia-400 tracking-tight mb-4 drop-shadow-sm">
+            Mental &amp; Business Co-Pilot
           </h1>
           
-          <p className="text-gray-300 mb-8 font-medium text-lg">{subtitle}</p>
+          <p className="text-gray-300 mb-8 font-medium text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+            The best AI assistant for the wellness of your mental &amp; business life. {subtitle}
+          </p>
           
           <div className="flex flex-wrap justify-center gap-3 mb-10 max-w-2xl mx-auto">
             {goals.map(goal => (
@@ -481,7 +483,7 @@ export default function Home() {
           <div className="w-full text-center mb-10">
             {firstName && <h2 className="text-xl font-bold tracking-widest text-white mb-2">{timeOfDay}, {firstName} 👋</h2>}
             <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-teal-400 tracking-tight mb-4 drop-shadow-sm">
-              Your Dashboard
+              WelBuddy Dashboard
             </h1>
             <p className="text-gray-300 font-medium">{subtitle}</p>
           </div>
