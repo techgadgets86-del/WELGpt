@@ -1,0 +1,14 @@
+User-Agent: *
+Allow: /
+Disallow: /api/
+Disallow: /account/
+
+User-Agent: Googlebot
+User-Agent: Bingbot
+User-Agent: Applebot
+User-Agent: DuckDuckBot
+Allow: /
+Disallow: /api/
+
+Host: https://app.welgpt.space
+Sitemap: https://app.welgpt.space/sitemap.xml
