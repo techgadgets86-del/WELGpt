@@ -7,6 +7,10 @@ User-Agent: Googlebot
 User-Agent: Bingbot
 User-Agent: Applebot
 User-Agent: DuckDuckBot
+User-Agent: Google-Extended
+User-Agent: GPTBot
+User-Agent: PerplexityBot
+User-Agent: ClaudeBot
 Allow: /
 Disallow: /api/
 

@@ -8,7 +8,8 @@ export default function ExploreHub() {
   const router = useRouter();
 
   const tools = [
-    { icon: Brain, label: "WelBuddy AI", desc: "Mental & business wellness co-pilot", href: "/welbuddy", color: "text-teal-300", bg: "bg-teal-500/10", border: "border-teal-500/25" },
+    { icon: Brain, label: "AI Assistant", desc: "Top-rated US personal & executive co-pilot", href: "/ai-assistant", color: "text-teal-300", bg: "bg-teal-500/10", border: "border-teal-500/25" },
+    { icon: Sparkles, label: "WelBuddy Hub", desc: "Mental & business wellness co-pilot", href: "/welbuddy", color: "text-violet-300", bg: "bg-violet-500/10", border: "border-violet-500/25" },
     { icon: Utensils, label: "Nutrition", desc: "AI generated meal protocols", href: "/nutrition", color: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20" },
     { icon: Activity, label: "Training", desc: "Sensei gamified workouts", href: "/sensei", color: "text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20" },
     { icon: Waves, label: "Meditation", desc: "Find your center", href: "/meditation", color: "text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/20" },

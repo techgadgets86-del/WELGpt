@@ -2,7 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>https://app.welgpt.space</loc>
-<lastmod>2026-11-09T10:04:35.211Z</lastmod>
+<lastmod>2026-11-09T16:00:00.000Z</lastmod>
+<changefreq>daily</changefreq>
+<priority>1</priority>
+</url>
+<url>
+<loc>https://app.welgpt.space/ai-assistant</loc>
+<lastmod>2026-11-09T16:00:00.000Z</lastmod>
 <changefreq>daily</changefreq>
 <priority>1</priority>
 </url>

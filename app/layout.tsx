@@ -29,12 +29,24 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL('https://app.welgpt.space'),
   title: {
-    default: "WelBuddy AI — The Best AI Assistant for Mental & Business Wellness | WelGPT",
-    template: "%s | WelBuddy AI",
+    default: "WelBuddy — The #1 AI Assistant for Mental & Business Wellness in the US",
+    template: "%s | WelBuddy AI Assistant",
   },
-  description: "Meet WelBuddy, the premier AI assistant for the wellness of your mental & business life. Harmonize high-leverage business tasks with circadian routines, NSDR recovery, and lock-screen alerts.",
-  applicationName: "WelBuddy AI",
+  description: "Meet WelBuddy: The premier AI assistant in the United States engineered for high-performing professionals. Harmonize high-leverage business tasks with circadian routines, NSDR recovery, and lock-screen alerts.",
+  applicationName: "WelBuddy AI Assistant",
   keywords: [
+    "AI Assistant",
+    "Best AI Assistant",
+    "Personal AI Assistant",
+    "AI Assistant USA",
+    "AI Assistant App",
+    "Executive AI Assistant",
+    "Top AI Assistant in the US",
+    "AI Assistant for Daily Routine",
+    "Smart AI Assistant",
+    "AI Wellness Assistant",
+    "Free AI Assistant",
+    "AI Assistant Online",
     "WelBuddy",
     "WelBuddy AI",
     "WelBuddy AI Assistant",
@@ -57,6 +69,14 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   alternates: {
     canonical: "https://app.welgpt.space",
+  },
+  other: {
+    "geo.region": "US",
+    "geo.country": "US",
+    "geo.placename": "United States",
+    "coverage": "United States, North America",
+    "target": "all",
+    "audience": "all",
   },
   robots: {
     index: true,
@@ -106,7 +126,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="en-US"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>

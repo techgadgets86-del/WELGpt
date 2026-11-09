@@ -66,9 +66,15 @@ export default function WelBuddyLandingPage() {
 
         {/* Hero Section */}
         <header className="text-center py-6 sm:py-12 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/15 border border-violet-500/30 text-violet-300 text-xs font-semibold uppercase tracking-wider mb-5">
-            <Sparkles size={14} className="text-teal-300" />
-            The #1 AI Wellness &amp; Business Co-Pilot
+          <div className="flex items-center justify-center gap-2 mb-5">
+            <Link
+              href="/ai-assistant"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-500/15 border border-teal-500/30 text-teal-300 text-xs font-semibold uppercase tracking-wider hover:bg-teal-500/25 transition-all"
+            >
+              <Sparkles size={14} className="text-teal-300" />
+              <span>Ranked #1 AI Assistant in the USA &bull; Read Review</span>
+              <ArrowRight size={12} />
+            </Link>
           </div>
 
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-[1.1] mb-6">
