@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Users, 
@@ -145,10 +147,16 @@ interface AnalyticsReport {
   appsSummary: AppSummary[];
 }
 
-export default function AnalyticsDashboard() {
+interface AnalyticsDashboardProps {
+  mode?: "welgpt" | "multi-app";
+}
+
+export default function AnalyticsDashboard({ mode }: AnalyticsDashboardProps = {}) {
+  const pathname = usePathname();
+  const isCommandCenter = mode === "multi-app" || pathname === "/command-center";
   const [data, setData] = useState<AnalyticsReport | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedApp, setSelectedApp] = useState<'all' | 'welgpt' | 'dilsev'>('all');
+  const [selectedApp, setSelectedApp] = useState<'all' | 'welgpt' | 'dilsev'>(isCommandCenter ? 'all' : 'welgpt');
   const [activeTab, setActiveTab] = useState<
     "overview" | "countries" | "duration" | "features" | "security" | "comparison"
   >("overview");
@@ -182,7 +190,8 @@ export default function AnalyticsDashboard() {
   const fetchStats = async (isManual = false) => {
     if (isManual) setIsSyncing(true);
     try {
-      const res = await fetch(`/api/analytics/stats?app=${selectedApp}`);
+      const appTarget = isCommandCenter ? selectedApp : "welgpt";
+      const res = await fetch(`/api/analytics/stats?app=${appTarget}`);
       const json = await res.json();
       if (json.success) {
         // Trigger chime if live visitor count changes
@@ -233,17 +242,19 @@ export default function AnalyticsDashboard() {
     return (
       <div className="min-h-screen bg-[#070714] text-white flex flex-col items-center justify-center p-6">
         <div className="relative w-20 h-20 mb-6">
-          <div className="absolute inset-0 rounded-full border-2 border-indigo-500/20 animate-ping" />
-          <div className="absolute inset-0 rounded-full border-2 border-t-indigo-500 border-r-indigo-500 border-b-transparent border-l-transparent animate-spin" />
-          <div className="absolute inset-4 rounded-full bg-indigo-950/60 flex items-center justify-center backdrop-blur-md">
-            <Radio className="w-6 h-6 text-indigo-400 animate-pulse" />
+          <div className="absolute inset-0 rounded-full border-2 border-emerald-500/20 animate-ping" />
+          <div className="absolute inset-0 rounded-full border-2 border-t-emerald-500 border-r-emerald-500 border-b-transparent border-l-transparent animate-spin" />
+          <div className="absolute inset-4 rounded-full bg-emerald-950/60 flex items-center justify-center backdrop-blur-md">
+            <Radio className="w-6 h-6 text-emerald-400 animate-pulse" />
           </div>
         </div>
-        <p className="text-sm font-medium tracking-wider uppercase text-indigo-400 animate-pulse">
-          Connecting Multi-App Live Telemetry Streams...
+        <p className="text-sm font-medium tracking-wider uppercase text-emerald-400 animate-pulse">
+          {isCommandCenter ? "Connecting Multi-App Live Telemetry Streams..." : "Connecting WelGPT Live Telemetry Streams..."}
         </p>
         <p className="text-xs text-slate-500 mt-2">
-          Syncing Firebase Auth (WelGPT) & Cloud MySQL (DilSEV)
+          {isCommandCenter
+            ? "Syncing Firebase Auth (WelGPT) & Cloud MySQL (DilSEV)"
+            : "Syncing Firebase Auth & WelBuddy Live Metrics"}
         </p>
       </div>
     );
@@ -279,15 +290,29 @@ export default function AnalyticsDashboard() {
               <span className="text-xs text-slate-400 font-mono">
                 SYNC: {lastSyncTime.toLocaleTimeString()}
               </span>
+              {isCommandCenter && (
+                <Link
+                  href="/analytics"
+                  className="text-xs text-slate-400 hover:text-emerald-300 transition-colors ml-2 font-medium"
+                >
+                  ← Back to WelGPT Analytics
+                </Link>
+              )}
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white mt-2 flex items-center gap-3">
-              Multi-App Command Center
-              <span className="text-xs px-2.5 py-0.5 rounded-full font-semibold uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                Executive Telemetry
+              {isCommandCenter ? "Multi-App Command Center" : "WelGPT System Analytics"}
+              <span className={`text-xs px-2.5 py-0.5 rounded-full font-semibold uppercase tracking-wider ${
+                isCommandCenter
+                  ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                  : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+              }`}>
+                {isCommandCenter ? "Executive Telemetry" : "Platform Telemetry"}
               </span>
             </h1>
             <p className="text-sm text-slate-400 mt-1">
-              Real-time multi-platform tracking, user engagement, global reach & security intelligence across WelGPT and DilSEV.
+              {isCommandCenter
+                ? "Real-time multi-platform tracking, user engagement, global reach & security intelligence across WelGPT and DilSEV."
+                : "Real-time platform tracking, WelBuddy AI tasks, habit velocity, global reach & security intelligence for WelGPT."}
             </p>
           </div>
 
@@ -357,71 +382,88 @@ export default function AnalyticsDashboard() {
           </div>
         </div>
 
-        {/* Multi-App Selector Tabs */}
-        <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-slate-900/60 p-2 rounded-2xl border border-slate-800/90 backdrop-blur-md">
-          <div className="flex items-center gap-1.5 p-1 bg-slate-950/70 rounded-xl border border-slate-800">
-            <button
-              onClick={() => setSelectedApp("all")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-                selectedApp === "all"
-                  ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-500/25"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              <Layers className="w-4 h-4" />
-              <span>All Apps Ecosystem</span>
-              <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-[10px] ml-1">
-                {overview?.totalUsers || 72}
-              </span>
-            </button>
+        {/* Multi-App Selector Tabs (Visible in Multi-App Command Center) */}
+        {isCommandCenter ? (
+          <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-slate-900/60 p-2 rounded-2xl border border-slate-800/90 backdrop-blur-md">
+            <div className="flex items-center gap-1.5 p-1 bg-slate-950/70 rounded-xl border border-slate-800">
+              <button
+                onClick={() => setSelectedApp("all")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                  selectedApp === "all"
+                    ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-500/25"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                <Layers className="w-4 h-4" />
+                <span>All Apps Ecosystem</span>
+                <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-[10px] ml-1">
+                  {overview?.totalUsers || 72}
+                </span>
+              </button>
 
-            <button
-              onClick={() => setSelectedApp("welgpt")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-                selectedApp === "welgpt"
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/25"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              <Zap className="w-4 h-4 text-amber-300" />
-              <span>WelGPT</span>
-              <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-[10px] ml-1">
-                59
-              </span>
-            </button>
+              <button
+                onClick={() => setSelectedApp("welgpt")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                  selectedApp === "welgpt"
+                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/25"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                <Zap className="w-4 h-4 text-amber-300" />
+                <span>WelGPT</span>
+                <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-[10px] ml-1">
+                  59
+                </span>
+              </button>
 
-            <button
-              onClick={() => setSelectedApp("dilsev")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-                selectedApp === "dilsev"
-                  ? "bg-pink-600 text-white shadow-md shadow-pink-500/25"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              <MessageSquare className="w-4 h-4 text-pink-200" />
-              <span>DilSEV</span>
-              <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-[10px] ml-1">
-                15
-              </span>
-            </button>
-          </div>
-
-          {/* Quick live indicator */}
-          <div className="flex items-center justify-between sm:justify-end gap-3 px-3 py-1 text-xs">
-            <div className="flex items-center gap-2 text-slate-400">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="font-semibold text-white">{overview?.liveVisitorsNow || 5} active right now</span>
+              <button
+                onClick={() => setSelectedApp("dilsev")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                  selectedApp === "dilsev"
+                    ? "bg-pink-600 text-white shadow-md shadow-pink-500/25"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                <MessageSquare className="w-4 h-4 text-pink-200" />
+                <span>DilSEV</span>
+                <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-[10px] ml-1">
+                  15
+                </span>
+              </button>
             </div>
-            <span className="text-slate-600">•</span>
-            <span className="text-slate-400">
-              {selectedApp === "all"
-                ? "WelGPT & DilSEV combined"
-                : selectedApp === "welgpt"
-                ? "app.welgpt.space & welgpt.space"
-                : "app.dilsev.com & dilsev.com"}
-            </span>
+
+            {/* Quick live indicator */}
+            <div className="flex items-center justify-between sm:justify-end gap-3 px-3 py-1 text-xs">
+              <div className="flex items-center gap-2 text-slate-400">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="font-semibold text-white">{overview?.liveVisitorsNow || 5} active right now</span>
+              </div>
+              <span className="text-slate-600">•</span>
+              <span className="text-slate-400">
+                {selectedApp === "all"
+                  ? "WelGPT & DilSEV combined"
+                  : selectedApp === "welgpt"
+                  ? "app.welgpt.space & welgpt.space"
+                  : "app.dilsev.com & dilsev.com"}
+              </span>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-slate-900/60 p-3 rounded-2xl border border-slate-800/90 backdrop-blur-md">
+            <div className="flex items-center gap-2.5 text-xs font-semibold text-emerald-300">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>WelGPT & WelBuddy Active Telemetry</span>
+              <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px]">
+                Live Production
+              </span>
+            </div>
+            <div className="flex items-center gap-3 text-xs text-slate-400">
+              <span className="font-semibold text-white">{overview?.liveVisitorsNow || 5} active right now</span>
+              <span className="text-slate-600">•</span>
+              <span>app.welgpt.space & welgpt.space</span>
+            </div>
+          </div>
+        )}
 
         {/* Top KPI Cards Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 mt-6">
@@ -446,7 +488,9 @@ export default function AnalyticsDashboard() {
               <span className="text-xs text-emerald-400 font-medium">active visitors</span>
             </div>
             <p className="text-[11px] text-slate-400 mt-1 truncate">
-              {selectedApp === "all" ? "Across both apps" : `${selectedApp.toUpperCase()} sessions`}
+              {isCommandCenter
+                ? (selectedApp === "all" ? "Across both apps" : `${selectedApp.toUpperCase()} sessions`)
+                : "WelGPT & WelBuddy sessions"}
             </p>
           </motion.div>
 
@@ -467,7 +511,9 @@ export default function AnalyticsDashboard() {
               </span>
               <span className="text-xs text-indigo-400 font-semibold">WAU</span>
             </div>
-            <p className="text-[11px] text-slate-400 mt-1">7-day active learners & focus</p>
+            <p className="text-[11px] text-slate-400 mt-1">
+              {isCommandCenter ? "7-day active learners & focus" : "7-day active wellness & focus"}
+            </p>
           </motion.div>
 
           {/* 3. Daily Active Users (DAU) */}
@@ -560,8 +606,8 @@ export default function AnalyticsDashboard() {
           </motion.div>
         </div>
 
-        {/* Multi-App Executive Comparison Card (Shown on 'all' view) */}
-        {selectedApp === "all" && appsSummary.length > 0 && (
+        {/* Multi-App Executive Comparison Card (Shown strictly in Multi-App Command Center) */}
+        {isCommandCenter && selectedApp === "all" && appsSummary.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -662,7 +708,7 @@ export default function AnalyticsDashboard() {
             { id: "duration", label: "Session Duration", icon: Clock },
             { id: "features", label: "Feature Adoption", icon: Zap },
             { id: "security", label: "Security & SOC Reports", icon: ShieldCheck },
-            { id: "comparison", label: "App Comparison Matrix", icon: Sliders },
+            ...(isCommandCenter ? [{ id: "comparison", label: "App Comparison Matrix", icon: Sliders }] : []),
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -915,11 +961,15 @@ export default function AnalyticsDashboard() {
                             {c.sessions}
                           </td>
                           <td className="py-3.5 px-4 text-right text-slate-400">
-                            {c.code === "TR" || c.code === "AZ"
-                              ? "DilSEV (English Fluency)"
-                              : c.code === "US" || c.code === "GB"
-                              ? "WelGPT + DilSEV Unified"
-                              : "WelGPT (Deep Work & Routine)"}
+                            {isCommandCenter
+                              ? (c.code === "TR" || c.code === "AZ"
+                                ? "DilSEV (English Fluency)"
+                                : c.code === "US" || c.code === "GB"
+                                ? "WelGPT + DilSEV Unified"
+                                : "WelGPT (Deep Work & Routine)")
+                              : (c.code === "US" || c.code === "GB"
+                                ? "Circadian Routines & WelBuddy AI"
+                                : "WelGPT Habit & Focus OS")}
                           </td>
                         </tr>
                       ))}
@@ -934,18 +984,24 @@ export default function AnalyticsDashboard() {
                   <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-400 mb-2">
                     Primary Regional Hub
                   </h4>
-                  <p className="text-sm font-semibold text-white">North America & Europe</p>
+                  <p className="text-sm font-semibold text-white">United States & North America</p>
                   <p className="text-xs text-slate-400 mt-1">
-                    United States (35%) and United Kingdom (22%) constitute over half of WelGPT habit optimization and deep work sessions.
+                    {isCommandCenter
+                      ? "United States (35%) and United Kingdom (22%) constitute over half of WelGPT habit optimization and deep work sessions."
+                      : "United States (62%) represents the primary hub for WelBuddy AI Assistant tasks, circadian routine tracking, and NSDR recovery."}
                   </p>
                 </div>
                 <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-pink-400 mb-2">
-                    Emerging Language Hub
+                  <h4 className={`text-xs font-bold uppercase tracking-wider mb-2 ${isCommandCenter ? "text-pink-400" : "text-cyan-400"}`}>
+                    {isCommandCenter ? "Emerging Language Hub" : "Global Reach"}
                   </h4>
-                  <p className="text-sm font-semibold text-white">Turkey & Central Eurasia</p>
+                  <p className="text-sm font-semibold text-white">
+                    {isCommandCenter ? "Turkey & Central Eurasia" : "UK & International Metros"}
+                  </p>
                   <p className="text-xs text-slate-400 mt-1">
-                    Turkey (40%) and Azerbaijan (8%) lead DilSEV AI conversational tutor sessions and pronunciation training.
+                    {isCommandCenter
+                      ? "Turkey (40%) and Azerbaijan (8%) lead DilSEV AI conversational tutor sessions and pronunciation training."
+                      : "United Kingdom (22%), Canada (8%), and European metros actively utilize WelGPT for deep work focus timers and habits."}
                   </p>
                 </div>
                 <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80">
@@ -954,7 +1010,7 @@ export default function AnalyticsDashboard() {
                   </h4>
                   <p className="text-sm font-semibold text-white">Full Currency Parity</p>
                   <p className="text-xs text-slate-400 mt-1">
-                    Paddle checkout supports localized currency presentation (USD, GBP, EUR, AUD, TRY) with automatic IP detection.
+                    Paddle checkout supports localized currency presentation (USD, GBP, EUR, AUD) with automatic US/global IP detection.
                   </p>
                 </div>
               </div>
@@ -1099,15 +1155,21 @@ export default function AnalyticsDashboard() {
                               <div>
                                 <div className="flex items-center gap-2">
                                   <h4 className="font-bold text-white text-sm">{feat.name}</h4>
-                                  <span
-                                    className={`px-2 py-0.2 rounded-full text-[10px] font-bold ${
-                                      feat.appId === "welgpt"
-                                        ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
-                                        : "bg-pink-500/20 text-pink-300 border border-pink-500/30"
-                                    }`}
-                                  >
-                                    {feat.appName}
-                                  </span>
+                                  {isCommandCenter ? (
+                                    <span
+                                      className={`px-2 py-0.2 rounded-full text-[10px] font-bold ${
+                                        feat.appId === "welgpt"
+                                          ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                                          : "bg-pink-500/20 text-pink-300 border border-pink-500/30"
+                                      }`}
+                                    >
+                                      {feat.appName}
+                                    </span>
+                                  ) : (
+                                    <span className="px-2 py-0.2 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                      WelGPT
+                                    </span>
+                                  )}
                                 </div>
                                 <p className="text-xs text-slate-400">{feat.category}</p>
                               </div>
@@ -1275,8 +1337,8 @@ export default function AnalyticsDashboard() {
             </div>
           )}
 
-          {/* TAB 6: APP COMPARISON MATRIX */}
-          {activeTab === "comparison" && (
+          {/* TAB 6: APP COMPARISON MATRIX (Isolated to Command Center) */}
+          {isCommandCenter && activeTab === "comparison" && (
             <div className="p-6 rounded-3xl bg-slate-900/70 border border-slate-800/90 backdrop-blur-xl">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
@@ -1361,6 +1423,20 @@ export default function AnalyticsDashboard() {
             </div>
           )}
         </div>
+
+        {/* Discreet link for executive admin to open isolated command center */}
+        {!isCommandCenter && (
+          <div className="mt-12 pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+            <span>WelGPT System Telemetry • SOC-2 & Real-time Platform Monitoring</span>
+            <Link
+              href="/command-center"
+              className="inline-flex items-center gap-1.5 text-slate-500 hover:text-indigo-400 transition-colors py-1.5 px-3 rounded-xl hover:bg-slate-900 border border-slate-800/50"
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>Isolated Executive Multi-App Command Center &rarr;</span>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

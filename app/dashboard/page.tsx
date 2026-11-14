@@ -23,7 +23,7 @@ export default function DashboardPage() {
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium transition-colors w-fit"
         >
           <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          <span>System Analytics &amp; SOC</span>
+          <span>WelGPT Analytics &amp; SOC</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       </header>

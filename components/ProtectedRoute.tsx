@@ -10,9 +10,17 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   const router = useRouter();
   const pathname = usePathname();
 
+  const isPublicRoute = (path: string) =>
+    path === "/login" ||
+    path === "/analytics" ||
+    path === "/command-center" ||
+    path === "/pricing" ||
+    path.startsWith("/ai-assistant") ||
+    path.startsWith("/blog");
+
   useEffect(() => {
     if (!loading) {
-      if (!user && pathname !== "/login" && pathname !== "/analytics") {
+      if (!user && !isPublicRoute(pathname)) {
         router.push("/login");
       } else if (user && pathname === "/login") {
         router.push("/");
@@ -20,8 +28,8 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     }
   }, [user, loading, router, pathname]);
 
-  // Login and analytics pages should render immediately without blocking on loading spinner
-  if (pathname === "/login" || pathname === "/analytics") {
+  // Public pages and analytics should render immediately without blocking on loading spinner
+  if (isPublicRoute(pathname)) {
     return <>{children}</>;
   }
 

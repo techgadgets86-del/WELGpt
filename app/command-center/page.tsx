@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function CommandCenterPage() {
-  return <AnalyticsDashboard />;
+  return <AnalyticsDashboard mode="multi-app" />;
 }
