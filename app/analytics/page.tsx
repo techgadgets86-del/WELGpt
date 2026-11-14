@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/lib/AuthContext";
+import { isOfficialAdminEmail } from "@/lib/adminAuth";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Users, 
@@ -153,6 +155,9 @@ interface AnalyticsDashboardProps {
 
 export default function AnalyticsDashboard({ mode }: AnalyticsDashboardProps = {}) {
   const pathname = usePathname();
+  const { user, loading: authLoading } = useAuth();
+  const isAdmin = isOfficialAdminEmail(user?.email);
+
   const isCommandCenter = mode === "multi-app" || pathname === "/command-center";
   const [data, setData] = useState<AnalyticsReport | null>(null);
   const [loading, setLoading] = useState(true);
@@ -188,10 +193,23 @@ export default function AnalyticsDashboard({ mode }: AnalyticsDashboardProps = {
   };
 
   const fetchStats = async (isManual = false) => {
+    if (!user || !isAdmin) {
+      setLoading(false);
+      return;
+    }
     if (isManual) setIsSyncing(true);
     try {
       const appTarget = isCommandCenter ? selectedApp : "welgpt";
-      const res = await fetch(`/api/analytics/stats?app=${appTarget}`);
+      let token = "";
+      try {
+        token = await user.getIdToken();
+      } catch {
+        // Fallback if token retrieval is delayed
+      }
+      const headers: Record<string, string> = {};
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
+      const res = await fetch(`/api/analytics/stats?app=${appTarget}`, { headers });
       const json = await res.json();
       if (json.success) {
         // Trigger chime if live visitor count changes
@@ -212,20 +230,24 @@ export default function AnalyticsDashboard({ mode }: AnalyticsDashboardProps = {
     }
   };
 
-  // Initial and reactive fetch on app filter change
+  // Initial and reactive fetch on app filter change or auth resolution
   useEffect(() => {
-    setLoading(true);
-    fetchStats();
-  }, [selectedApp]);
+    if (!authLoading && user && isAdmin) {
+      setLoading(true);
+      fetchStats();
+    } else if (!authLoading) {
+      setLoading(false);
+    }
+  }, [selectedApp, authLoading, user, isAdmin]);
 
   // Periodic live telemetry polling
   useEffect(() => {
-    if (autoRefreshInterval <= 0) return;
+    if (autoRefreshInterval <= 0 || !user || !isAdmin) return;
     const interval = setInterval(() => {
       fetchStats();
     }, autoRefreshInterval * 1000);
     return () => clearInterval(interval);
-  }, [autoRefreshInterval, selectedApp]);
+  }, [autoRefreshInterval, selectedApp, user, isAdmin]);
 
   const handleExport = () => {
     if (!data) return;
@@ -237,6 +259,49 @@ export default function AnalyticsDashboard({ mode }: AnalyticsDashboardProps = {
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-[#070714] text-white flex flex-col items-center justify-center p-6 text-center">
+        <div className="relative w-16 h-16 mb-4">
+          <div className="absolute inset-0 rounded-full border-2 border-emerald-500/20 animate-ping" />
+          <div className="absolute inset-0 rounded-full border-2 border-t-emerald-500 border-r-emerald-500 border-b-transparent border-l-transparent animate-spin" />
+        </div>
+        <p className="text-xs uppercase tracking-widest text-emerald-400 font-semibold animate-pulse">
+          Authenticating Company Admin Access...
+        </p>
+      </div>
+    );
+  }
+
+  // Enforce company email requirement
+  if (!user || !isAdmin) {
+    return (
+      <div className="min-h-screen bg-[#070714] text-white flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-16 h-16 rounded-3xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mb-4">
+          <Lock className="w-8 h-8 text-rose-400" />
+        </div>
+        <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">Restricted Admin Access</h2>
+        <p className="text-sm text-slate-400 max-w-md mb-6 leading-relaxed">
+          The telemetry portal contains sensitive multi-tenant user and SOC intelligence. Access is strictly restricted to authenticated company email addresses (@welgpt.space, @welgpt.com, or designated administrator accounts).
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <Link
+            href="/login"
+            className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition-all shadow-lg shadow-indigo-600/20"
+          >
+            Sign In with Company Email
+          </Link>
+          <Link
+            href="/dashboard"
+            className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-semibold text-sm transition-all border border-white/10"
+          >
+            Return to Dashboard
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (loading && !data) {
     return (
@@ -1425,7 +1490,7 @@ export default function AnalyticsDashboard({ mode }: AnalyticsDashboardProps = {
         </div>
 
         {/* Discreet link for executive admin to open isolated command center */}
-        {!isCommandCenter && (
+        {!isCommandCenter && isAdmin && (
           <div className="mt-12 pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
             <span>WelGPT System Telemetry • SOC-2 & Real-time Platform Monitoring</span>
             <Link

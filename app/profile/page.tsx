@@ -8,9 +8,11 @@ import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { isOfficialAdminEmail } from "@/lib/adminAuth";
 
 export default function ProfilePage() {
   const { user, profile, updateUserData } = useAuth();
+  const isAdmin = isOfficialAdminEmail(user?.email);
   const prefsRef = useRef<HTMLDivElement>(null);
   const goalsRef = useRef<HTMLDivElement>(null);
   
@@ -76,9 +78,11 @@ export default function ProfilePage() {
           <Link href="/account" className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-white/5 text-gray-300 hover:text-white transition-colors text-left font-medium">
             <CreditCard className="text-violet-400" size={20} /> Billing & Subscription
           </Link>
-          <Link href="/analytics" className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-white/5 text-emerald-300 hover:text-emerald-200 transition-colors text-left font-medium">
-            <ShieldCheck className="text-emerald-400" size={20} /> WelGPT Analytics &amp; SOC
-          </Link>
+          {isAdmin && (
+            <Link href="/analytics" className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-white/5 text-emerald-300 hover:text-emerald-200 transition-colors text-left font-medium">
+              <ShieldCheck className="text-emerald-400" size={20} /> WelGPT Analytics &amp; SOC
+            </Link>
+          )}
           <button onClick={() => goalsRef.current?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-white/5 text-gray-300 hover:text-white transition-colors text-left font-medium">
             <Target className="text-teal-400" size={20} /> Edit Goals
           </button>
