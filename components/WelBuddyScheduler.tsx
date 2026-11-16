@@ -160,35 +160,47 @@ export default function WelBuddyScheduler({
 
   useEffect(() => {
     let currentBlocks = DEFAULT_ROUTINE;
-    const saved = localStorage.getItem("welbuddy_routine_schedule");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          currentBlocks = parsed;
-          setBlocks(parsed);
-        } else {
+    const loadSaved = () => {
+      const saved = localStorage.getItem("welbuddy_routine_schedule");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            currentBlocks = parsed;
+            setBlocks(parsed);
+          } else {
+            setBlocks(DEFAULT_ROUTINE);
+            localStorage.setItem("welbuddy_routine_schedule", JSON.stringify(DEFAULT_ROUTINE));
+          }
+        } catch (e) {
           setBlocks(DEFAULT_ROUTINE);
-          localStorage.setItem("welbuddy_routine_schedule", JSON.stringify(DEFAULT_ROUTINE));
         }
-      } catch (e) {
+      } else {
         setBlocks(DEFAULT_ROUTINE);
+        localStorage.setItem("welbuddy_routine_schedule", JSON.stringify(DEFAULT_ROUTINE));
       }
-    } else {
-      setBlocks(DEFAULT_ROUTINE);
-      localStorage.setItem("welbuddy_routine_schedule", JSON.stringify(DEFAULT_ROUTINE));
-    }
 
-    // Auto-sync physical routine exercises to WelBuddy Tasks
-    syncAllRoutineExercises({
-      routineTasks: currentBlocks.map((b: RoutineBlock) => ({
-        id: b.id,
-        time: b.time,
-        title: b.title,
-        desc: b.description,
-        durationMinutes: b.durationMinutes,
-      }))
-    });
+      // Auto-sync physical routine exercises to WelBuddy Tasks
+      syncAllRoutineExercises({
+        routineTasks: currentBlocks.map((b: RoutineBlock) => ({
+          id: b.id,
+          time: b.time,
+          title: b.title,
+          desc: b.description,
+          durationMinutes: b.durationMinutes,
+        }))
+      });
+    };
+
+    loadSaved();
+
+    // Listen for live routine updates extracted by Co-Pilot AI
+    window.addEventListener("welbuddy_routine_updated", loadSaved);
+    window.addEventListener("storage", loadSaved);
+    return () => {
+      window.removeEventListener("welbuddy_routine_updated", loadSaved);
+      window.removeEventListener("storage", loadSaved);
+    };
   }, []);
 
   const saveBlocks = (updated: RoutineBlock[]) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useChat } from "@/lib/useChat";
 import { useAuth } from "@/lib/AuthContext";
 import { 
@@ -24,12 +24,23 @@ import {
   Mic,
   MicOff,
   Plus,
-  Clock
+  Clock,
+  Radio,
+  FileText,
+  Calendar,
+  Bell
 } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams, useRouter } from "next/navigation";
 import PremiumModal from "./PremiumModal";
+import AiExtractionCard from "./AiExtractionCard";
+import VoiceTalkingAgentModal from "./VoiceTalkingAgentModal";
+import { useVoiceTalkingAgent } from "@/lib/useVoiceTalkingAgent";
+import { 
+  separateAndSaveIntelligently, 
+  ExtractionBatch 
+} from "@/lib/welbuddySmartSeparation";
 
 // Play subtle tactile audio pop using Web Audio API
 function playHapticTone(freq = 440, duration = 0.06) {
@@ -73,11 +84,13 @@ export default function ChatInterface({
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [savedTasksIndex, setSavedTasksIndex] = useState<number | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const recognitionRef = useRef<any>(null);
+  const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
   
+  // Stored autonomous extractions keyed by message.id
+  const [extractions, setExtractions] = useState<Record<string, ExtractionBatch>>({});
+  const [latestBatch, setLatestBatch] = useState<ExtractionBatch | null>(null);
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
   const [hasAutoPrompted, setHasAutoPrompted] = useState(false);
@@ -90,6 +103,15 @@ export default function ChatInterface({
     const savedPersona = localStorage.getItem("welbuddy_persona");
     if (savedPersona === "stoic" || savedPersona === "compassionate" || savedPersona === "operator") {
       setPersona(savedPersona);
+    }
+    const savedExtractions = localStorage.getItem("welbuddy_chat_extractions");
+    if (savedExtractions) {
+      try {
+        const parsed = JSON.parse(savedExtractions);
+        if (parsed && typeof parsed === "object") {
+          setExtractions(parsed);
+        }
+      } catch (_e) {}
     }
   }, []);
 
@@ -177,49 +199,73 @@ export default function ChatInterface({
     }
   }, [injectedPrompt, append, onClearInjectedPrompt]);
 
-  // Setup Web Speech API for voice dictation in chat
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      if (SpeechRecognition) {
-        const rec = new SpeechRecognition();
-        rec.continuous = false;
-        rec.interimResults = false;
-        rec.lang = "en-US";
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        rec.onresult = (evt: any) => {
-          const text = evt.results[0][0].transcript;
-          if (text) {
-            handleInputChange({ target: { value: text } } as any);
-          }
-          setIsRecording(false);
-          if (soundEnabled) playHapticTone(520, 0.08);
-        };
-        rec.onerror = () => setIsRecording(false);
-        rec.onend = () => setIsRecording(false);
-        recognitionRef.current = rec;
+  // Voice Talking Agent Hook
+  const {
+    isVoiceModeOpen,
+    setIsVoiceModeOpen,
+    agentState,
+    transcript,
+    interimTranscript,
+    audioLevel,
+    isHandsFreeEnabled,
+    setIsHandsFreeEnabled,
+    startListening,
+    stopListening,
+    speakText,
+    stopSpeaking,
+  } = useVoiceTalkingAgent({
+    persona,
+    onSpeechRecognized: (spokenText) => {
+      if (spokenText) {
+        append({ role: "user", content: spokenText });
       }
-    }
-  }, [handleInputChange, soundEnabled]);
+    },
+  });
 
-  const toggleMic = () => {
-    if (!recognitionRef.current) {
-      alert("Voice input is supported in Google Chrome, Safari, and Edge.");
-      return;
-    }
-    if (isRecording) {
-      recognitionRef.current.stop();
-      setIsRecording(false);
-      if (soundEnabled) playHapticTone(340, 0.06);
-    } else {
-      try {
-        recognitionRef.current.start();
-        setIsRecording(true);
-        if (soundEnabled) playHapticTone(620, 0.08);
-      } catch (err) {
-        console.warn("Mic error:", err);
+  // Track stream completion for AI voice speech and Autonomous Extraction
+  const wasLoadingRef = useRef(false);
+
+  useEffect(() => {
+    if (wasLoadingRef.current && !isLoading && messages.length > 0) {
+      const lastMsg = messages[messages.length - 1];
+      const secondLastMsg = messages.length >= 2 ? messages[messages.length - 2] : null;
+
+      if (lastMsg.role === "assistant" && lastMsg.content) {
+        // 1. If Voice Mode is open, speak the response out loud
+        if (isVoiceModeOpen) {
+          speakText(lastMsg.content);
+        }
+
+        // 2. Autonomous Extraction Engine: Take notes & separate tasks, routines, reminders
+        const userPrompt = secondLastMsg?.role === "user" ? secondLastMsg.content : "";
+        separateAndSaveIntelligently({
+          userMessage: userPrompt,
+          assistantReply: lastMsg.content,
+          persona,
+        }).then((batch) => {
+          if (batch) {
+            setExtractions((prev) => {
+              const updated = { ...prev, [lastMsg.id]: batch };
+              try {
+                localStorage.setItem("welbuddy_chat_extractions", JSON.stringify(updated));
+              } catch (_e) {}
+              return updated;
+            });
+            setLatestBatch(batch);
+          }
+        });
       }
+    }
+    wasLoadingRef.current = isLoading;
+  }, [isLoading, messages, isVoiceModeOpen, persona, speakText]);
+
+  const handleToggleSpeakMessage = (text: string, msgId: string) => {
+    if (speakingMessageId === msgId) {
+      stopSpeaking();
+      setSpeakingMessageId(null);
+    } else {
+      setSpeakingMessageId(msgId);
+      speakText(text, () => setSpeakingMessageId(null));
     }
   };
 
@@ -254,6 +300,9 @@ export default function ChatInterface({
     });
 
     localStorage.setItem("welbuddy_tasks", JSON.stringify([...newTasks, ...existing]));
+    window.dispatchEvent(new Event("storage"));
+    window.dispatchEvent(new CustomEvent("welbuddy_tasks_updated", { detail: [...newTasks, ...existing] }));
+
     setSavedTasksIndex(idx);
     if (soundEnabled) playHapticTone(720, 0.12);
     setTimeout(() => setSavedTasksIndex(null), 2500);
@@ -270,7 +319,9 @@ export default function ChatInterface({
   const handleClearHistory = () => {
     if (window.confirm("Start a clean session with WelBuddy?")) {
       localStorage.removeItem("welgpt_chat_history");
+      localStorage.removeItem("welbuddy_chat_extractions");
       setMessages([]);
+      setExtractions({});
       setLoadedSessionCount(0);
       if (soundEnabled) playHapticTone(300, 0.1);
     }
@@ -344,23 +395,42 @@ export default function ChatInterface({
     { label: "🛡️ Beat Procrastination", prompt: "What is the biggest mental friction point here, and how do I bypass procrastination on it?" }
   ];
 
+  const lastAssistantContent = messages.filter((m) => m.role === "assistant").pop()?.content || "";
+
   return (
     <div className="flex flex-col h-full w-full max-w-4xl mx-auto relative z-10 pt-1 sm:pt-2">
       
       {/* Top WelBuddy Control Strip */}
       <div className="flex items-center justify-between gap-1.5 sm:gap-3 px-1 sm:px-2 pb-2 sm:pb-3 border-b border-white/5 mb-2 sm:mb-3">
-        {/* Status indicator */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          <div className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 bg-emerald-500"></span>
+        {/* Status indicator & Voice Agent Launch Button */}
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
+            <div className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 bg-emerald-500"></span>
+            </div>
+            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white">
+              WelBuddy™
+            </span>
           </div>
-          <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white">
-            WelBuddy™
-          </span>
-          <span className="text-[10px] font-mono text-gray-400 hidden lg:inline">
-            • Mental & Business Engine
-          </span>
+
+          {/* AI Voice Talking Agent Trigger */}
+          <button
+            type="button"
+            onClick={() => {
+              setIsVoiceModeOpen(true);
+              startListening();
+            }}
+            className="relative flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-gradient-to-r from-teal-500/20 via-violet-600/25 to-purple-600/25 border border-teal-400/35 text-teal-300 hover:text-white hover:border-teal-400/60 transition-all font-bold text-[10px] sm:text-xs shadow-[0_0_15px_rgba(20,184,166,0.2)] group shrink-0 active:scale-95"
+            title="Launch WelBuddy AI Voice Talking Agent"
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-400"></span>
+            </span>
+            <Mic size={12} className="text-teal-400 group-hover:scale-110 transition-transform" />
+            <span className="font-semibold">Voice Agent</span>
+          </button>
         </div>
 
         {/* Persona Selector */}
@@ -440,7 +510,7 @@ export default function ChatInterface({
             <div className="relative inline-flex items-center justify-center p-3 rounded-2xl mb-4 bg-gradient-to-br from-violet-600/30 via-purple-600/20 to-teal-500/20 border border-violet-500/30 shadow-[0_0_30px_rgba(124,58,237,0.25)]">
               <Image src="/logo-icon.png" alt="WelBuddy" width={44} height={44} className="object-contain" priority />
               <div className="absolute -bottom-2 px-2.5 py-0.5 rounded-full bg-teal-500/20 border border-teal-400/40 text-[9px] font-mono font-bold uppercase tracking-widest text-teal-300">
-                Co-Pilot Active
+                Voice Co-Pilot
               </div>
             </div>
 
@@ -448,11 +518,26 @@ export default function ChatInterface({
               Hey 👋 I&apos;m <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-purple-300 to-teal-300">WelBuddy.</span>
             </h1>
             <p className="text-gray-300 text-sm md:text-base max-w-lg mx-auto mb-2 font-medium">
-              The best AI assistant for the wellness of your mental &amp; business life.
+              Your AI Voice Talking Agent for executive business velocity and nervous system wellness.
             </p>
-            <p className="text-gray-500 text-xs mb-8">
-              Pick a quick mode below or ask anything about your focus, stress, or business leverage.
+            <p className="text-gray-500 text-xs mb-6 max-w-md mx-auto">
+              I autonomously take notes and intelligently separate your tasks, routines, and reminders as we speak or chat.
             </p>
+
+            {/* Launch Voice Agent CTA */}
+            <div className="mb-8">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsVoiceModeOpen(true);
+                  startListening();
+                }}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-violet-600 via-purple-600 to-teal-500 hover:from-violet-500 hover:to-teal-400 text-white font-bold text-xs sm:text-sm shadow-[0_0_30px_rgba(124,58,237,0.35)] transition-all active:scale-95"
+              >
+                <Mic size={16} className="text-teal-300 animate-pulse" />
+                <span>Talk to WelBuddy Voice Agent</span>
+              </button>
+            </div>
             
             {/* Quick interactive mode buttons */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-w-3xl mx-auto px-2">
@@ -512,6 +597,25 @@ export default function ChatInterface({
                               <Brain size={12} /> WelBuddy
                             </span>
                             <div className="flex items-center gap-1.5">
+                              {/* Listen / Read Aloud Button */}
+                              <button
+                                type="button"
+                                onClick={() => handleToggleSpeakMessage(msg.content, msg.id)}
+                                className={`transition-colors p-1 flex items-center gap-1 text-[11px] ${
+                                  speakingMessageId === msg.id ? "text-cyan-400 font-bold" : "text-gray-400 hover:text-white"
+                                }`}
+                                title={speakingMessageId === msg.id ? "Stop speaking" : "Listen to response"}
+                              >
+                                {speakingMessageId === msg.id ? (
+                                  <VolumeX size={13} className="text-cyan-400 animate-pulse" />
+                                ) : (
+                                  <Volume2 size={13} />
+                                )}
+                                <span className="text-[10px] hidden sm:inline">
+                                  {speakingMessageId === msg.id ? "Stop" : "Listen"}
+                                </span>
+                              </button>
+
                               <button
                                 type="button"
                                 onClick={() => handleSaveToTasks(msg.content, index)}
@@ -543,6 +647,14 @@ export default function ChatInterface({
                           </div>
                         )}
                         {msg.content}
+
+                        {/* Autonomous AI Extraction Card (Notes, Tasks, Routines, Reminders) */}
+                        {msg.role !== "user" && extractions[msg.id] && (
+                          <AiExtractionCard 
+                            batch={extractions[msg.id]} 
+                            onSwitchTab={onSwitchTab} 
+                          />
+                        )}
                       </div>
                     </div>
 
@@ -604,7 +716,7 @@ export default function ChatInterface({
           </button>
 
           <span className="text-[10px] sm:text-[11px] text-gray-500 font-mono hidden sm:inline">
-            Active: <strong className="text-gray-300 capitalize">{persona}</strong> mode
+            Active: <strong className="text-gray-300 capitalize">{persona}</strong> • Auto-Extraction Active
           </span>
         </div>
 
@@ -622,21 +734,21 @@ export default function ChatInterface({
               onChange={handleInputChange}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
-              placeholder={isPersonalized ? "Ask WelBuddy (e.g. 'Prioritize my day')..." : "Message WelBuddy..."}
+              placeholder={isPersonalized ? "Talk or type to WelBuddy (e.g. 'Meeting recap: deck by 3pm, drink water daily at 8am')..." : "Message WelBuddy..."}
               className="flex-1 bg-transparent border-none outline-none text-white placeholder:text-gray-500 py-3 sm:py-3.5 px-3.5 sm:px-5 font-medium text-sm md:text-base min-w-0"
             />
+            {/* Voice Mode Toggle Button */}
             <button
               type="button"
-              onClick={toggleMic}
-              className={`p-2.5 sm:p-3 text-sm transition-colors rounded-xl mr-1 shrink-0 ${
-                isRecording
-                  ? "bg-rose-500/20 text-rose-400 animate-pulse border border-rose-500/30"
-                  : "text-gray-400 hover:text-white hover:bg-white/5"
-              }`}
-              title={isRecording ? "Listening... click to stop" : "Voice dictation"}
-              aria-label="Voice input"
+              onClick={() => {
+                setIsVoiceModeOpen(true);
+                startListening();
+              }}
+              className="p-2.5 sm:p-3 text-sm text-teal-400 hover:text-white hover:bg-teal-500/10 transition-colors rounded-xl mr-1 shrink-0"
+              title="Launch AI Voice Talking Agent"
+              aria-label="Launch voice talking agent"
             >
-              {isRecording ? <MicOff size={17} /> : <Mic size={17} />}
+              <Mic size={17} />
             </button>
             <button 
               type="submit"
@@ -649,10 +761,32 @@ export default function ChatInterface({
           </motion.div>
         </form>
         <p className="text-center text-[10px] sm:text-[11px] text-gray-500 line-clamp-1 sm:line-clamp-none px-2">
-          WelBuddy is your AI assistant for business execution and mental wellness. Verify medical decisions with a physician.
+          WelBuddy is your AI voice talking agent. Notes, tasks, routines, and reminders are intelligently separated on its own.
         </p>
       </div>
       
+      {/* Full Interactive Voice Talking Agent Modal */}
+      <VoiceTalkingAgentModal
+        isOpen={isVoiceModeOpen}
+        onClose={() => {
+          stopSpeaking();
+          stopListening();
+          setIsVoiceModeOpen(false);
+        }}
+        agentState={agentState}
+        transcript={transcript}
+        interimTranscript={interimTranscript}
+        lastAssistantMessage={lastAssistantContent}
+        audioLevel={audioLevel}
+        isHandsFreeEnabled={isHandsFreeEnabled}
+        onToggleHandsFree={() => setIsHandsFreeEnabled(!isHandsFreeEnabled)}
+        onStartListening={startListening}
+        onStopListening={stopListening}
+        onStopSpeaking={stopSpeaking}
+        latestBatch={latestBatch}
+        persona={persona}
+      />
+
       <PremiumModal isOpen={showPremiumModal} onClose={() => setShowPremiumModal(false)} />
     </div>
   );

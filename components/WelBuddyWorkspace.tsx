@@ -44,30 +44,60 @@ function playTabTone(freq = 540, duration = 0.05) {
 export default function WelBuddyWorkspace() {
   const [activeTab, setActiveTab] = useState<WelBuddyTab>("chat");
   const [pendingTasksCount, setPendingTasksCount] = useState(0);
+  const [notesCount, setNotesCount] = useState(0);
+  const [remindersCount, setRemindersCount] = useState(0);
   const [injectedChatPrompt, setInjectedChatPrompt] = useState<string | null>(null);
 
-  // Read pending tasks count
+  // Read counts for tasks, notes, and reminders
   useEffect(() => {
-    const updateTaskCount = () => {
-      const saved = localStorage.getItem("welbuddy_tasks");
-      if (saved) {
+    const updateCounts = () => {
+      // Tasks
+      const savedTasks = localStorage.getItem("welbuddy_tasks");
+      if (savedTasks) {
         try {
-          const parsed = JSON.parse(saved);
+          const parsed = JSON.parse(savedTasks);
           if (Array.isArray(parsed)) {
             const pending = parsed.filter((t) => !t.completed).length;
             setPendingTasksCount(pending);
           }
         } catch (e) {}
       }
+
+      // Notes
+      const savedNotes = localStorage.getItem("welbuddy_notes");
+      if (savedNotes) {
+        try {
+          const parsed = JSON.parse(savedNotes);
+          if (Array.isArray(parsed)) {
+            setNotesCount(parsed.length);
+          }
+        } catch (e) {}
+      }
+
+      // Reminders
+      const savedReminders = localStorage.getItem("welbuddy_reminders");
+      if (savedReminders) {
+        try {
+          const parsed = JSON.parse(savedReminders);
+          if (Array.isArray(parsed)) {
+            const pending = parsed.filter((r) => !r.completed).length;
+            setRemindersCount(pending);
+          }
+        } catch (e) {}
+      }
     };
 
-    updateTaskCount();
-    window.addEventListener("storage", updateTaskCount);
-    window.addEventListener("welbuddy_tasks_updated", updateTaskCount);
-    const interval = setInterval(updateTaskCount, 2000);
+    updateCounts();
+    window.addEventListener("storage", updateCounts);
+    window.addEventListener("welbuddy_tasks_updated", updateCounts);
+    window.addEventListener("welbuddy_notes_updated", updateCounts);
+    window.addEventListener("welbuddy_reminders_updated", updateCounts);
+    const interval = setInterval(updateCounts, 2000);
     return () => {
-      window.removeEventListener("storage", updateTaskCount);
-      window.removeEventListener("welbuddy_tasks_updated", updateTaskCount);
+      window.removeEventListener("storage", updateCounts);
+      window.removeEventListener("welbuddy_tasks_updated", updateCounts);
+      window.removeEventListener("welbuddy_notes_updated", updateCounts);
+      window.removeEventListener("welbuddy_reminders_updated", updateCounts);
       clearInterval(interval);
     };
   }, []);
@@ -101,6 +131,11 @@ export default function WelBuddyWorkspace() {
         >
           <Bell size={12} className="text-teal-400" />
           <span>Lock-Screen Alerts</span>
+          {remindersCount > 0 && (
+            <span className="px-1.5 py-0.2 rounded-full text-[9px] font-mono font-bold bg-amber-500/30 text-amber-300 border border-amber-500/40">
+              {remindersCount}
+            </span>
+          )}
         </button>
       </div>
 
@@ -174,8 +209,15 @@ export default function WelBuddyWorkspace() {
             <Mic size={14} className={`shrink-0 ${activeTab === "audio" ? "text-teal-300" : "text-gray-400"}`} />
             <span className="truncate">
               <span className="inline sm:hidden">Audio</span>
-              <span className="hidden sm:inline">Audio Notes</span>
+              <span className="hidden sm:inline">Audio &amp; Notes</span>
             </span>
+            {notesCount > 0 && (
+              <span className={`px-1.5 py-0.2 rounded-full text-[9px] sm:text-[10px] font-mono font-bold shrink-0 ${
+                activeTab === "audio" ? "bg-white/20 text-white" : "bg-teal-500/30 text-teal-300"
+              }`}>
+                {notesCount}
+              </span>
+            )}
           </button>
         </div>
       </div>

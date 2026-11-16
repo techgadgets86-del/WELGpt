@@ -12,14 +12,20 @@ import {
   FileText, 
   Loader2, 
   Layers, 
-  ArrowRight,
-  ListOrdered,
-  Zap,
-  Brain,
-  Volume2
+  ArrowRight, 
+  ListOrdered, 
+  Zap, 
+  Brain, 
+  Volume2,
+  Trash2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { WelBuddyTask } from "./WelBuddyTasks";
+import { 
+  WelBuddyNote, 
+  getSavedWelBuddyNotes, 
+  saveWelBuddyNotes 
+} from "@/lib/welbuddySmartSeparation";
 
 interface SmartChapter {
   id: string;
@@ -69,6 +75,39 @@ export default function WelBuddyAudioNotes({
   const [tasks, setTasks] = useState<ExtractedTask[]>([]);
   const [copiedSummary, setCopiedSummary] = useState(false);
   const [importedTasks, setImportedTasks] = useState(false);
+  const [savedNotes, setSavedNotes] = useState<WelBuddyNote[]>([]);
+  const [copiedNoteId, setCopiedNoteId] = useState<string | null>(null);
+
+  // Load saved notes and listen for live updates
+  useEffect(() => {
+    const loadNotes = () => {
+      setSavedNotes(getSavedWelBuddyNotes());
+    };
+    loadNotes();
+    window.addEventListener("welbuddy_notes_updated", loadNotes);
+    window.addEventListener("storage", loadNotes);
+    return () => {
+      window.removeEventListener("welbuddy_notes_updated", loadNotes);
+      window.removeEventListener("storage", loadNotes);
+    };
+  }, []);
+
+  const handleDeleteNote = (id: string) => {
+    const updated = savedNotes.filter((n) => n.id !== id);
+    setSavedNotes(updated);
+    saveWelBuddyNotes(updated);
+    playHapticTone(360, 0.06);
+  };
+
+  const handleCopyNote = (note: WelBuddyNote) => {
+    const text = `${note.title}\n\n${note.summary}${
+      note.insights?.length ? "\n\nKey Insights:\n" + note.insights.map((i) => `• ${i}`).join("\n") : ""
+    }`;
+    navigator.clipboard.writeText(text);
+    setCopiedNoteId(note.id);
+    playHapticTone(660, 0.08);
+    setTimeout(() => setCopiedNoteId(null), 2000);
+  };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -425,6 +464,92 @@ export default function WelBuddyAudioNotes({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Captured Smart Notes from AI Co-Pilot & Voice Agent */}
+      <div className="mt-8 pt-6 border-t border-white/10 space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-base font-bold text-white flex items-center gap-2">
+              <FileText size={18} className="text-teal-400" />
+              <span>Smart Notes Vault ({savedNotes.length})</span>
+            </h3>
+            <p className="text-gray-400 text-xs mt-0.5">
+              Autonomously captured &amp; organized from your Co-Pilot Voice Agent and Chat sessions.
+            </p>
+          </div>
+          {savedNotes.length > 0 && (
+            <span className="px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 text-[10px] font-mono font-bold">
+              AI Indexed
+            </span>
+          )}
+        </div>
+
+        {savedNotes.length === 0 ? (
+          <div className="p-6 rounded-2xl bg-[#111127] border border-white/5 text-center text-gray-500 text-xs">
+            <p>No captured smart notes yet.</p>
+            <p className="text-[11px] text-gray-600 mt-1">
+              Talk or chat with WelBuddy in Co-Pilot to have reflections, meeting summaries, and insights automatically recorded here.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {savedNotes.map((note) => (
+              <div
+                key={note.id}
+                className="p-4 rounded-2xl bg-[#111127] border border-white/10 hover:border-teal-500/30 transition-all flex flex-col justify-between group shadow-sm"
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-2 pb-2 mb-2 border-b border-white/5">
+                    <h4 className="font-bold text-white text-sm line-clamp-1">{note.title}</h4>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => handleCopyNote(note)}
+                        className="p-1 rounded text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+                        title="Copy note"
+                      >
+                        {copiedNoteId === note.id ? (
+                          <Check size={13} className="text-emerald-400" />
+                        ) : (
+                          <Copy size={13} />
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteNote(note.id)}
+                        className="p-1 rounded text-gray-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                        title="Delete note"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-gray-300 text-xs leading-relaxed line-clamp-3">{note.summary}</p>
+
+                  {note.insights && note.insights.length > 0 && (
+                    <ul className="mt-2 space-y-1 list-disc list-inside text-gray-400 text-[11px]">
+                      {note.insights.slice(0, 3).map((ins, i) => (
+                        <li key={i} className="line-clamp-1">{ins}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                <div className="mt-3 pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-gray-500 font-mono">
+                  <span>{new Date(note.createdAt).toLocaleDateString()}</span>
+                  <div className="flex items-center gap-1">
+                    {note.tags?.slice(0, 2).map((t, ti) => (
+                      <span key={ti} className="px-1.5 py-0.2 rounded bg-white/5 text-gray-400">
+                        #{t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
