@@ -242,7 +242,7 @@ export function autoSaveExtractedItems(batch: ExtractionBatch): {
 export function parseLocalHeuristic(text: string, context = ""): ExtractionBatch {
   const combined = `${text}\n${context}`;
   const lines = combined
-    .split(/\n|(?<=[.!?])\s+/)
+    .split(/\n|;|\s*,\s*(?:and\s+|then\s+|also\s+|plus\s+|additionally\s+)?|(?<=[.!?])\s+/)
     .map((l) => l.trim())
     .filter((l) => l.length > 5);
 
@@ -251,27 +251,27 @@ export function parseLocalHeuristic(text: string, context = ""): ExtractionBatch
   const routines: RoutineBlock[] = [];
   const reminders: WelBuddyReminder[] = [];
 
-  // 1. Routine Detection Patterns
-  const routineRegex = /(every\s+(morning|day|evening|night|afternoon|week)|daily|at\s+(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)|circadian|routine|habit|anchor)/i;
-  
-  // 2. Reminder Detection Patterns
-  const reminderRegex = /(remind\s+me|don['’]t\s+forget|alert\s+me|schedule\s+reminder|deadline\s+is|by\s+(\d{1,2}(?::\d{2})?\s*(?:am|pm)?|tomorrow|friday|monday))/i;
+  // 1. Explicit Reminder Detection Patterns
+  const reminderRegex = /(?:remind\s+me|don['’]t\s+forget|alert\s+me|schedule\s+reminder|notify\s+me|ping\s+me)\b/i;
+
+  // 2. Routine Detection Patterns (Recurring daily/weekly habits or circadian anchors)
+  const routineRegex = /(?:every\s+(?:morning|day|evening|night|afternoon|week)|daily|each\s+day|circadian|routine|habit\s+loop|anchor)\b/i;
 
   // 3. Task Action Verb Patterns
-  const taskActionRegex = /^(?:\[\s*\]|[-*•0-9.)]+\s*)?(prepare|build|send|draft|finish|code|review|call|test|deploy|submit|write|organize|schedule|fix|analyze|update|create|buy|contact|implement|set\s+up|clean|read|record)\b/i;
+  const taskActionRegex = /(?:prepare|build|send|draft|finish|code|review|call|test|deploy|submit|write|organize|schedule|fix|analyze|update|create|buy|contact|implement|set\s+up|clean|read|record|need\s+to|have\s+to|must\s+finish|to-?do)\b/i;
 
   // 4. Note / Insight / Reflection Keywords
-  const noteRegex = /(realized|note\s+that|insight|meeting\s+with|key\s+takeaway|summary|learned|idea:|reflection|observed|thought:)/i;
+  const noteRegex = /(?:realized|note\s+that|insight|meeting\s+with|key\s+takeaway|summary|learned|idea|reflection|observed|thought|noticed\s+that)\b/i;
 
   lines.forEach((line, idx) => {
     const clean = line.replace(/^(?:\[\s*\]|[-*•0-9.)]+\s*)+/, "").trim();
     if (clean.length < 5) return;
 
-    // Check Reminders first
+    // 1. Check Explicit Reminders first
     if (reminderRegex.test(clean) && reminders.length < 3) {
-      const timeMatch = clean.match(/(?:at|by|tomorrow|in)\s+([0-9]{1,2}(?::[0-9]{2})?\s*(?:am|pm)?|\w+\s+at\s+[0-9]{1,2}(?::[0-9]{2})?\s*(?:am|pm)?)/i);
-      const targetTime = timeMatch ? timeMatch[0] : "Scheduled time";
-      const reminderTitle = clean.replace(reminderRegex, "").trim() || clean;
+      const timeMatch = clean.match(/(?:at|by|tomorrow|in|friday|monday|tuesday|wednesday|thursday|saturday|sunday)\s+([0-9]{1,2}(?::[0-9]{2})?\s*(?:am|pm)?|\w+\s+at\s+[0-9]{1,2}(?::[0-9]{2})?\s*(?:am|pm)?)/i);
+      const targetTime = timeMatch ? timeMatch[0] : "Scheduled reminder";
+      const reminderTitle = clean.replace(reminderRegex, "").replace(/^to\s+/i, "").trim() || clean;
 
       reminders.push({
         id: `rem_${Date.now()}_${idx}`,
@@ -285,7 +285,7 @@ export function parseLocalHeuristic(text: string, context = ""): ExtractionBatch
       return;
     }
 
-    // Check Routines
+    // 2. Check Routines (Recurring habit, anchor)
     if (routineRegex.test(clean) && routines.length < 3) {
       const timeMatch = clean.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i);
       let hour = 8;
@@ -319,15 +319,15 @@ export function parseLocalHeuristic(text: string, context = ""): ExtractionBatch
         durationMinutes: category === "deep_work" ? 90 : 20,
         title: clean.length > 60 ? clean.slice(0, 57) + "..." : clean,
         category,
-        description: `Circadian routine anchor extracted from Co-Pilot chat: ${clean}`,
+        description: `Circadian routine anchor: ${clean}`,
         completed: false,
         frequency: "daily",
       });
       return;
     }
 
-    // Check Actionable Tasks
-    if ((taskActionRegex.test(clean) || clean.startsWith("- [ ]") || clean.startsWith("•") || idx < 3) && tasks.length < 5) {
+    // 3. Check Actionable Tasks
+    if ((taskActionRegex.test(clean) || clean.startsWith("- [ ]") || clean.startsWith("•") || idx < 3) && !noteRegex.test(clean) && tasks.length < 5) {
       const lower = clean.toLowerCase();
       const isWellness = /sleep|stress|sigh|rest|water|hydrate|nsdr|walk|meditat|stretch|exercise|workout/i.test(lower);
       const isSprint = /90m|flow|deep work|code|sprint|feature|build/i.test(lower);
@@ -345,8 +345,8 @@ export function parseLocalHeuristic(text: string, context = ""): ExtractionBatch
       return;
     }
 
-    // Check Notes / Insights
-    if ((noteRegex.test(clean) || clean.length > 25) && notes.length < 2) {
+    // 4. Check Notes / Insights
+    if ((noteRegex.test(clean) || clean.length > 20) && notes.length < 3) {
       notes.push({
         id: `note_${Date.now()}_${idx}`,
         title: clean.slice(0, 40) + (clean.length > 40 ? "..." : ""),
