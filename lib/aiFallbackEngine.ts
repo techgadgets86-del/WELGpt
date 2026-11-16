@@ -37,7 +37,8 @@ export async function generateWithFallbacks(prompt: string): Promise<string> {
           model: "meta-llama/llama-3.1-8b-instruct", 
           messages: [{ role: "user", content: prompt }],
           response_format: { type: "json_object" }
-        })
+        }),
+        signal: AbortSignal.timeout(3500)
       });
       if (!res.ok) throw new Error(`OpenRouter HTTP ${res.status}`);
       const data = await res.json();
@@ -65,7 +66,8 @@ export async function generateWithFallbacks(prompt: string): Promise<string> {
           model: "meta/llama3-8b-instruct", 
           messages: [{ role: "user", content: prompt }],
           max_tokens: 1024
-        })
+        }),
+        signal: AbortSignal.timeout(3500)
       });
       if (!res.ok) throw new Error(`Nvidia NIM HTTP ${res.status}`);
       const data = await res.json();

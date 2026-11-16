@@ -80,7 +80,11 @@ RULES:
 - Keep titles crisp and action-oriented.`;
 
     try {
-      const rawAiResponse = await generateWithFallbacks(prompt);
+      const aiPromise = generateWithFallbacks(prompt);
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('AI extraction timeout')), 4000)
+      );
+      const rawAiResponse = await Promise.race([aiPromise, timeoutPromise]);
       const parsed = JSON.parse(rawAiResponse);
 
       if (parsed && typeof parsed === 'object') {
